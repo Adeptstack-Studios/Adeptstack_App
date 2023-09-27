@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<Shell
+    x:Class="Adeptstack_App.AppShell"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:local="clr-namespace:Adeptstack_App"
+    Shell.FlyoutBehavior="Disabled"
+    BackgroundColor="#181416" FlyoutBackgroundColor="#181416" >
+
+    <Shell.FlyoutHeader>
+        <Border 
+                StrokeThickness="0">
+            <Grid ColumnDefinitions="Auto, *"
+                    Padding="25"
+                  ColumnSpacing="20">
+                <Image Grid.Column="0"
+                Source="adeptstack.png"
+                   Aspect="AspectFill"
+                   HeightRequest="50"
+                   WidthRequest="50"/>
+
+                <Label Grid.Column="1"
+                   Text="Adeptstack"
+                   VerticalTextAlignment="Center"
+                   FontSize="28"
+                   FontAttributes="Bold"/>
+            </Grid>
+        </Border>
+    </Shell.FlyoutHeader>
+
+    <Shell.FlyoutFooter>
+        <Border BackgroundColor="#181416" StrokeThickness="0">
+            <VerticalStackLayout>
+                <Label Text="© - Adeptstack" HorizontalTextAlignment="Center" Padding="0, 10"/>
+            </VerticalStackLayout>
+        </Border>
+    </Shell.FlyoutFooter>
+
+    <FlyoutItem Title="2">
+        <ShellContent
+Title="News"
+Icon="news.png"
+ContentTemplate="{DataTemplate local:MainPage}"
+Route="MainPage" />
+
+        <ShellContent
+Title="Changelogs"
+Icon="changes.png"
+ContentTemplate="{DataTemplate local:Changelogs}"
+Route="Changelogs"/>
+    </FlyoutItem>
+
+</Shell>
