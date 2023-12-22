@@ -3,7 +3,7 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="Adeptstack_App.DisplayContent"
              Title="DisplayContent">
-    <Grid>
+    <Grid BackgroundColor="#181416">
         <RefreshView Refreshing="RefreshView_Refreshing" >
             <WebView x:Name="web" Navigating="web_Navigating" >
 

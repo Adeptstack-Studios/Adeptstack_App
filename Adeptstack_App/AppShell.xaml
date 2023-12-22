@@ -7,7 +7,7 @@
     Shell.FlyoutBehavior="Disabled"
     BackgroundColor="#181416" FlyoutBackgroundColor="#181416" >
 
-    <Shell.FlyoutHeader>
+    <!--<Shell.FlyoutHeader>
         <Border 
                 StrokeThickness="0">
             <Grid ColumnDefinitions="Auto, *"
@@ -34,9 +34,9 @@
                 <Label Text="© - Adeptstack" HorizontalTextAlignment="Center" Padding="0, 10"/>
             </VerticalStackLayout>
         </Border>
-    </Shell.FlyoutFooter>
+    </Shell.FlyoutFooter>-->
 
-    <FlyoutItem Title="2">
+    <FlyoutItem Title="2" >
         <ShellContent
 Title="News"
 Icon="news.png"

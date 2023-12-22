@@ -31,11 +31,12 @@ public partial class MainPage : ContentPage
 
         if (rfv.IsRefreshing)
         {
-            web.Reload();
             if (Utilities.IsConnectedToInternet())
             {
+                web.Reload();
                 rfv.IsRefreshing = false;
             }
+            rfv.IsRefreshing = false;
         }
     }
 }

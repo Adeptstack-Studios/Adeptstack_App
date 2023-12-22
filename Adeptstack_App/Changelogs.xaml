@@ -3,7 +3,7 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="Adeptstack_App.Changelogs"
              Title="Changelogs">
-    <Grid>
+    <Grid BackgroundColor="#181416">
         <Grid.RowDefinitions>
             <RowDefinition />
             <RowDefinition Height="60" />
