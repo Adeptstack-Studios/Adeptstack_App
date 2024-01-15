@@ -4,10 +4,6 @@
              x:Class="Adeptstack_App.Changelogs"
              Title="Changelogs">
     <Grid BackgroundColor="#181416">
-        <Grid.RowDefinitions>
-            <RowDefinition />
-            <RowDefinition Height="60" />
-        </Grid.RowDefinitions>
         <RefreshView Refreshing="RefreshView_Refreshing" >
             <WebView x:Name="web" Grid.Row="0" Navigating="web_Navigating" >
 

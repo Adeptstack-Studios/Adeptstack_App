@@ -36,18 +36,18 @@
         </Border>
     </Shell.FlyoutFooter>-->
 
-    <FlyoutItem Title="2" >
-        <ShellContent
-Title="News"
-Icon="news.png"
-ContentTemplate="{DataTemplate local:MainPage}"
-Route="MainPage" />
+    <FlyoutItem Title="10" >
+        <ShellContent 
+                Title="News"
+                Icon="news.png"
+                ContentTemplate="{DataTemplate local:MainPage}"
+                Route="MainPage" />
 
         <ShellContent
-Title="Changelogs"
-Icon="changes.png"
-ContentTemplate="{DataTemplate local:Changelogs}"
-Route="Changelogs"/>
+                Title="Changelogs"
+                Icon="changes.png"
+                ContentTemplate="{DataTemplate local:Changelogs}"
+                Route="Changelogs"/>
     </FlyoutItem>
 
 </Shell>
