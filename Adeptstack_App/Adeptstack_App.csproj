@@ -58,7 +58,6 @@
 	  <None Remove="Resources\Images\Adeptstack.png" />
 	  <None Remove="Resources\Images\changes.png" />
 	  <None Remove="Resources\Images\news.png" />
-	  <None Remove="Resources\Images\no_wifi.png" />
 	  <None Remove="Resources\Images\settings.png" />
 	  <None Remove="Resources\Splash\adeptstacksplash.png" />
 	</ItemGroup>
@@ -77,9 +76,6 @@
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>
 	  <MauiXaml Update="DisplayContent.xaml">
-	    <Generator>MSBuild:Compile</Generator>
-	  </MauiXaml>
-	  <MauiXaml Update="NoWifi.xaml">
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>
 	</ItemGroup>

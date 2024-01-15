@@ -19,10 +19,10 @@ public partial class Changelogs : ContentPage
                 await Navigation.PushAsync(new AppChangelog(e.Url));
             }
         }
-        else
-        {
-            await Navigation.PushAsync(new NoWifi());
-        }
+        //else
+        //{
+        //    await Navigation.PushAsync(new NoWifi());
+        //}
     }
 
     private void RefreshView_Refreshing(object sender, EventArgs e)
