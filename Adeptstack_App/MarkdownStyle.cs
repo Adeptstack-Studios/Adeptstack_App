@@ -22,5 +22,10 @@
         {
             return css_dark;
         }
+
+        public static string CSSLight()
+        {
+            return css_light;
+        }
     }
 }
