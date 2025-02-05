@@ -1,9 +1,11 @@
-﻿namespace Adeptstack_App;
+using Adeptstack_App.Utils;
 
-public partial class MainPage : ContentPage
+namespace Adeptstack_App;
+
+public partial class Changelogs : ContentPage
 {
-    string url = "https://app-adeptstack.vercel.app/News";
-    public MainPage()
+    string url = "https://app-adeptstack.vercel.app/Changelog";
+    public Changelogs()
     {
         InitializeComponent();
         web.Source = url;
@@ -16,7 +18,7 @@ public partial class MainPage : ContentPage
             if (url != e.Url)
             {
                 e.Cancel = true;
-                await Navigation.PushAsync(new DisplayContent(e.Url));
+                await Navigation.PushAsync(new AppChangelog(e.Url));
             }
         }
         //else
@@ -40,4 +42,3 @@ public partial class MainPage : ContentPage
         }
     }
 }
-

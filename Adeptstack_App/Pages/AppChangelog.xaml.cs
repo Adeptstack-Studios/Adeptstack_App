@@ -1,12 +1,17 @@
+using Adeptstack_App.Utils;
+
 namespace Adeptstack_App;
 
-public partial class Changelogs : ContentPage
+public partial class AppChangelog : ContentPage
 {
-    string url = "https://app-adeptstack.vercel.app/Changelog";
-    public Changelogs()
+    string url = "https://app-adeptstack.vercel.app/Changelog/Notivity";
+
+    public AppChangelog(string url)
     {
         InitializeComponent();
         web.Source = url;
+        this.url = url;
+        this.Title = Utilities.GetTitle(url);
     }
 
     private async void web_Navigating(object sender, WebNavigatingEventArgs e)
@@ -16,7 +21,7 @@ public partial class Changelogs : ContentPage
             if (url != e.Url)
             {
                 e.Cancel = true;
-                await Navigation.PushAsync(new AppChangelog(e.Url));
+                await Navigation.PushAsync(new DisplayContent(e.Url));
             }
         }
         //else

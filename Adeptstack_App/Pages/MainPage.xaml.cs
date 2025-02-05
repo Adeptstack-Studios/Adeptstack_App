@@ -1,15 +1,14 @@
+﻿using Adeptstack_App.Utils;
+
 namespace Adeptstack_App;
 
-public partial class AppChangelog : ContentPage
+public partial class MainPage : ContentPage
 {
-    string url = "https://app-adeptstack.vercel.app/Changelog/Notivity";
-
-    public AppChangelog(string url)
+    string url = "https://app-adeptstack.vercel.app/News";
+    public MainPage()
     {
         InitializeComponent();
         web.Source = url;
-        this.url = url;
-        this.Title = Utilities.GetTitle(url);
     }
 
     private async void web_Navigating(object sender, WebNavigatingEventArgs e)
@@ -43,3 +42,4 @@ public partial class AppChangelog : ContentPage
         }
     }
 }
+

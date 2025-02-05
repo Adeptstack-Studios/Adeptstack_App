@@ -69,15 +69,19 @@
 	</ItemGroup>
 
 	<ItemGroup>
-	  <MauiXaml Update="AppChangelog.xaml">
+	  <MauiXaml Update="Pages\AppChangelog.xaml">
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>
-	  <MauiXaml Update="Changelogs.xaml">
+	  <MauiXaml Update="Pages\Changelogs.xaml">
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>
-	  <MauiXaml Update="DisplayContent.xaml">
+	  <MauiXaml Update="Pages\DisplayContent.xaml">
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>
+	</ItemGroup>
+
+	<ItemGroup>
+	  <Folder Include="ContentViews\" />
 	</ItemGroup>
 
 </Project>

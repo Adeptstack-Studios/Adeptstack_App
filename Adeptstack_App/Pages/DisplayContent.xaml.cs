@@ -1,3 +1,5 @@
+using Adeptstack_App.Utils;
+
 namespace Adeptstack_App;
 
 public partial class DisplayContent : ContentPage

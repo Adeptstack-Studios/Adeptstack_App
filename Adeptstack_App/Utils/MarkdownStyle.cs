@@ -1,4 +1,4 @@
-﻿namespace Adeptstack_App
+﻿namespace Adeptstack_App.Utils
 {
     class MarkdownStyle
     {

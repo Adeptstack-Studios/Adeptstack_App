@@ -1,7 +1,7 @@
 ﻿using System.Net.NetworkInformation;
 using System.Text.RegularExpressions;
 
-namespace Adeptstack_App
+namespace Adeptstack_App.Utils
 {
     internal class Utilities
     {
