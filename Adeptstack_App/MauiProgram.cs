@@ -1,4 +1,6 @@
-﻿namespace Adeptstack_App;
+﻿using Microsoft.Extensions.Logging;
+
+namespace Adeptstack_App;
 
 public static class MauiProgram
 {
@@ -14,7 +16,7 @@ public static class MauiProgram
             });
 
 #if DEBUG
-		builder.Logging.AddDebug();
+        builder.Logging.AddDebug();
 #endif
 
         return builder.Build();

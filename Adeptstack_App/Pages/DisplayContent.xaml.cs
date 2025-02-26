@@ -1,4 +1,5 @@
 using Adeptstack_App.Utils;
+using Microsoft.Maui.ApplicationModel;
 
 namespace Adeptstack_App;
 
