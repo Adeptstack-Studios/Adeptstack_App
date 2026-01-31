@@ -8,7 +8,7 @@ namespace Adeptstack_App.Net
     {
         public static bool IsConnectedToInternet()
         {
-            string host = "adeptstack.vercel.app";
+            string host = "adeptstack.net";
             bool result = false;
             Ping p = new Ping();
             try
@@ -21,19 +21,26 @@ namespace Adeptstack_App.Net
             return result;
         }
 
-        public static void GetMetaData()
+        public static List<string> GetApps()
         {
             HttpClient client = new HttpClient();
-            string html = client.GetStringAsync("https://adeptstack.vercel.app/meta.json").Result;
+            string html = client.GetStringAsync("https://api.adeptstack.net/api/changelogs/get").Result;
+            var result = JsonSerializer.Deserialize<List<ChangelogContext>>(html);
 
+            List<string> apps = result
+                .Select(c => c.app)
+                .Distinct()
+                .ToList();
+
+            return apps;
         }
 
-        public static List<ChangelogContext> GetChangelogs(string url)
+        public static List<ChangelogContext> GetChangelogs(string app)
         {
             try
             {
                 HttpClient client = new HttpClient();
-                string html = client.GetStringAsync(url).Result;
+                string html = client.GetStringAsync($"https://api.adeptstack.net/api/changelogs/getBy?app={app}").Result;
                 var result = JsonSerializer.Deserialize<List<ChangelogContext>>(html);
                 return result;
             }
@@ -45,17 +52,10 @@ namespace Adeptstack_App.Net
             return new();
         }
 
-        public static string GetChangelogContent(string url)
-        {
-            HttpClient client = new HttpClient();
-            string md = client.GetStringAsync(url).Result;
-            return md;
-        }
-
         public static List<NewsContext> GetNews()
         {
             HttpClient client = new HttpClient();
-            string html = client.GetStringAsync("https://adeptstack.vercel.app/News.json").Result;
+            string html = client.GetStringAsync("https://api.adeptstack.net/api/news/get").Result;
             var result = JsonSerializer.Deserialize<List<NewsContext>>(html);
             return result;
         }
