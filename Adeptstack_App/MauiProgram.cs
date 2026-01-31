@@ -1,6 +1,10 @@
-﻿using Microsoft.Extensions.Logging;
+﻿using Adeptstack_App.ContextClasses;
+using Microsoft.Extensions.Logging;
 
 namespace Adeptstack_App;
+
+public delegate void NewsClickedEventArgs(object sender, NewsContext e);
+public delegate void ChangelogClickedEventArgs(object sender, ChangelogContext e);
 
 public static class MauiProgram
 {
