@@ -1,3 +1,4 @@
+using Adeptstack_App.ContextClasses;
 using Adeptstack_App.Utils;
 using Microsoft.Maui.ApplicationModel;
 
@@ -5,37 +6,41 @@ namespace Adeptstack_App;
 
 public partial class DisplayContent : ContentPage
 {
-    string link = "";
-    public DisplayContent(string url)
+    public DisplayContent(NewsContext news)
     {
         InitializeComponent();
-        web.Source = url;
-        this.Title = Utilities.GetTitle(url);
-        this.link = url;
+        this.Title = news.title;
+        LoadContent(news.content);
 
+    }
+
+    public DisplayContent(ChangelogContext changelog)
+    {
+        InitializeComponent();
+        this.Title = changelog.title;
+        LoadContent(changelog.content);
+
+    }
+
+    public void LoadContent(string content)
+    {
+        string css = MarkdownStyle.CSS();
+        string body = Markdig.Markdown.ToHtml(content);
+        string html = MarkdownStyle.GetFullHTML(css, body);
+
+        web.Navigating += web_Navigating;
+        web.Source = new HtmlWebViewSource
+        {
+            Html = html
+        };
     }
 
     private void web_Navigating(object sender, WebNavigatingEventArgs e)
     {
-        if (e.Url != link)
+        if (e.Url != "file:///android_asset/" && !e.Url.Contains("data:text/html"))
         {
             e.Cancel = true;
             Browser.Default.OpenAsync(e.Url).Wait();
-        }
-    }
-
-    private void RefreshView_Refreshing(object sender, EventArgs e)
-    {
-        RefreshView rfv = sender as RefreshView;
-
-        if (rfv.IsRefreshing)
-        {
-            if (Utilities.IsConnectedToInternet())
-            {
-                web.Reload();
-                rfv.IsRefreshing = false;
-            }
-            rfv.IsRefreshing = false;
         }
     }
 }

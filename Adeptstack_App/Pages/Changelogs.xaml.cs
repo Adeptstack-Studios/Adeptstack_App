@@ -1,44 +1,97 @@
+using Adeptstack_App.ContentViews;
+using Adeptstack_App.ContextClasses;
+using Adeptstack_App.Net;
 using Adeptstack_App.Utils;
+using System.Runtime.CompilerServices;
 
 namespace Adeptstack_App;
 
 public partial class Changelogs : ContentPage
 {
-    string url = "https://app-adeptstack.vercel.app/Changelog";
     public Changelogs()
     {
         InitializeComponent();
-        web.Source = url;
+        this.Title = "Adeptstack Changelogs";
+        AppsRefresh();
     }
 
-    private async void web_Navigating(object sender, WebNavigatingEventArgs e)
+    void AppsRefresh()
     {
-        if (Utilities.IsConnectedToInternet())
+        Thread appsThread = new Thread(delegate ()
         {
-            if (url != e.Url)
+            Dispatcher.Dispatch(() =>
             {
-                e.Cancel = true;
-                await Navigation.PushAsync(new AppChangelog(e.Url));
-            }
+                refresh.IsEnabled = false;
+                loading.IsVisible = true;
+                busy.IsRunning = true;
+                refresh.IsRefreshing = false;
+            });
+            RefreshingApps();
+        });
+        appsThread.Start();
+    }
+
+    void RefreshingApps()
+    {
+        List<string> apps = Web.GetApps();
+        Dispatcher.Dispatch(() => appsLayout.Children.Clear());
+
+        foreach (string s in apps)
+        {
+            var label = new Label
+            {
+                Text = s,
+                FontSize = 18,
+                FontFamily = "OpenSans",
+                TextColor = Color.FromArgb("#dddddd"),
+                HorizontalTextAlignment = TextAlignment.Start,
+                VerticalTextAlignment = TextAlignment.Center
+            };
+
+            var button = new Border
+            {
+                HeightRequest = 60,
+                Margin = new Thickness(0, 0, 0, 10),
+                BackgroundColor = Color.FromArgb("#171717"),
+                Padding = new Thickness(30, 0),
+
+                StrokeShape = new Microsoft.Maui.Controls.Shapes.RoundRectangle
+                {
+                    CornerRadius = new CornerRadius(12)
+                },
+
+                Content = label
+            };
+
+            var tapGesture = new TapGestureRecognizer();
+            tapGesture.Tapped += Clicked;
+
+            button.GestureRecognizers.Add(tapGesture);
+
+            Dispatcher.Dispatch(() => appsLayout.Children.Add(button));
         }
-        //else
-        //{
-        //    await Navigation.PushAsync(new NoWifi());
-        //}
+
+        Dispatcher.Dispatch(() =>
+        {
+            refresh.IsEnabled = true;
+            loading.IsVisible = false;
+            busy.IsRunning = false;
+        });
     }
 
     private void RefreshView_Refreshing(object sender, EventArgs e)
     {
-        RefreshView rfv = sender as RefreshView;
+        AppsRefresh();
+    }
 
-        if (rfv.IsRefreshing)
+    private void Clicked(object sender, EventArgs e)
+    {
+        Border clickedBorder = sender as Border;
+        Label textLabel = clickedBorder.Content as Label;
+
+        if (textLabel != null)
         {
-            if (Utilities.IsConnectedToInternet())
-            {
-                web.Reload();
-                rfv.IsRefreshing = false;
-            }
-            rfv.IsRefreshing = false;
+            Navigation.PushAsync(new AppChangelog(textLabel.Text));
         }
     }
 }

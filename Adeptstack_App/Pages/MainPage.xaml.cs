@@ -1,45 +1,66 @@
-﻿using Adeptstack_App.Utils;
+﻿using Adeptstack_App.ContentViews;
+using Adeptstack_App.ContextClasses;
+using Adeptstack_App.Net;
 
 namespace Adeptstack_App;
 
 public partial class MainPage : ContentPage
 {
-    string url = "https://app-adeptstack.vercel.app/News";
     public MainPage()
     {
         InitializeComponent();
-        web.Source = url;
+        this.Title = "Adeptstack News";
+        NewsRefresh();
     }
 
-    private async void web_Navigating(object sender, WebNavigatingEventArgs e)
+    void NewsRefresh()
     {
-        if (Utilities.IsConnectedToInternet())
+        Thread newsThread = new Thread(delegate ()
         {
-            if (url != e.Url)
+            Dispatcher.Dispatch(() =>
             {
-                e.Cancel = true;
-                await Navigation.PushAsync(new DisplayContent(e.Url));
-            }
+                refresh.IsEnabled = false;
+                loading.IsVisible = true;
+                busy.IsRunning = true;
+                refresh.IsRefreshing = false;
+            });
+            RefreshingNews();
+        });
+        newsThread.Start();
+    }
+
+    void RefreshingNews()
+    {
+        List<NewsContext> news = Web.GetNews();
+        Dispatcher.Dispatch(() => newsLayout.Children.Clear());
+
+        foreach (NewsContext newsItem in news)
+        {
+            NewsView newsView = new NewsView
+            {
+                News = newsItem,
+            };
+            newsView.NewsClicked += News_Clicked;
+
+            Dispatcher.Dispatch(() => newsLayout.Children.Add(newsView));
         }
-        //else
-        //{
-        //    await Navigation.PushAsync(new NoWifi());
-        //}
+
+        Dispatcher.Dispatch(() =>
+        {
+            refresh.IsEnabled = true;
+            loading.IsVisible = false;
+            busy.IsRunning = false;
+        });
     }
 
     private void RefreshView_Refreshing(object sender, EventArgs e)
     {
-        RefreshView rfv = sender as RefreshView;
+        NewsRefresh();
+    }
 
-        if (rfv.IsRefreshing)
-        {
-            if (Utilities.IsConnectedToInternet())
-            {
-                web.Reload();
-                rfv.IsRefreshing = false;
-            }
-            rfv.IsRefreshing = false;
-        }
+    private void News_Clicked(object sender, NewsContext e)
+    {
+        Navigation.PushAsync(new DisplayContent(e));
     }
 }
 
