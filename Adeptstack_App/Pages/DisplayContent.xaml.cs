@@ -1,0 +1,46 @@
+using Adeptstack_App.ContextClasses;
+using Adeptstack_App.Utils;
+using Microsoft.Maui.ApplicationModel;
+
+namespace Adeptstack_App;
+
+public partial class DisplayContent : ContentPage
+{
+    public DisplayContent(NewsContext news)
+    {
+        InitializeComponent();
+        this.Title = news.title;
+        LoadContent(news.content);
+
+    }
+
+    public DisplayContent(ChangelogContext changelog)
+    {
+        InitializeComponent();
+        this.Title = changelog.title;
+        LoadContent(changelog.content);
+
+    }
+
+    public void LoadContent(string content)
+    {
+        string css = MarkdownStyle.CSS();
+        string body = Markdig.Markdown.ToHtml(content);
+        string html = MarkdownStyle.GetFullHTML(css, body);
+
+        web.Navigating += web_Navigating;
+        web.Source = new HtmlWebViewSource
+        {
+            Html = html
+        };
+    }
+
+    private void web_Navigating(object sender, WebNavigatingEventArgs e)
+    {
+        if (e.Url != "file:///android_asset/" && !e.Url.Contains("data:text/html"))
+        {
+            e.Cancel = true;
+            Browser.Default.OpenAsync(e.Url).Wait();
+        }
+    }
+}

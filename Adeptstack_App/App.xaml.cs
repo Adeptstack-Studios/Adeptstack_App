@@ -1,4 +1,5 @@
-﻿namespace Adeptstack_App;
+﻿using Microsoft.Maui.ApplicationModel;
+namespace Adeptstack_App;
 
 public partial class App : Application
 {

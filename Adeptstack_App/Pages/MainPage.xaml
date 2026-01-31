@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="Adeptstack_App.MainPage"
+             Title="Adeptstack">
+
+    <Grid BackgroundColor="black">
+        <RefreshView x:Name="refresh" Refreshing="RefreshView_Refreshing" >
+            <ScrollView>
+                <Grid>
+                    <FlexLayout x:Name="newsLayout" Wrap="Wrap" HorizontalOptions="Center">
+                        
+                    </FlexLayout>
+                    <Grid BackgroundColor="Black" x:Name="loading" IsVisible="False">
+                        <ActivityIndicator x:Name="busy" IsRunning="True" VerticalOptions="Start" HorizontalOptions="Center" Color="White" Margin="0,70,0,0" />
+                    </Grid>
+                </Grid>
+            </ScrollView>
+        </RefreshView>
+    </Grid>
+
+</ContentPage>
