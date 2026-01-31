@@ -1,11 +1,37 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <ContentView xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-             x:Class="Adeptstack_App.ContentViews.ChangelogView">
-    <VerticalStackLayout>
-        <Label 
-            Text="Welcome to .NET MAUI!"
-            VerticalOptions="Center" 
-            HorizontalOptions="Center" />
-    </VerticalStackLayout>
+             x:Class="Adeptstack_App.ContentViews.ChangelogView" x:Name="this">
+    <Border WidthRequest="280" HeightRequest="220" Background="#171717" Margin="5,20,5,0" StrokeShape="RoundRectangle 20" StrokeThickness="0">
+        <Grid BindingContext="{x:Reference this}">
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="150" />
+                    <RowDefinition />
+                </Grid.RowDefinitions>
+
+                <Grid Grid.Row="0">
+                    <Image Source="{Binding Changelog.imageUrl}" Aspect="AspectFill" />
+                </Grid>
+
+                <Grid Grid.Row="1" WidthRequest="280" >
+                    <Grid.RowDefinitions>
+                        <RowDefinition />
+                        <RowDefinition />
+                    </Grid.RowDefinitions>
+
+                    <Grid Grid.Row="0" Margin="10,0,0,0">
+                        <Label Text="{Binding Changelog.title, FallbackValue='Title'}" VerticalTextAlignment="Center" FontFamily="OpenSansSemibold" FontSize="18" />
+                    </Grid>
+
+                    <FlexLayout Grid.Row="1" Margin="20,0,20,5" WidthRequest="240" JustifyContent="SpaceBetween" AlignItems="Center" Wrap="NoWrap">
+                        <Label Text="{Binding Changelog.version, FallbackValue='category'}" VerticalTextAlignment="Center" FontFamily="OpenSansRegular" FontSize="13" />
+                        <Label Text="{Binding Changelog.channel, FallbackValue='category'}" VerticalTextAlignment="Center" FontFamily="OpenSansRegular" FontSize="13" />
+                        <Label Text="{Binding Changelog.publishedAt, StringFormat='{0:MMM dd, yyyy}', FallbackValue='01/01/2020'}" FontFamily="OpenSansRegular" VerticalTextAlignment="Center" FontSize="13" />
+                    </FlexLayout>
+                </Grid>
+            </Grid>
+            <Button BackgroundColor="Transparent" x:Name="clickedOn" Clicked="clickedOn_Clicked" />
+        </Grid>
+    </Border>
 </ContentView>
