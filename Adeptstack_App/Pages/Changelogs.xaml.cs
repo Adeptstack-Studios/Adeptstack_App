@@ -31,44 +31,29 @@ public partial class Changelogs : ContentPage
         appsThread.Start();
     }
 
-    void RefreshingApps()
+    async void RefreshingApps()
     {
-        List<string> apps = Web.GetApps();
+        bool isConnected = await Web.IsConnectedToInternetAsync();
+        if (isConnected) Dispatcher.Dispatch(() => internet.IsVisible = false);
+        if (!isConnected) Dispatcher.Dispatch(() => internet.IsVisible = true);
+        List<ContextClasses.AppContext> apps = Web.GetApps();
         Dispatcher.Dispatch(() => appsLayout.Children.Clear());
 
-        foreach (string s in apps)
+        if (apps.Count > 0)
         {
-            var label = new Label
+            Dispatcher.Dispatch(() => nothing.IsVisible = false);
+            foreach (ContextClasses.AppContext s in apps)
             {
-                Text = s,
-                FontSize = 18,
-                FontFamily = "OpenSans",
-                TextColor = Color.FromArgb("#dddddd"),
-                HorizontalTextAlignment = TextAlignment.Start,
-                VerticalTextAlignment = TextAlignment.Center
-            };
+                AppView appView = new AppView();
+                appView.App = s;
+                appView.AppClicked += Clicked;
 
-            var button = new Border
-            {
-                HeightRequest = 60,
-                Margin = new Thickness(0, 0, 0, 10),
-                BackgroundColor = Color.FromArgb("#171717"),
-                Padding = new Thickness(30, 0),
-
-                StrokeShape = new Microsoft.Maui.Controls.Shapes.RoundRectangle
-                {
-                    CornerRadius = new CornerRadius(12)
-                },
-
-                Content = label
-            };
-
-            var tapGesture = new TapGestureRecognizer();
-            tapGesture.Tapped += Clicked;
-
-            button.GestureRecognizers.Add(tapGesture);
-
-            Dispatcher.Dispatch(() => appsLayout.Children.Add(button));
+                Dispatcher.Dispatch(() => appsLayout.Children.Add(appView));
+            } 
+        }
+        else
+        {
+            Dispatcher.Dispatch(() => nothing.IsVisible = true);
         }
 
         Dispatcher.Dispatch(() =>
@@ -84,14 +69,8 @@ public partial class Changelogs : ContentPage
         AppsRefresh();
     }
 
-    private void Clicked(object sender, EventArgs e)
+    private void Clicked(object sender, ContextClasses.AppContext e)
     {
-        Border clickedBorder = sender as Border;
-        Label textLabel = clickedBorder.Content as Label;
-
-        if (textLabel != null)
-        {
-            Navigation.PushAsync(new AppChangelog(textLabel.Text));
-        }
+        Navigation.PushAsync(new AppChangelog(e.name));
     }
 }

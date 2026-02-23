@@ -1,4 +1,5 @@
 using Adeptstack_App.ContextClasses;
+using Adeptstack_App.Net;
 using Adeptstack_App.Utils;
 using Microsoft.Maui.ApplicationModel;
 
@@ -22,17 +23,30 @@ public partial class DisplayContent : ContentPage
 
     }
 
-    public void LoadContent(string content)
+    public async void LoadContent(string content)
     {
-        string css = MarkdownStyle.CSS();
-        string body = Markdig.Markdown.ToHtml(content);
-        string html = MarkdownStyle.GetFullHTML(css, body);
+        bool isConnected = await Web.IsConnectedToInternetAsync();
+        if (isConnected) Dispatcher.Dispatch(() => internet.IsVisible = false);
+        if (!isConnected) Dispatcher.Dispatch(() => internet.IsVisible = true);
 
-        web.Navigating += web_Navigating;
-        web.Source = new HtmlWebViewSource
+        if (!string.IsNullOrEmpty(content))
         {
-            Html = html
-        };
+            Dispatcher.Dispatch(() => nothing.IsVisible = false);
+            string css = MarkdownStyle.CSS();
+            string body = Markdig.Markdown.ToHtml(content);
+            string html = MarkdownStyle.GetFullHTML(css, body);
+
+            web.Navigating += web_Navigating;
+
+            web.Source = new HtmlWebViewSource
+            {
+                Html = html
+            }; 
+        }
+        else
+        {
+            Dispatcher.Dispatch(() => nothing.IsVisible = true);
+        }
     }
 
     private void web_Navigating(object sender, WebNavigatingEventArgs e)

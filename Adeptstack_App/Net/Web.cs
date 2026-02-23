@@ -1,4 +1,5 @@
 ﻿using Adeptstack_App.ContextClasses;
+using System.Diagnostics;
 using System.Net.NetworkInformation;
 using System.Text.Json;
 
@@ -6,33 +7,39 @@ namespace Adeptstack_App.Net
 {
     internal class Web
     {
-        public static bool IsConnectedToInternet()
+        private static readonly HttpClient _httpClient = new HttpClient { Timeout = TimeSpan.FromSeconds(3) };
+
+        public static async Task<bool> IsConnectedToInternetAsync()
         {
-            string host = "adeptstack.net";
-            bool result = false;
-            Ping p = new Ping();
             try
             {
-                PingReply reply = p.Send(host, 3000);
-                if (reply.Status == IPStatus.Success)
-                    return true;
+                var request = new HttpRequestMessage(HttpMethod.Head, "https://clients3.google.com/generate_204");
+                using (var response = await _httpClient.SendAsync(request))
+                {
+                    return response.IsSuccessStatusCode;
+                }
             }
-            catch { }
-            return result;
+            catch (Exception e)
+            {
+                System.Diagnostics.Debug.WriteLine($"Connection test failed: {e.Message}");
+                return false;
+            }
         }
 
-        public static List<string> GetApps()
+        public static List<ContextClasses.AppContext> GetApps()
         {
-            HttpClient client = new HttpClient();
-            string html = client.GetStringAsync("https://api.adeptstack.net/api/changelogs/get").Result;
-            var result = JsonSerializer.Deserialize<List<ChangelogContext>>(html);
-
-            List<string> apps = result
-                .Select(c => c.app)
-                .Distinct()
-                .ToList();
-
-            return apps;
+            try
+            {
+                HttpClient client = new HttpClient();
+                string html = client.GetStringAsync("https://api.adeptstack.net/api/apps/get").Result;
+                var result = JsonSerializer.Deserialize<List<ContextClasses.AppContext>>(html);
+                return result;
+            }
+            catch (Exception e)
+            {
+                Debug.WriteLine(e.ToString());
+                return new();
+            }
         }
 
         public static List<ChangelogContext> GetChangelogs(string app)
@@ -46,18 +53,25 @@ namespace Adeptstack_App.Net
             }
             catch (Exception e)
             {
-                string error = e.ToString();
-                Console.WriteLine(error);
+                Debug.WriteLine(e.ToString());
+                return new();
             }
-            return new();
         }
 
         public static List<NewsContext> GetNews()
         {
-            HttpClient client = new HttpClient();
-            string html = client.GetStringAsync("https://api.adeptstack.net/api/news/get").Result;
-            var result = JsonSerializer.Deserialize<List<NewsContext>>(html);
-            return result;
+            try
+            {
+                HttpClient client = new HttpClient();
+                string html = client.GetStringAsync("https://api.adeptstack.net/api/news/get").Result;
+                var result = JsonSerializer.Deserialize<List<NewsContext>>(html);
+                return result;
+            }
+            catch (Exception e)
+            {
+                Debug.WriteLine(e.ToString());
+                return new();
+            }
         }
     }
 }
