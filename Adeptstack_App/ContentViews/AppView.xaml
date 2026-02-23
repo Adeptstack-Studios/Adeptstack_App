@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentView xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="Adeptstack_App.ContentViews.AppView" x:Name="this">
+    <Border WidthRequest="300" HeightRequest="80" Background="#171717" Margin="5,20,5,0" StrokeShape="RoundRectangle 20" StrokeThickness="0">
+        <Grid BindingContext="{x:Reference this}">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="75" />
+                    <ColumnDefinition />
+                </Grid.ColumnDefinitions>
+
+                <Grid Grid.Column="0" Padding="20">
+                    <Image Source="{Binding App.iconUrl}" Aspect="AspectFill" WidthRequest="40" HeightRequest="40" />
+                </Grid>
+
+                <Grid Grid.Column="1" >
+                    <Grid.RowDefinitions>
+                        <RowDefinition />
+                        <RowDefinition />
+                    </Grid.RowDefinitions>
+
+                    <Grid Grid.Row="0" Margin="0,20,0,0">
+                        <Label Text="{Binding App.name, FallbackValue='Title'}" VerticalTextAlignment="Center" FontFamily="OpenSansSemibold" FontSize="18" />
+                    </Grid>
+
+                    <FlexLayout Grid.Row="1" Margin="0,-15,20,5" JustifyContent="SpaceBetween" AlignItems="Center" Wrap="NoWrap">
+                        <Label Text="{Binding App.slogan, FallbackValue='slogan'}" VerticalTextAlignment="Center" FontFamily="OpenSansRegular" FontSize="13" Opacity="0.7" />
+                    </FlexLayout>
+                </Grid>
+            </Grid>
+            <Button BackgroundColor="Transparent" x:Name="clickedOn" Clicked="clickedOn_Clicked" />
+        </Grid>
+    </Border>
+</ContentView>

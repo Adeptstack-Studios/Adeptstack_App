@@ -10,6 +10,12 @@
                     <VerticalStackLayout x:Name="appsLayout" Margin="30,20">
                         
                     </VerticalStackLayout>
+                    <Grid BackgroundColor="Black" x:Name="nothing" IsVisible="False">
+                        <VerticalStackLayout HorizontalOptions="Center" VerticalOptions="Center" >
+                            <Label Text="No Content available" TextColor="White" HorizontalOptions="Center" FontSize="Medium" FontAttributes="Bold" />
+                            <Label x:Name="internet" Text="Check Internet connection" TextColor="White" HorizontalOptions="Center" FontAttributes="Bold" Opacity="0.7" FontSize="Subtitle" IsVisible="False" />
+                        </VerticalStackLayout>
+                    </Grid>
                     <Grid BackgroundColor="Black" x:Name="loading" IsVisible="False">
                         <ActivityIndicator x:Name="busy" IsRunning="True" VerticalOptions="Start" HorizontalOptions="Center" Color="White" Margin="0,70,0,0" />
                     </Grid>

@@ -15,8 +15,8 @@
     <ApplicationId>com.adeptstack.adeptstack_app</ApplicationId>
     <ApplicationIdGuid>9d54e310-f8de-42c9-a1ec-53b67f096b5b</ApplicationIdGuid>
 
-    <ApplicationDisplayVersion>2.0.0</ApplicationDisplayVersion>
-    <ApplicationVersion>11</ApplicationVersion>
+    <ApplicationDisplayVersion>2.1.0</ApplicationDisplayVersion>
+    <ApplicationVersion>13</ApplicationVersion>
     <Version>$(ApplicationDisplayVersion)</Version>
 
     <SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'ios'">11.0</SupportedOSPlatformVersion>
@@ -32,7 +32,7 @@
     <GenerateAppInstallerFile>False</GenerateAppInstallerFile>
     <AppxPackageSigningEnabled>False</AppxPackageSigningEnabled>
     <AppxPackageSigningTimestampDigestAlgorithm>SHA256</AppxPackageSigningTimestampDigestAlgorithm>
-    <AppxAutoIncrementPackageRevision>True</AppxAutoIncrementPackageRevision>
+    <AppxAutoIncrementPackageRevision>False</AppxAutoIncrementPackageRevision>
     <AppxSymbolPackageEnabled>False</AppxSymbolPackageEnabled>
     <GenerateTestArtifacts>True</GenerateTestArtifacts>
     <GenerateTemporaryStoreCertificate>True</GenerateTemporaryStoreCertificate>
@@ -55,6 +55,10 @@
   </ItemGroup>
 
   <ItemGroup>
+    <MauiAsset Remove="Resources\Raw\Nunito.ttf" />
+  </ItemGroup>
+
+  <ItemGroup>
     <MauiImage Remove="Resources\Images\adeptstack.png" />
   </ItemGroup>
 
@@ -63,7 +67,10 @@
     <None Remove="Resources\Images\changes.png" />
     <None Remove="Resources\Images\news.png" />
     <None Remove="Resources\Images\settings.png" />
-    <None Remove="Resources\Splash\adeptstacksplash.png" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="Resources\Raw\Nunito.ttf" />
   </ItemGroup>
 
   <ItemGroup>
@@ -83,6 +90,9 @@
   </ItemGroup>
 
   <ItemGroup>
+    <MauiXaml Update="ContentViews\AppView.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </MauiXaml>
     <MauiXaml Update="Pages\AppChangelog.xaml">
       <Generator>MSBuild:Compile</Generator>
     </MauiXaml>

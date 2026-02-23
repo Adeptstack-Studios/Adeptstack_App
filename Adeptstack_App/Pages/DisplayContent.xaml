@@ -9,5 +9,11 @@
 
             </WebView>
         </ScrollView>
+        <Grid BackgroundColor="Black" x:Name="nothing" IsVisible="False">
+            <VerticalStackLayout HorizontalOptions="Center" VerticalOptions="Center" >
+                <Label Text="No Content available" TextColor="White" HorizontalOptions="Center" FontSize="Medium" FontAttributes="Bold" />
+                <Label x:Name="internet" Text="Check Internet connection" TextColor="White" HorizontalOptions="Center" FontAttributes="Bold" Opacity="0.7" FontSize="Subtitle" IsVisible="False" />
+            </VerticalStackLayout>
+        </Grid>
     </Grid>
 </ContentPage>

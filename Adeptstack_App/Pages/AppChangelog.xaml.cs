@@ -34,20 +34,31 @@ public partial class AppChangelog : ContentPage
         changelogsThread.Start();
     }
 
-    void RefreshingChangelogs()
+    async void RefreshingChangelogs()
     {
+        bool isConnected = await Web.IsConnectedToInternetAsync();
+        if (isConnected) Dispatcher.Dispatch(() => internet.IsVisible = false);
+        if (!isConnected) Dispatcher.Dispatch(() => internet.IsVisible = true);
         List<ChangelogContext> changelogs = Web.GetChangelogs(this.app);
         Dispatcher.Dispatch(() => changelogsLayout.Children.Clear());
 
-        foreach (ChangelogContext changelogItem in changelogs)
+        if (changelogs.Count > 0)
         {
-            ChangelogView changelogView = new ChangelogView
+            Dispatcher.Dispatch(() => nothing.IsVisible = false);
+            foreach (ChangelogContext changelogItem in changelogs)
             {
-                Changelog = changelogItem,
-            };
-            changelogView.ChangelogClicked += Changelog_Clicked;
+                ChangelogView changelogView = new ChangelogView
+                {
+                    Changelog = changelogItem,
+                };
+                changelogView.ChangelogClicked += Changelog_Clicked;
 
-            Dispatcher.Dispatch(() => changelogsLayout.Children.Add(changelogView));
+                Dispatcher.Dispatch(() => changelogsLayout.Children.Add(changelogView));
+            }
+        }
+        else
+        {
+            Dispatcher.Dispatch(() => nothing.IsVisible = true);
         }
 
         Dispatcher.Dispatch(() =>

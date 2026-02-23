@@ -29,20 +29,31 @@ public partial class MainPage : ContentPage
         newsThread.Start();
     }
 
-    void RefreshingNews()
+    async void RefreshingNews()
     {
+        bool isConnected = await Web.IsConnectedToInternetAsync();
+        if (isConnected) Dispatcher.Dispatch(() => internet.IsVisible = false);
+        if (!isConnected) Dispatcher.Dispatch(() => internet.IsVisible = true);
         List<NewsContext> news = Web.GetNews();
         Dispatcher.Dispatch(() => newsLayout.Children.Clear());
 
-        foreach (NewsContext newsItem in news)
+        if (news.Count > 0)
         {
-            NewsView newsView = new NewsView
+            Dispatcher.Dispatch(() => nothing.IsVisible = false);
+            foreach (NewsContext newsItem in news)
             {
-                News = newsItem,
-            };
-            newsView.NewsClicked += News_Clicked;
+                NewsView newsView = new NewsView
+                {
+                    News = newsItem,
+                };
+                newsView.NewsClicked += News_Clicked;
 
-            Dispatcher.Dispatch(() => newsLayout.Children.Add(newsView));
+                Dispatcher.Dispatch(() => newsLayout.Children.Add(newsView));
+            }
+        }
+        else
+        {
+            Dispatcher.Dispatch(() => nothing.IsVisible = true);
         }
 
         Dispatcher.Dispatch(() =>
