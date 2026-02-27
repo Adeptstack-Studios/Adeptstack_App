@@ -19,14 +19,14 @@
                                    "pre { background: darkgray; padding: 5px 10px; border-radius: 10px; } div { border-radius: 11px; }" +
                                    "code { background: darkgray; padding: 2px 5px; border-radius: 5px; }";
 
-        public static string GetFullHTML(string css, string content)
+        public static string GetFullHTML(string css, string content, string imgUrl)
         {
             if (string.IsNullOrEmpty(css))
             {
                 css = css_dark;
             }
 
-            return "<html><head><style>" + css + "</style></head><body>" + content + "</body></html>";
+            return "<html><head><style>" + css + "</style></head><body><img src=\"" + imgUrl + "\" alt=\"image\">" + content + "</body></html>";
         }
 
         public static string CSS()

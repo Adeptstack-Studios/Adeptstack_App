@@ -11,7 +11,7 @@ public partial class DisplayContent : ContentPage
     {
         InitializeComponent();
         this.Title = news.title;
-        LoadContent(news.content);
+        LoadContent(news.content, news.imageUrl);
 
     }
 
@@ -19,11 +19,11 @@ public partial class DisplayContent : ContentPage
     {
         InitializeComponent();
         this.Title = changelog.title;
-        LoadContent(changelog.content);
+        LoadContent(changelog.content, changelog.imageUrl);
 
     }
 
-    public async void LoadContent(string content)
+    public async void LoadContent(string content, string imgUrl)
     {
         bool isConnected = await Web.IsConnectedToInternetAsync();
         if (isConnected) Dispatcher.Dispatch(() => internet.IsVisible = false);
@@ -34,7 +34,7 @@ public partial class DisplayContent : ContentPage
             Dispatcher.Dispatch(() => nothing.IsVisible = false);
             string css = MarkdownStyle.CSS();
             string body = Markdig.Markdown.ToHtml(content);
-            string html = MarkdownStyle.GetFullHTML(css, body);
+            string html = MarkdownStyle.GetFullHTML(css, body, imgUrl);
 
             web.Navigating += web_Navigating;
 
