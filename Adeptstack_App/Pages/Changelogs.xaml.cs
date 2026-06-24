@@ -69,8 +69,8 @@ public partial class Changelogs : ContentPage
         AppsRefresh();
     }
 
-    private void Clicked(object sender, ContextClasses.AppContext e)
+    private void Clicked(object sender, ContextClasses.AppContext a)
     {
-        Navigation.PushAsync(new AppChangelog(e.name));
+        Navigation.PushAsync(new AppChangelog(a));
     }
 }
