@@ -3,18 +3,20 @@ using Adeptstack_App.ContextClasses;
 using Adeptstack_App.Net;
 using Adeptstack_App.Utils;
 using System.Runtime.CompilerServices;
+using AppContext = Adeptstack_App.ContextClasses.AppContext;
 
 namespace Adeptstack_App;
 
 public partial class AppChangelog : ContentPage
 {
-    string app = "app";
+    AppContext app;
 
-    public AppChangelog(string app)
+    public AppChangelog(AppContext app)
     {
         InitializeComponent();
         this.app = app;
-        this.Title = $"{app} Changelogs";
+        this.Title = $"{app.name} Changelogs";
+        legacy.IsVisible = app.legacy;
         ChangelogsRefresh();
     }
 
@@ -39,7 +41,7 @@ public partial class AppChangelog : ContentPage
         bool isConnected = await Web.IsConnectedToInternetAsync();
         if (isConnected) Dispatcher.Dispatch(() => internet.IsVisible = false);
         if (!isConnected) Dispatcher.Dispatch(() => internet.IsVisible = true);
-        List<ChangelogContext> changelogs = Web.GetChangelogs(this.app);
+        List<ChangelogContext> changelogs = Web.GetChangelogs(this.app.id);
         Dispatcher.Dispatch(() => changelogsLayout.Children.Clear());
 
         if (changelogs.Count > 0)

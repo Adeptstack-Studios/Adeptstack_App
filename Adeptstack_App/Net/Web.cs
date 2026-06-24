@@ -42,12 +42,12 @@ namespace Adeptstack_App.Net
             }
         }
 
-        public static List<ChangelogContext> GetChangelogs(string app)
+        public static List<ChangelogContext> GetChangelogs(int appId)
         {
             try
             {
                 HttpClient client = new HttpClient();
-                string html = client.GetStringAsync($"https://api.adeptstack.net/api/changelogs/getBy?app={app}").Result;
+                string html = client.GetStringAsync($"https://api.adeptstack.net/api/changelogs/getBy?appId={appId}").Result;
                 var result = JsonSerializer.Deserialize<List<ChangelogContext>>(html);
                 return result;
             }

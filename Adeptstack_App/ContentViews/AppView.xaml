@@ -24,6 +24,12 @@
                     </FlexLayout>
                    
                 </VerticalStackLayout>
+
+                <Grid Grid.Column="1" VerticalOptions="Start" HorizontalOptions="End" Margin="15,10" IsVisible="{Binding App.legacy, FallbackValue=False}">
+                    <Border StrokeShape="RoundRectangle 5" Padding="5,2" Background="{StaticResource Gray600}" Stroke="{StaticResource Gray950}" StrokeThickness="1.5" Opacity="0.7" >
+                        <Label Text="Legacy" FontSize="12" FontAttributes="Bold" CharacterSpacing="0.75" />
+                    </Border>
+                </Grid>
             </Grid>
             <Button BackgroundColor="Transparent" x:Name="clickedOn" Clicked="clickedOn_Clicked" />
         </Grid>
