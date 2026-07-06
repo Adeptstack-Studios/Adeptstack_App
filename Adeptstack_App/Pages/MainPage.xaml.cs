@@ -6,7 +6,6 @@ namespace Adeptstack_App;
 
 public partial class MainPage : ContentPage
 {
-    // Globale Liste, um die Original-Daten im Speicher zu halten
     private List<NewsContext> _allNews = new List<NewsContext>();
     private string _currentCategory = "All";
     private string _searchQuery = "";
@@ -37,10 +36,7 @@ public partial class MainPage : ContentPage
             {
                 internet.IsVisible = !isConnected;
 
-                // Kategorien aus den geladenen Daten extrahieren und UI bauen
                 BuildCategoryUI();
-
-                // Liste basierend auf aktuellem Filter/Suche anzeigen
                 ApplyFiltersAndRender();
 
                 refresh.IsRefreshing = false;
@@ -51,27 +47,22 @@ public partial class MainPage : ContentPage
         });
     }
 
-    // --- NEU: Logik für Suche und Kategorien ---
+    // --- Logik für Suche und Kategorien ---
 
     private void SearchIcon_Clicked(object sender, EventArgs e)
     {
-        // Toggle Sichtbarkeit
         bool isSearching = !searchBar.IsVisible;
         searchBar.IsVisible = isSearching;
         headerTitle.IsVisible = !isSearching;
 
         if (isSearching)
         {
-            // Suchleiste ist offen -> Zeige das X-Symbol
             searchIconBtn.Source = "close.png";
             searchBar.Focus();
         }
         else
         {
-            // Suchleiste ist geschlossen -> Zurück zur Lupe
             searchIconBtn.Source = "search.png";
-
-            // Suche abbrechen und Liste zurücksetzen
             searchBar.Text = string.Empty;
         }
     }
@@ -86,7 +77,6 @@ public partial class MainPage : ContentPage
     {
         categoryLayout.Children.Clear();
 
-        // Einzigartige Kategorien aus der News-Liste ziehen (plus "All" am Anfang)
         var categories = _allNews.Select(n => n.category).Distinct().ToList();
         categories.Insert(0, "All");
 
@@ -94,7 +84,6 @@ public partial class MainPage : ContentPage
         {
             bool isSelected = category == _currentCategory;
 
-            // Die Kategorie-Pille im Adeptstack-Design
             var btn = new Button
             {
                 Text = category.ToUpper(),
@@ -110,8 +99,8 @@ public partial class MainPage : ContentPage
             btn.Clicked += (s, e) =>
             {
                 _currentCategory = category;
-                BuildCategoryUI(); // Button-Farben updaten
-                ApplyFiltersAndRender(); // Liste filtern
+                BuildCategoryUI();
+                ApplyFiltersAndRender();
             };
 
             categoryLayout.Children.Add(btn);
@@ -120,7 +109,6 @@ public partial class MainPage : ContentPage
 
     private void ApplyFiltersAndRender()
     {
-        // 1. Filtern
         var filteredNews = _allNews.Where(n =>
         {
             bool matchesCategory = _currentCategory == "All" || string.Equals(n.category, _currentCategory, StringComparison.OrdinalIgnoreCase);
@@ -130,7 +118,6 @@ public partial class MainPage : ContentPage
             return matchesCategory && matchesSearch;
         }).ToList();
 
-        // 2. Rendern
         newsLayout.Children.Clear();
 
         if (filteredNews.Count > 0)
@@ -145,7 +132,6 @@ public partial class MainPage : ContentPage
         }
         else
         {
-            // Text anpassen, falls Suche/Filter leer ist, aber Internet da ist
             emptyStateLabel.Text = _allNews.Count > 0 ? "No results found" : "No Updates Available";
             nothing.IsVisible = true;
         }

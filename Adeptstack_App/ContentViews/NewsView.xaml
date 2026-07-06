@@ -4,7 +4,6 @@
              x:Class="Adeptstack_App.ContentViews.NewsView" 
              x:Name="this">
 
-    <!-- Feste Breite (340) und Margin nach unten (24) für saubere Abstände im Grid -->
     <Border WidthRequest="340"
             BackgroundColor="#0f172a" 
             Stroke="#1e293b" 
@@ -15,26 +14,19 @@
         <Grid BindingContext="{x:Reference this}">
             <Grid.RowDefinitions>
                 <RowDefinition Height="180" />
-                <!-- Feste Höhe für das Bild -->
                 <RowDefinition Height="Auto" />
-                <!-- Textbereich passt sich an -->
             </Grid.RowDefinitions>
 
-            <!-- Das Artikel-Bild -->
             <Image Grid.Row="0" 
                    Source="{Binding News.imageUrl}" 
                    Aspect="AspectFill" />
 
-            <!-- Trennlinie -->
             <BoxView Grid.Row="0" 
                      VerticalOptions="End" 
                      HeightRequest="1" 
                      Color="#1e293b" />
 
-            <!-- Text-Bereich: VerticalStackLayout für perfekten Flow von oben nach unten -->
             <VerticalStackLayout Grid.Row="1" Padding="20" Spacing="8">
-
-                <!-- Zeile 1: App Name (Links) & Datum (Rechts) -->
                 <Grid>
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="*" />
@@ -56,7 +48,6 @@
                            FontSize="12" />
                 </Grid>
 
-                <!-- Zeile 2: Titel -->
                 <Label Text="{Binding News.title, FallbackValue='Update Title'}" 
                        TextColor="#f8fafc"
                        FontFamily="OpenSansSemibold" 
@@ -64,8 +55,6 @@
                        LineBreakMode="TailTruncation"
                        MaxLines="2" />
 
-                <!-- Zeile 3: Beschreibung (Neu hinzugefügt) -->
-                <!-- Annahme: Die Eigenschaft in deiner NewsContext-Klasse heißt "description" -->
                 <Label Text="{Binding News.description, FallbackValue='Hier steht eine kurze Zusammenfassung des Updates, damit man direkt weiß, worum es im Artikel geht.'}" 
                        TextColor="#94a3b8" 
                        FontFamily="OpenSansRegular" 
@@ -75,7 +64,6 @@
 
             </VerticalStackLayout>
 
-            <!-- Der transparente Button-Layer für den Klick -->
             <Button Grid.RowSpan="2" 
                     BackgroundColor="Transparent" 
                     x:Name="clickedOn" 

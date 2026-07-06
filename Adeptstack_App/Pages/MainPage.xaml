@@ -4,10 +4,9 @@
              x:Class="Adeptstack_App.MainPage"
              BackgroundColor="#020617">
 
-    <!-- Die neue Suchleiste in der Top-Bar -->
+    <!-- Shell.TitleView -->
     <Shell.TitleView>
         <Grid ColumnDefinitions="*, Auto" Padding="0,0,16,0">
-            <!-- Normaler Titel -->
             <Label x:Name="headerTitle" 
                    Text="Adeptstack News" 
                    TextColor="#f8fafc" 
@@ -15,7 +14,6 @@
                    FontSize="18" 
                    FontAttributes="Bold" />
 
-            <!-- Versteckte Suchleiste -->
             <SearchBar x:Name="searchBar" 
                        IsVisible="False" 
                        Placeholder="Search updates..." 
@@ -26,7 +24,6 @@
                        TextChanged="SearchBar_TextChanged" 
                        VerticalOptions="Center" />
 
-            <!-- Such-Icon (Tausche 'search.png' gegen dein eigenes Icon-Bild aus) -->
             <ImageButton Grid.Column="1" 
                          x:Name="searchIconBtn"
                          Source="search.png" 
@@ -43,13 +40,10 @@
         <RefreshView x:Name="refresh" Refreshing="RefreshView_Refreshing" RefreshColor="#3b82f6">
             <ScrollView>
                 <VerticalStackLayout Padding="16,24,16,24">
-
-                    <!-- NEU: Kategorie-Leiste -->
                     <ScrollView Orientation="Horizontal" HorizontalScrollBarVisibility="Never" Margin="0,0,0,24">
                         <HorizontalStackLayout x:Name="categoryLayout" Spacing="12" HorizontalOptions="Center" />
                     </ScrollView>
 
-                    <!-- Dein bewährtes FlexLayout -->
                     <FlexLayout x:Name="newsLayout" 
                                 Wrap="Wrap" 
                                 JustifyContent="Center" 
