@@ -24,14 +24,19 @@
                        TextChanged="SearchBar_TextChanged" 
                        VerticalOptions="Center" />
 
-            <ImageButton Grid.Column="1" 
-                         x:Name="searchIconBtn"
-                         Source="search.png" 
-                         WidthRequest="24" 
-                         HeightRequest="24" 
-                         VerticalOptions="Center" 
-                         Clicked="SearchIcon_Clicked" 
-                         BackgroundColor="Transparent" />
+            <Image x:Name="searchIconBtn"
+               Grid.Column="1"
+               Source="search.png" 
+               Aspect="AspectFit"
+               WidthRequest="28" 
+               HeightRequest="28" 
+               VerticalOptions="Center" 
+               BackgroundColor="Transparent"
+               Margin="0,0,0,0">
+                <Image.GestureRecognizers>
+                    <TapGestureRecognizer Tapped="SearchIcon_Clicked" />
+                </Image.GestureRecognizers>
+            </Image>
         </Grid>
     </Shell.TitleView>
 
