@@ -1,37 +1,57 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <ContentView xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-             x:Class="Adeptstack_App.ContentViews.AppView" x:Name="this">
-    <Border WidthRequest="300" HeightRequest="80" Background="#171717" Margin="5,20,5,0" StrokeShape="RoundRectangle 20" StrokeThickness="0">
-        <Grid BindingContext="{x:Reference this}">
-            <Grid>
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="75" />
-                    <ColumnDefinition />
-                </Grid.ColumnDefinitions>
+             x:Class="Adeptstack_App.ContentViews.AppView" 
+             x:Name="this">
 
-                <Grid Grid.Column="0" Padding="20">
-                    <Image Source="{Binding App.iconUrl}" Aspect="AspectFill" WidthRequest="40" HeightRequest="40" />
-                </Grid>
+    <!-- WICHTIG: BindingContext ist jetzt hier oben! Dadurch funktioniert die Opacity. -->
+    <Border BindingContext="{x:Reference this}" 
+            WidthRequest="340" 
+            HeightRequest="80" 
+            BackgroundColor="#0f172a" 
+            Margin="10,10,10,16" 
+            StrokeShape="RoundRectangle 16" 
+            StrokeThickness="1" 
+            Stroke="#1e293b">
 
-                <VerticalStackLayout Grid.Column="1" >
-                    <Grid Margin="0,20,0,0">
-                        <Label Text="{Binding App.name, FallbackValue='Title'}" VerticalTextAlignment="Center" FontFamily="OpenSansSemibold" FontSize="18" />
-                    </Grid>
+        <!-- Der Trigger dimmt jetzt die gesamte Karte auf 40% runter -->
+        <Border.Triggers>
+            <DataTrigger TargetType="Border" Binding="{Binding App.legacy}" Value="True">
+                <Setter Property="Opacity" Value="0.65" />
+            </DataTrigger>
+        </Border.Triggers>
 
-                    <FlexLayout JustifyContent="SpaceBetween" AlignItems="Center" Wrap="NoWrap">
-                        <Label Text="{Binding App.slogan, FallbackValue='slogan'}" VerticalTextAlignment="Center" FontFamily="OpenSansRegular" FontSize="13" Opacity="0.7" />
-                    </FlexLayout>
-                   
-                </VerticalStackLayout>
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="75" />
+                <ColumnDefinition />
+            </Grid.ColumnDefinitions>
 
-                <Grid Grid.Column="1" VerticalOptions="Start" HorizontalOptions="End" Margin="15,10" IsVisible="{Binding App.legacy, FallbackValue=False}">
-                    <Border StrokeShape="RoundRectangle 5" Padding="5,2" Background="{StaticResource Gray600}" Stroke="{StaticResource Gray950}" StrokeThickness="1.5" Opacity="0.7" >
-                        <Label Text="Legacy" FontSize="12" FontAttributes="Bold" CharacterSpacing="0.75" />
-                    </Border>
-                </Grid>
+            <!-- Icon -->
+            <Grid Grid.Column="0" Padding="15">
+                <Image Source="{Binding App.iconUrl}" Aspect="AspectFill" WidthRequest="40" HeightRequest="40" VerticalOptions="Center" />
             </Grid>
-            <Button BackgroundColor="Transparent" x:Name="clickedOn" Clicked="clickedOn_Clicked" />
+
+            <!-- Text -->
+            <VerticalStackLayout Grid.Column="1" VerticalOptions="Center">
+                <Grid Margin="0,0,0,0">
+                    <Label Text="{Binding App.name, FallbackValue='Title'}" TextColor="#f8fafc" VerticalTextAlignment="Center" FontFamily="OpenSansSemibold" FontSize="18" />
+                </Grid>
+
+                <FlexLayout JustifyContent="SpaceBetween" AlignItems="Center" Wrap="NoWrap">
+                    <Label Text="{Binding App.slogan, FallbackValue='slogan'}" TextColor="#94a3b8" VerticalTextAlignment="Center" FontFamily="OpenSansRegular" FontSize="13" />
+                </FlexLayout>
+            </VerticalStackLayout>
+
+            <!-- DEIN BADGE: Originale Form, nicht mehr gepresst, nur farblich modernisiert -->
+            <Grid Grid.Column="1" VerticalOptions="Start" HorizontalOptions="End" Margin="15,10" IsVisible="{Binding App.legacy, FallbackValue=False}">
+                <Border StrokeShape="RoundRectangle 5" Padding="5,2" BackgroundColor="#1e293b" Stroke="#475569" StrokeThickness="1">
+                    <Label Text="Legacy" TextColor="#cbd5e1" FontSize="12" FontAttributes="Bold" />
+                </Border>
+            </Grid>
+
+            <!-- Grid.ColumnSpan="2" sorgt dafür, dass der Klick auf der ganzen Karte registriert wird -->
+            <Button Grid.ColumnSpan="2" BackgroundColor="Transparent" x:Name="clickedOn" Clicked="clickedOn_Clicked" />
         </Grid>
     </Border>
 </ContentView>
