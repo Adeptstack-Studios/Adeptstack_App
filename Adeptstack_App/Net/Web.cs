@@ -42,6 +42,22 @@ namespace Adeptstack_App.Net
             }
         }
 
+        public static ContextClasses.AppContext GetAppById(int id)
+        {
+            try
+            {
+                HttpClient client = new HttpClient();
+                string html = client.GetStringAsync($"https://api.adeptstack.net/api/apps/get/{id}").Result;
+                var result = JsonSerializer.Deserialize<ContextClasses.AppContext>(html);
+                return result;
+            }
+            catch (Exception e)
+            {
+                Debug.WriteLine(e.ToString());
+                return new();
+            }
+        }
+
         public static List<ChangelogContext> GetChangelogs(int appId)
         {
             try

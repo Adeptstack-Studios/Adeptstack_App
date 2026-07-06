@@ -2,17 +2,29 @@
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="Adeptstack_App.DisplayContent"
-             Title="DisplayContent">
-    <Grid BackgroundColor="Black">
-        <ScrollView VerticalScrollBarVisibility="Never" >
-            <WebView x:Name="web" Navigating="web_Navigating" >
+             BackgroundColor="#020617">
 
-            </WebView>
-        </ScrollView>
-        <Grid BackgroundColor="Black" x:Name="nothing" IsVisible="False">
-            <VerticalStackLayout HorizontalOptions="Center" VerticalOptions="Center" >
-                <Label Text="No Content available" TextColor="White" HorizontalOptions="Center" FontSize="Medium" FontAttributes="Bold" />
-                <Label x:Name="internet" Text="Check Internet connection" TextColor="White" HorizontalOptions="Center" FontAttributes="Bold" Opacity="0.7" FontSize="Subtitle" IsVisible="False" />
+    <Grid>
+        <!-- Layer 1: Der Content (WebView regelt das Scrolling jetzt selbst) -->
+        <WebView x:Name="web" 
+                 BackgroundColor="#020617" 
+                 Navigating="web_Navigating" />
+
+        <!-- Layer 2: Empty / Error State (Design angepasst an MainPage) -->
+        <Grid x:Name="nothing" IsVisible="False" BackgroundColor="#020617">
+            <VerticalStackLayout HorizontalOptions="Center" VerticalOptions="Center" Spacing="8">
+                <Label Text="No Content Available" 
+                       TextColor="#f8fafc" 
+                       FontSize="20" 
+                       FontAttributes="Bold" 
+                       HorizontalTextAlignment="Center" />
+
+                <Label x:Name="internet" 
+                       Text="Please check your internet connection." 
+                       TextColor="#94a3b8" 
+                       FontSize="14" 
+                       IsVisible="False" 
+                       HorizontalTextAlignment="Center" />
             </VerticalStackLayout>
         </Grid>
     </Grid>
