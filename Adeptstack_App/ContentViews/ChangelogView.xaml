@@ -1,37 +1,107 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <ContentView xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-             x:Class="Adeptstack_App.ContentViews.ChangelogView" x:Name="this">
-    <Border WidthRequest="280" HeightRequest="220" Background="#171717" Margin="5,20,5,0" StrokeShape="RoundRectangle 20" StrokeThickness="0">
-        <Grid BindingContext="{x:Reference this}">
-            <Grid>
+             x:Class="Adeptstack_App.ContentViews.ChangelogView" 
+             x:Name="this">
+
+    <Border BindingContext="{x:Reference this}"
+            WidthRequest="340" 
+            HeightRequest="290" 
+            BackgroundColor="#0f172a" 
+            StrokeShape="RoundRectangle 16" 
+            StrokeThickness="1" 
+            Stroke="#1e293b"
+            Margin="0">
+
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="150" />
+                <!-- Bild etwas kompakter für mehr Text-Platz -->
+                <RowDefinition Height="*" />
+                <!-- Text & Tags -->
+            </Grid.RowDefinitions>
+
+            <!-- Bild -->
+            <Grid Grid.Row="0">
+                <Image Source="{Binding Changelog.imageUrl}" 
+                       Aspect="AspectFill" />
+            </Grid>
+
+            <!-- Info-Bereich -->
+            <Grid Grid.Row="1" Padding="16" RowSpacing="6">
                 <Grid.RowDefinitions>
-                    <RowDefinition Height="150" />
-                    <RowDefinition />
+                    <RowDefinition Height="Auto" />
+                    <!-- Titel & Datum -->
+                    <RowDefinition Height="*" />
+                    <!-- Beschreibung -->
+                    <RowDefinition Height="Auto" />
+                    <!-- Tags -->
                 </Grid.RowDefinitions>
 
-                <Grid Grid.Row="0">
-                    <Image Source="{Binding Changelog.imageUrl}" Aspect="AspectFill" />
+                <!-- 1. Titel und Datum in einer Zeile -->
+                <Grid Grid.Row="0" ColumnDefinitions="*, Auto" ColumnSpacing="8">
+                    <Label Grid.Column="0" 
+                           Text="{Binding Changelog.title, FallbackValue='Notivity v0.10.0'}" 
+                           TextColor="#f8fafc" 
+                           FontFamily="OpenSansSemibold" 
+                           FontSize="18" 
+                           LineBreakMode="TailTruncation" 
+                           MaxLines="1" 
+                           VerticalOptions="Center" />
+
+                    <Label Grid.Column="1" 
+                           Text="{Binding Changelog.publishedAt, StringFormat='{0:MMM dd, yyyy}', FallbackValue='Apr. 25, 2026'}" 
+                           TextColor="#64748b" 
+                           FontFamily="OpenSansRegular" 
+                           FontSize="12" 
+                           VerticalOptions="Center" />
                 </Grid>
 
-                <Grid Grid.Row="1" WidthRequest="280" >
-                    <Grid.RowDefinitions>
-                        <RowDefinition />
-                        <RowDefinition />
-                    </Grid.RowDefinitions>
+                <!-- 2. Beschreibung (Mittig, füllt den Platz) -->
+                <Label Grid.Row="1" 
+                       Text="{Binding Changelog.description, FallbackValue='This application is no longer actively developed and only receives security-related updates.'}" 
+                       TextColor="#94a3b8" 
+                       FontFamily="OpenSansRegular" 
+                       FontSize="13" 
+                       LineBreakMode="TailTruncation" 
+                       MaxLines="2" 
+                       VerticalOptions="Start" />
 
-                    <Grid Grid.Row="0" Margin="10,0,0,0">
-                        <Label Text="{Binding Changelog.title, FallbackValue='Title'}" VerticalTextAlignment="Center" FontFamily="OpenSansSemibold" FontSize="18" />
-                    </Grid>
+                <!-- 3. Tags (Die Badges ganz unten) -->
+                <HorizontalStackLayout Grid.Row="2" Spacing="8" VerticalOptions="End">
 
-                    <FlexLayout Grid.Row="1" Margin="20,0,20,5" WidthRequest="240" JustifyContent="SpaceBetween" AlignItems="Center" Wrap="NoWrap">
-                        <Label Text="{Binding Changelog.version, FallbackValue='category'}" VerticalTextAlignment="Center" FontFamily="OpenSansRegular" FontSize="13" />
-                        <Label Text="{Binding Changelog.channel, FallbackValue='category'}" VerticalTextAlignment="Center" FontFamily="OpenSansRegular" FontSize="13" />
-                        <Label Text="{Binding Changelog.publishedAt, StringFormat='{0:MMM dd, yyyy}', FallbackValue='01/01/2020'}" FontFamily="OpenSansRegular" VerticalTextAlignment="Center" FontSize="13" />
-                    </FlexLayout>
-                </Grid>
+                    <!-- Tag: Version (Subtiler blauer Akzent) -->
+                    <Border BackgroundColor="#172554" 
+                            Stroke="#1e3a8a" 
+                            StrokeThickness="1" 
+                            StrokeShape="RoundRectangle 6" 
+                            Padding="8,4">
+                        <Label Text="{Binding Changelog.version, FallbackValue='v0.10.0'}" 
+                               TextColor="#bfdbfe" 
+                               FontSize="11" 
+                               FontAttributes="Bold" />
+                    </Border>
+
+                    <!-- Tag: Channel (Klassisches Slate) -->
+                    <Border BackgroundColor="#1e293b" 
+                            Stroke="#334155" 
+                            StrokeThickness="1" 
+                            StrokeShape="RoundRectangle 6" 
+                            Padding="8,4">
+                        <Label Text="{Binding Changelog.channel, FallbackValue='develop'}" 
+                               TextColor="#cbd5e1" 
+                               FontSize="11" 
+                               FontAttributes="Bold" />
+                    </Border>
+
+                </HorizontalStackLayout>
             </Grid>
-            <Button BackgroundColor="Transparent" x:Name="clickedOn" Clicked="clickedOn_Clicked" />
+
+            <!-- Transparenter Button über die gesamte Karte -->
+            <Button Grid.RowSpan="2" 
+                    BackgroundColor="Transparent" 
+                    x:Name="clickedOn" 
+                    Clicked="clickedOn_Clicked" />
         </Grid>
     </Border>
 </ContentView>
