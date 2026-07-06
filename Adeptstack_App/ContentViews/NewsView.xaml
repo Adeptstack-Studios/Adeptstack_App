@@ -1,36 +1,85 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <ContentView xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-             x:Class="Adeptstack_App.ContentViews.NewsView" x:Name="this">
-    <Border WidthRequest="280" HeightRequest="220" Background="#171717" Margin="5,20,5,0" StrokeShape="RoundRectangle 20" StrokeThickness="0">
+             x:Class="Adeptstack_App.ContentViews.NewsView" 
+             x:Name="this">
+
+    <!-- Feste Breite (340) und Margin nach unten (24) für saubere Abstände im Grid -->
+    <Border WidthRequest="340"
+            BackgroundColor="#0f172a" 
+            Stroke="#1e293b" 
+            StrokeThickness="1" 
+            StrokeShape="RoundRectangle 16"
+            Margin="10, 10, 10, 24">
+
         <Grid BindingContext="{x:Reference this}">
-            <Grid>
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="150" />
-                    <RowDefinition />
-                </Grid.RowDefinitions>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="180" />
+                <!-- Feste Höhe für das Bild -->
+                <RowDefinition Height="Auto" />
+                <!-- Textbereich passt sich an -->
+            </Grid.RowDefinitions>
 
-                <Grid Grid.Row="0">
-                    <Image Source="{Binding News.imageUrl}" Aspect="AspectFill" />
+            <!-- Das Artikel-Bild -->
+            <Image Grid.Row="0" 
+                   Source="{Binding News.imageUrl}" 
+                   Aspect="AspectFill" />
+
+            <!-- Trennlinie -->
+            <BoxView Grid.Row="0" 
+                     VerticalOptions="End" 
+                     HeightRequest="1" 
+                     Color="#1e293b" />
+
+            <!-- Text-Bereich: VerticalStackLayout für perfekten Flow von oben nach unten -->
+            <VerticalStackLayout Grid.Row="1" Padding="20" Spacing="8">
+
+                <!-- Zeile 1: App Name (Links) & Datum (Rechts) -->
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="Auto" />
+                    </Grid.ColumnDefinitions>
+
+                    <Label Grid.Column="0" 
+                           Text="{Binding News.category, FallbackValue='ADEPTSTACK'}" 
+                           TextColor="#3b82f6" 
+                           FontFamily="OpenSansSemibold" 
+                           FontSize="12" 
+                           TextTransform="Uppercase"
+                           CharacterSpacing="1" />
+
+                    <Label Grid.Column="1" 
+                           Text="{Binding News.publishedAt, StringFormat='{0:MMM dd, yyyy}', FallbackValue='Apr 01, 2026'}" 
+                           TextColor="#94a3b8" 
+                           FontFamily="OpenSansRegular" 
+                           FontSize="12" />
                 </Grid>
-                
-                <Grid Grid.Row="1" WidthRequest="280" >
-                    <Grid.RowDefinitions>
-                        <RowDefinition />
-                        <RowDefinition />
-                    </Grid.RowDefinitions>
 
-                    <Grid Grid.Row="0" Margin="12.5,0,0,0">
-                        <Label Text="{Binding News.title, FallbackValue='Title'}" VerticalTextAlignment="Center" FontFamily="OpenSansSemibold" FontSize="16" />
-                    </Grid>
+                <!-- Zeile 2: Titel -->
+                <Label Text="{Binding News.title, FallbackValue='Update Title'}" 
+                       TextColor="#f8fafc"
+                       FontFamily="OpenSansSemibold" 
+                       FontSize="18" 
+                       LineBreakMode="TailTruncation"
+                       MaxLines="2" />
 
-                    <Grid Grid.Row="1" Margin="20,0,20,5" WidthRequest="240">
-                        <Label Text="{Binding News.category, FallbackValue='category'}" VerticalTextAlignment="Center" FontFamily="OpenSansRegular" FontSize="13" />
-                        <Label Text="{Binding News.publishedAt, StringFormat='{0:MMM dd, yyyy}', FallbackValue='01/01/2020'}" FontFamily="OpenSansRegular" HorizontalTextAlignment="End" VerticalTextAlignment="Center" FontSize="13" />
-                    </Grid>
-                </Grid>
-            </Grid>
-            <Button BackgroundColor="Transparent" x:Name="clickedOn" Clicked="clickedOn_Clicked" />
+                <!-- Zeile 3: Beschreibung (Neu hinzugefügt) -->
+                <!-- Annahme: Die Eigenschaft in deiner NewsContext-Klasse heißt "description" -->
+                <Label Text="{Binding News.description, FallbackValue='Hier steht eine kurze Zusammenfassung des Updates, damit man direkt weiß, worum es im Artikel geht.'}" 
+                       TextColor="#94a3b8" 
+                       FontFamily="OpenSansRegular" 
+                       FontSize="14" 
+                       LineBreakMode="TailTruncation"
+                       MaxLines="3" />
+
+            </VerticalStackLayout>
+
+            <!-- Der transparente Button-Layer für den Klick -->
+            <Button Grid.RowSpan="2" 
+                    BackgroundColor="Transparent" 
+                    x:Name="clickedOn" 
+                    Clicked="clickedOn_Clicked" />
         </Grid>
     </Border>
 </ContentView>
