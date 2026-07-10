@@ -1,5 +1,6 @@
 ﻿using Adeptstack_App.ContextClasses;
 using Microsoft.Extensions.Logging;
+using OneSignalSDK.DotNet;
 using AppContext = Adeptstack_App.ContextClasses.AppContext;
 
 namespace Adeptstack_App;
@@ -25,6 +26,15 @@ public static class MauiProgram
 #if DEBUG
         builder.Logging.AddDebug();
 #endif
+
+#if DEBUG
+        string oneSignalAppId = "272b665a-e239-4daa-8969-db5e416a8d41"; // Für den Emulator
+#else
+        string oneSignalAppId = "22db7ac0-b66d-4b83-abf1-5734cb341a5b"; // Für den echten Release
+#endif
+
+        OneSignal.Initialize(oneSignalAppId);
+        OneSignal.Notifications.RequestPermissionAsync(true);
 
         return builder.Build();
     }
