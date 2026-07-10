@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="Adeptstack_App.Pages.SettingsPage"
+             BackgroundColor="#020617"
+             Title="Settings">
+    <VerticalStackLayout>
+        <Grid VerticalOptions="Center" Margin="20">
+            <Label Text="Enable Changelog Push Notifications" HorizontalOptions="Start"/>
+            <Switch x:Name="changelogPushNotificationsSwitch" Toggled="changelogPushNotificationsSwitch_Toggled" HorizontalOptions="End"/>
+        </Grid>
+    </VerticalStackLayout>
+</ContentPage>
