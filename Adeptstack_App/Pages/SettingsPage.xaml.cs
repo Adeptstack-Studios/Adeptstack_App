@@ -8,16 +8,30 @@ public partial class SettingsPage : ContentPage
 	public SettingsPage()
 	{
 		InitializeComponent();
-        changelogPushNotificationsSwitch.IsToggled = Preferences.Default.Get("WantsChangelogs", true);
     }
 
-    private async Task changelogPushNotificationsSwitch_Toggled(object sender, ToggledEventArgs e)
+    protected override void OnAppearing()
     {
-        if (Web.IsConnectedToInternetAsync().Result)
+        base.OnAppearing();
+        changelogPushNotificationsSwitch.IsToggled = GetChangelogTagFromOneSignal();
+    }
+
+    public bool GetChangelogTagFromOneSignal()
+    {
+        IDictionary<string, string> tags = OneSignal.User.GetTags();
+
+        if (tags != null && tags.TryGetValue("WantsChangelogs", out string tagValue))
+        {
+            return tagValue.ToLower() == "true";
+        }
+        return true;
+    }
+
+    private async void changelogPushNotificationsSwitch_Toggled(object sender, ToggledEventArgs e)
+    {
+        if (await Web.IsConnectedToInternetAsync())
         {
             bool isEnabled = e.Value;
-
-            Preferences.Default.Set("WantsChangelogs", isEnabled);
 
             if (isEnabled)
             {
