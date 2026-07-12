@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="Adeptstack_App.Pages.SettingsPage"
+             BackgroundColor="#020617"
+             Title="Settings">
+
+    <Grid RowDefinitions="*, Auto" Padding="20">
+
+        <VerticalStackLayout Grid.Row="0" Spacing="5">
+
+            <Label Text="NOTIFICATIONS" 
+                   TextColor="#64748B" 
+                   FontSize="12" 
+                   FontAttributes="Bold" 
+                   Margin="5,0,0,5"/>
+
+            <Border BackgroundColor="#0F172A"
+                    Stroke="#1E293B"
+                    StrokeThickness="1"
+                    Padding="16,12">
+
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="12" />
+                </Border.StrokeShape>
+
+                <Grid ColumnDefinitions="*, Auto" VerticalOptions="Center">
+
+                    <VerticalStackLayout Grid.Column="0" VerticalOptions="Center" Spacing="4">
+                        <Label Text="Changelog Push Notifications" 
+                               TextColor="#F8FAFC" 
+                               FontSize="16" 
+                               FontAttributes="Bold"/>
+                        <Label Text="Get notified when a new update drops." 
+                               TextColor="#94A3B8" 
+                               FontSize="12" />
+                    </VerticalStackLayout>
+
+                    <Switch Grid.Column="1" 
+                            x:Name="changelogPushNotificationsSwitch" 
+                            Toggled="changelogPushNotificationsSwitch_Toggled" 
+                            OnColor="#3B82F6" 
+                            VerticalOptions="Center"/>
+                </Grid>
+            </Border>
+
+        </VerticalStackLayout>
+
+        <VerticalStackLayout Grid.Row="1" Spacing="15" HorizontalOptions="Center" Padding="0,20,0,10">
+
+            <HorizontalStackLayout Spacing="15" HorizontalOptions="Center">
+
+                <Label Text="Terms of Use" TextColor="#3B82F6" FontSize="13" TextDecorations="Underline">
+                    <Label.GestureRecognizers>
+                        <TapGestureRecognizer Tapped="TermsOfUse_Tapped" />
+                    </Label.GestureRecognizers>
+                </Label>
+
+                <Label Text="•" TextColor="#475569" FontSize="13" VerticalOptions="Center"/>
+
+                <Label Text="Privacy" TextColor="#3B82F6" FontSize="13" TextDecorations="Underline">
+                    <Label.GestureRecognizers>
+                        <TapGestureRecognizer Tapped="Privacy_Tapped" />
+                    </Label.GestureRecognizers>
+                </Label>
+
+                <Label Text="•" TextColor="#475569" FontSize="13" VerticalOptions="Center"/>
+
+                <Label Text="Imprint" TextColor="#3B82F6" FontSize="13" TextDecorations="Underline">
+                    <Label.GestureRecognizers>
+                        <TapGestureRecognizer Tapped="Impressum_Tapped" />
+                    </Label.GestureRecognizers>
+                </Label>
+
+            </HorizontalStackLayout>
+
+            <Label Text="© 2026 Adeptstack. All rights reserved." 
+                   TextColor="#475569" 
+                   FontSize="12" 
+                   HorizontalOptions="Center" />
+
+        </VerticalStackLayout>
+
+    </Grid>
+</ContentPage>

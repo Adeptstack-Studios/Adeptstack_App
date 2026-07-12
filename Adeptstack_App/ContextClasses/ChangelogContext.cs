@@ -10,7 +10,7 @@
         public string appUrl { get; set; }
         public string content { get; set; }
         public string channel { get; set; }
-        public string app { get; set; }
+        public int appId { get; set; }
         public string version { get; set; }
         public DateTime publishedAt { get; set; }
     }

@@ -6,61 +6,153 @@ namespace Adeptstack_App;
 
 public partial class MainPage : ContentPage
 {
+    private List<NewsContext> _allNews = new List<NewsContext>();
+    private string _currentCategory = "All";
+    private string _searchQuery = "";
+
     public MainPage()
     {
         InitializeComponent();
-        this.Title = "Adeptstack News";
         NewsRefresh();
     }
 
-    void NewsRefresh()
+    private async void NewsRefresh()
     {
-        Thread newsThread = new Thread(delegate ()
+        refresh.IsEnabled = false;
+        loading.IsVisible = true;
+        busy.IsRunning = true;
+        nothing.IsVisible = false;
+
+        await Task.Run(async () =>
         {
+            bool isConnected = await Web.IsConnectedToInternetAsync();
+
+            if (isConnected)
+            {
+                _allNews = Web.GetNews();
+            }
+
             Dispatcher.Dispatch(() =>
             {
-                refresh.IsEnabled = false;
-                loading.IsVisible = true;
-                busy.IsRunning = true;
+                internet.IsVisible = !isConnected;
+
+                BuildCategoryUI();
+                ApplyFiltersAndRender();
+
                 refresh.IsRefreshing = false;
+                refresh.IsEnabled = true;
+                loading.IsVisible = false;
+                busy.IsRunning = false;
             });
-            RefreshingNews();
         });
-        newsThread.Start();
     }
 
-    async void RefreshingNews()
+    // --- Logik für Suche und Kategorien ---
+
+    private void SearchIcon_Clicked(object sender, EventArgs e)
     {
-        bool isConnected = await Web.IsConnectedToInternetAsync();
-        if (isConnected) Dispatcher.Dispatch(() => internet.IsVisible = false);
-        if (!isConnected) Dispatcher.Dispatch(() => internet.IsVisible = true);
-        List<NewsContext> news = Web.GetNews();
-        Dispatcher.Dispatch(() => newsLayout.Children.Clear());
+        bool isSearching = !searchBar.IsVisible;
+        searchBar.IsVisible = isSearching;
+        headerTitle.IsVisible = !isSearching;
 
-        if (news.Count > 0)
+        if (isSearching)
         {
-            Dispatcher.Dispatch(() => nothing.IsVisible = false);
-            foreach (NewsContext newsItem in news)
-            {
-                NewsView newsView = new NewsView
-                {
-                    News = newsItem,
-                };
-                newsView.NewsClicked += News_Clicked;
-
-                Dispatcher.Dispatch(() => newsLayout.Children.Add(newsView));
-            }
+            searchIconBtn.Source = "close.png";
+            searchBar.Focus();
         }
         else
         {
-            Dispatcher.Dispatch(() => nothing.IsVisible = true);
+            searchIconBtn.Source = "search.png";
+            searchBar.Text = string.Empty;
         }
+    }
 
-        Dispatcher.Dispatch(() =>
+    private void SearchBar_TextChanged(object sender, TextChangedEventArgs e)
+    {
+        _searchQuery = e.NewTextValue?.ToLower() ?? "";
+        ApplyFiltersAndRender();
+    }
+
+    private void BuildCategoryUI()
+    {
+        categoryLayout.Children.Clear();
+
+        var categories = _allNews.Select(n => n.category).Distinct().ToList();
+        categories.Insert(0, "All");
+
+        foreach (var category in categories)
         {
-            refresh.IsEnabled = true;
-            loading.IsVisible = false;
-            busy.IsRunning = false;
+            bool isSelected = category == _currentCategory;
+
+            var btn = new Button
+            {
+                Text = category.ToUpper(),
+                FontFamily = "OpenSansSemibold",
+                FontSize = 12,
+                CornerRadius = 20,
+                HeightRequest = 36,
+                Padding = new Thickness(16, 0),
+                BackgroundColor = isSelected ? Color.FromArgb("#3b82f6") : Color.FromArgb("#1e293b"),
+                TextColor = isSelected ? Colors.White : Color.FromArgb("#94a3b8")
+            };
+
+            btn.Clicked += (s, e) =>
+            {
+                _currentCategory = category;
+                BuildCategoryUI();
+                ApplyFiltersAndRender();
+            };
+
+            categoryLayout.Children.Add(btn);
+        }
+    }
+
+    private async void ApplyFiltersAndRender()
+    {
+        refresh.IsEnabled = false;
+        loading.IsVisible = true;
+        busy.IsRunning = true;
+        nothing.IsVisible = false;
+
+        await Task.Run(async () =>
+        {
+            var filteredNews = _allNews.Where(n =>
+            {
+                bool matchesCategory = _currentCategory == "All" || string.Equals(n.category, _currentCategory, StringComparison.OrdinalIgnoreCase);
+                bool matchesSearch = string.IsNullOrWhiteSpace(_searchQuery) ||
+                                     (n.title != null && n.title.ToLower().Contains(_searchQuery));
+
+                return matchesCategory && matchesSearch;
+            }).ToList();
+
+            Dispatcher.Dispatch(() => newsLayout.Children.Clear());
+
+            if (filteredNews.Count > 0)
+            {
+                Dispatcher.Dispatch(() => nothing.IsVisible = false);
+                foreach (NewsContext newsItem in filteredNews)
+                {
+                    NewsView newsView = new NewsView { News = newsItem };
+                    newsView.NewsClicked += News_Clicked;
+                    Dispatcher.Dispatch(() => newsLayout.Children.Add(newsView));
+                }
+            }
+            else
+            {
+                Dispatcher.Dispatch(() =>
+                {
+                    emptyStateLabel.Text = _allNews.Count > 0 ? "No results found" : "No Updates Available";
+                    nothing.IsVisible = true;
+                });
+            }
+
+            Dispatcher.Dispatch(() =>
+            {
+                refresh.IsRefreshing = false;
+                refresh.IsEnabled = true;
+                loading.IsVisible = false;
+                busy.IsRunning = false;
+            });
         });
     }
 
@@ -74,4 +166,3 @@ public partial class MainPage : ContentPage
         Navigation.PushAsync(new DisplayContent(e));
     }
 }
-

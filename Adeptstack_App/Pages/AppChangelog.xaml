@@ -2,43 +2,77 @@
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="Adeptstack_App.AppChangelog"
-             Title="AppChangelog">
-    <Grid BackgroundColor="Black">
-        <RefreshView x:Name="refresh" Refreshing="RefreshView_Refreshing" >
+             BackgroundColor="#020617">
+
+    <Grid>
+        <!-- Layer 1: Content -->
+        <RefreshView x:Name="refresh" Refreshing="RefreshView_Refreshing" RefreshColor="#3b82f6">
             <ScrollView>
-                <VerticalStackLayout>
-                    <Grid x:Name="legacy">
-                        <Border BackgroundColor="#1E1A18" Stroke="#5C4424" StrokeThickness="1" Padding="16" Margin="30,20" MaximumWidthRequest="800">
-                            <Border.StrokeShape>
-                                <RoundRectangle CornerRadius="12" />
-                            </Border.StrokeShape>
+                <VerticalStackLayout Padding="16,24,16,24" Spacing="24">
 
-                            <Grid ColumnDefinitions="Auto, *" ColumnSpacing="16" VerticalOptions="Center">
-                                <Label Grid.Column="0" Text="&#x26A0;" TextColor="#F59E0B" FontSize="28" VerticalOptions="Center" VerticalTextAlignment="Center"/>
+                    <!-- Legacy Warning Banner -->
+                    <Border x:Name="legacy" 
+                            BackgroundColor="#1E1A18" 
+                            Stroke="#5C4424" 
+                            StrokeThickness="1" 
+                            Padding="16" 
+                            MaximumWidthRequest="800"
+                            HorizontalOptions="Center">
+                        <Border.StrokeShape>
+                            <RoundRectangle CornerRadius="12" />
+                        </Border.StrokeShape>
 
-                                <VerticalStackLayout Grid.Column="1" VerticalOptions="Center" Spacing="4">
-                                    <Label Text="Legacy Software" TextColor="#F59E0B" FontAttributes="Bold" FontSize="16" />
-                                    <Label Text="This application is no longer actively developed and only receives security-related or limited updates." TextColor="#D97706" FontSize="14" LineBreakMode="WordWrap" />
-                                </VerticalStackLayout>
-                            </Grid>
-                        </Border>
-                    </Grid>
-                    <Grid>
-                        <FlexLayout x:Name="changelogsLayout" Wrap="Wrap" HorizontalOptions="Center">
+                        <Grid ColumnDefinitions="Auto, *" ColumnSpacing="16" VerticalOptions="Center">
+                            <Label Grid.Column="0" Text="&#x26A0;" TextColor="#F59E0B" FontSize="28" VerticalOptions="Center" />
 
-                        </FlexLayout>
-                        <Grid BackgroundColor="Black" x:Name="nothing" IsVisible="False">
-                            <VerticalStackLayout HorizontalOptions="Center" VerticalOptions="Center" >
-                                <Label Text="No Content available" TextColor="White" HorizontalOptions="Center" FontSize="Medium" FontAttributes="Bold" />
-                                <Label x:Name="internet" Text="Check Internet connection" TextColor="White" HorizontalOptions="Center" FontAttributes="Bold" Opacity="0.7" FontSize="Subtitle" IsVisible="False" />
+                            <VerticalStackLayout Grid.Column="1" VerticalOptions="Center" Spacing="4">
+                                <Label Text="Legacy Software" TextColor="#F59E0B" FontAttributes="Bold" FontSize="16" />
+                                <Label Text="This application is no longer actively developed and only receives security-related or limited updates." 
+                                       TextColor="#D97706" 
+                                       FontSize="14" 
+                                       LineBreakMode="WordWrap" />
                             </VerticalStackLayout>
                         </Grid>
-                        <Grid BackgroundColor="Black" x:Name="loading" IsVisible="False">
-                            <ActivityIndicator x:Name="busy" IsRunning="True" VerticalOptions="Start" HorizontalOptions="Center" Color="White" Margin="0,70,0,0" />
-                        </Grid>
-                    </Grid>
+                    </Border>
+
+                    <!-- Changelogs FlexLayout -->
+                    <!-- MaximumWidthRequest 1150 erlaubt genau 3 Karten (á ~340px) nebeneinander -->
+                    <FlexLayout x:Name="changelogsLayout" 
+                                MaximumWidthRequest="1150" 
+                                Wrap="Wrap" 
+                                JustifyContent="Center" 
+                                AlignItems="Start"
+                                AlignContent="Start"
+                                HorizontalOptions="Center" />
                 </VerticalStackLayout>
             </ScrollView>
         </RefreshView>
+
+        <!-- Layer 2: Empty / Error State -->
+        <Grid x:Name="nothing" IsVisible="False" BackgroundColor="#020617">
+            <VerticalStackLayout HorizontalOptions="Center" VerticalOptions="Center" Spacing="8">
+                <Label Text="No Updates Available" 
+                       TextColor="#f8fafc" 
+                       FontSize="20" 
+                       FontAttributes="Bold" 
+                       HorizontalTextAlignment="Center" />
+
+                <Label x:Name="internet" 
+                       Text="Please check your internet connection." 
+                       TextColor="#94a3b8" 
+                       FontSize="14" 
+                       IsVisible="False" 
+                       HorizontalTextAlignment="Center" />
+            </VerticalStackLayout>
+        </Grid>
+
+        <!-- Layer 3: Loading State (Halbtransparent) -->
+        <Grid x:Name="loading" BackgroundColor="#CC020617" IsVisible="False">
+            <ActivityIndicator x:Name="busy" 
+                               IsRunning="True" 
+                               Color="#3b82f6" 
+                               HorizontalOptions="Center" 
+                               VerticalOptions="Center" />
+        </Grid>
     </Grid>
 </ContentPage>

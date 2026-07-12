@@ -1,8 +1,8 @@
 using Adeptstack_App.ContentViews;
 using Adeptstack_App.ContextClasses;
 using Adeptstack_App.Net;
-using Adeptstack_App.Utils;
-using System.Runtime.CompilerServices;
+using Microsoft.Maui.Layouts;
+using AppContext = Adeptstack_App.ContextClasses.AppContext;
 
 namespace Adeptstack_App;
 
@@ -15,52 +15,50 @@ public partial class Changelogs : ContentPage
         AppsRefresh();
     }
 
-    void AppsRefresh()
+    private async void AppsRefresh()
     {
-        Thread appsThread = new Thread(delegate ()
+        refresh.IsEnabled = false;
+        loading.IsVisible = true;
+        busy.IsRunning = true;
+        nothing.IsVisible = false;
+
+        await Task.Run(async () =>
         {
+            bool isConnected = await Web.IsConnectedToInternetAsync();
+            List<AppContext> apps = new List<AppContext>();
+
+            if (isConnected)
+            {
+                apps = Web.GetApps();
+                apps = apps.OrderBy(a => a.legacy).ToList();
+            }
+
             Dispatcher.Dispatch(() =>
             {
-                refresh.IsEnabled = false;
-                loading.IsVisible = true;
-                busy.IsRunning = true;
+                internet.IsVisible = !isConnected;
+                appsLayout.Children.Clear();
+
+                if (apps.Count > 0)
+                {
+                    nothing.IsVisible = false;
+
+                    foreach (AppContext s in apps)
+                    {
+                        AppView appView = new AppView { App = s };
+                        appView.AppClicked += Clicked;
+                        appsLayout.Children.Add(appView);
+                    }
+                }
+                else
+                {
+                    nothing.IsVisible = true;
+                }
+
                 refresh.IsRefreshing = false;
+                refresh.IsEnabled = true;
+                loading.IsVisible = false;
+                busy.IsRunning = false;
             });
-            RefreshingApps();
-        });
-        appsThread.Start();
-    }
-
-    async void RefreshingApps()
-    {
-        bool isConnected = await Web.IsConnectedToInternetAsync();
-        if (isConnected) Dispatcher.Dispatch(() => internet.IsVisible = false);
-        if (!isConnected) Dispatcher.Dispatch(() => internet.IsVisible = true);
-        List<ContextClasses.AppContext> apps = Web.GetApps();
-        Dispatcher.Dispatch(() => appsLayout.Children.Clear());
-
-        if (apps.Count > 0)
-        {
-            Dispatcher.Dispatch(() => nothing.IsVisible = false);
-            foreach (ContextClasses.AppContext s in apps)
-            {
-                AppView appView = new AppView();
-                appView.App = s;
-                appView.AppClicked += Clicked;
-
-                Dispatcher.Dispatch(() => appsLayout.Children.Add(appView));
-            } 
-        }
-        else
-        {
-            Dispatcher.Dispatch(() => nothing.IsVisible = true);
-        }
-
-        Dispatcher.Dispatch(() =>
-        {
-            refresh.IsEnabled = true;
-            loading.IsVisible = false;
-            busy.IsRunning = false;
         });
     }
 
@@ -69,7 +67,7 @@ public partial class Changelogs : ContentPage
         AppsRefresh();
     }
 
-    private void Clicked(object sender, ContextClasses.AppContext a)
+    private void Clicked(object sender, AppContext a)
     {
         Navigation.PushAsync(new AppChangelog(a));
     }

@@ -2,27 +2,89 @@
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="Adeptstack_App.MainPage"
-             Title="Adeptstack">
+             BackgroundColor="#020617">
 
-    <Grid BackgroundColor="black">
-        <RefreshView x:Name="refresh" Refreshing="RefreshView_Refreshing" >
+    <!-- Shell.TitleView -->
+    <Shell.TitleView>
+        <Grid ColumnDefinitions="*, Auto" Padding="0,0,16,0">
+            <Label x:Name="headerTitle" 
+                   Text="Adeptstack News" 
+                   TextColor="#f8fafc" 
+                   VerticalOptions="Center" 
+                   FontSize="21" 
+                   FontAttributes="Bold"
+                   FontFamily="Roboto"/>
+
+            <SearchBar x:Name="searchBar" 
+                       IsVisible="False" 
+                       Placeholder="Search updates..." 
+                       TextColor="#f8fafc" 
+                       PlaceholderColor="#94a3b8" 
+                       CancelButtonColor="#f8fafc" 
+                       BackgroundColor="Transparent"
+                       TextChanged="SearchBar_TextChanged" 
+                       VerticalOptions="Center" />
+
+            <Image x:Name="searchIconBtn"
+               Grid.Column="1"
+               Source="search.png" 
+               Aspect="AspectFit"
+               WidthRequest="28" 
+               HeightRequest="28" 
+               VerticalOptions="Center" 
+               BackgroundColor="Transparent"
+               Margin="0,0,0,0">
+                <Image.GestureRecognizers>
+                    <TapGestureRecognizer Tapped="SearchIcon_Clicked" />
+                </Image.GestureRecognizers>
+            </Image>
+        </Grid>
+    </Shell.TitleView>
+
+    <Grid>
+        <!-- Layer 1: Der Content -->
+        <RefreshView x:Name="refresh" Refreshing="RefreshView_Refreshing" RefreshColor="#3b82f6">
             <ScrollView>
-                <Grid>
-                    <FlexLayout x:Name="newsLayout" Wrap="Wrap" HorizontalOptions="Center">
-                        
-                    </FlexLayout>
-                    <Grid BackgroundColor="Black" x:Name="nothing" IsVisible="False">
-                        <VerticalStackLayout HorizontalOptions="Center" VerticalOptions="Center" >
-                            <Label Text="No Content available" TextColor="White" HorizontalOptions="Center" FontSize="Medium" FontAttributes="Bold" />
-                            <Label x:Name="internet" Text="Check Internet connection" TextColor="White" HorizontalOptions="Center" FontAttributes="Bold" Opacity="0.7" FontSize="Subtitle" IsVisible="False" />
-                        </VerticalStackLayout>
-                    </Grid>
-                    <Grid BackgroundColor="Black" x:Name="loading" IsVisible="False">
-                        <ActivityIndicator x:Name="busy" IsRunning="True" VerticalOptions="Start" HorizontalOptions="Center" Color="White" Margin="0,70,0,0" />
-                    </Grid>
-                </Grid>
+                <VerticalStackLayout Padding="16,24,16,24">
+                    <ScrollView Orientation="Horizontal" HorizontalScrollBarVisibility="Never" Margin="0,0,0,24">
+                        <HorizontalStackLayout x:Name="categoryLayout" Spacing="12" HorizontalOptions="Center" />
+                    </ScrollView>
+
+                    <FlexLayout x:Name="newsLayout" 
+                                Wrap="Wrap" 
+                                JustifyContent="Center" 
+                                AlignItems="Start"
+                                MaximumWidthRequest="1150"/>
+                </VerticalStackLayout>
             </ScrollView>
         </RefreshView>
-    </Grid>
 
+        <!-- Layer 2: Empty / Error State -->
+        <Grid x:Name="nothing" IsVisible="False" BackgroundColor="#020617">
+            <VerticalStackLayout HorizontalOptions="Center" VerticalOptions="Center" Spacing="8">
+                <Label x:Name="emptyStateLabel"
+                       Text="No Updates Available" 
+                       TextColor="#f8fafc" 
+                       FontSize="20" 
+                       FontAttributes="Bold" 
+                       HorizontalTextAlignment="Center" />
+
+                <Label x:Name="internet" 
+                       Text="Please check your internet connection." 
+                       TextColor="#94a3b8" 
+                       FontSize="14" 
+                       IsVisible="False" 
+                       HorizontalTextAlignment="Center" />
+            </VerticalStackLayout>
+        </Grid>
+
+        <!-- Layer 3: Loading State -->
+        <Grid x:Name="loading" BackgroundColor="#CC020617" IsVisible="False">
+            <ActivityIndicator x:Name="busy" 
+                               IsRunning="True" 
+                               Color="#3b82f6" 
+                               HorizontalOptions="Center" 
+                               VerticalOptions="Center" />
+        </Grid>
+    </Grid>
 </ContentPage>
