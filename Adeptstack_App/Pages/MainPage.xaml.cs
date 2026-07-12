@@ -107,37 +107,54 @@ public partial class MainPage : ContentPage
         }
     }
 
-    private void ApplyFiltersAndRender()
+    private async void ApplyFiltersAndRender()
     {
-        var filteredNews = _allNews.Where(n =>
+        refresh.IsEnabled = false;
+        loading.IsVisible = true;
+        busy.IsRunning = true;
+        nothing.IsVisible = false;
+
+        await Task.Run(async () =>
         {
-            bool matchesCategory = _currentCategory == "All" || string.Equals(n.category, _currentCategory, StringComparison.OrdinalIgnoreCase);
-            bool matchesSearch = string.IsNullOrWhiteSpace(_searchQuery) ||
-                                 (n.title != null && n.title.ToLower().Contains(_searchQuery));
-
-            return matchesCategory && matchesSearch;
-        }).ToList();
-
-        newsLayout.Children.Clear();
-
-        if (filteredNews.Count > 0)
-        {
-            nothing.IsVisible = false;
-            foreach (NewsContext newsItem in filteredNews)
+            var filteredNews = _allNews.Where(n =>
             {
-                NewsView newsView = new NewsView { News = newsItem };
-                newsView.NewsClicked += News_Clicked;
-                newsLayout.Children.Add(newsView);
-            }
-        }
-        else
-        {
-            emptyStateLabel.Text = _allNews.Count > 0 ? "No results found" : "No Updates Available";
-            nothing.IsVisible = true;
-        }
-    }
+                bool matchesCategory = _currentCategory == "All" || string.Equals(n.category, _currentCategory, StringComparison.OrdinalIgnoreCase);
+                bool matchesSearch = string.IsNullOrWhiteSpace(_searchQuery) ||
+                                     (n.title != null && n.title.ToLower().Contains(_searchQuery));
 
-    // --- Vorhandene Events ---
+                return matchesCategory && matchesSearch;
+            }).ToList();
+
+            Dispatcher.Dispatch(() => newsLayout.Children.Clear());
+
+            if (filteredNews.Count > 0)
+            {
+                Dispatcher.Dispatch(() => nothing.IsVisible = false);
+                foreach (NewsContext newsItem in filteredNews)
+                {
+                    NewsView newsView = new NewsView { News = newsItem };
+                    newsView.NewsClicked += News_Clicked;
+                    Dispatcher.Dispatch(() => newsLayout.Children.Add(newsView));
+                }
+            }
+            else
+            {
+                Dispatcher.Dispatch(() =>
+                {
+                    emptyStateLabel.Text = _allNews.Count > 0 ? "No results found" : "No Updates Available";
+                    nothing.IsVisible = true;
+                });
+            }
+
+            Dispatcher.Dispatch(() =>
+            {
+                refresh.IsRefreshing = false;
+                refresh.IsEnabled = true;
+                loading.IsVisible = false;
+                busy.IsRunning = false;
+            });
+        });
+    }
 
     private void RefreshView_Refreshing(object sender, EventArgs e)
     {
