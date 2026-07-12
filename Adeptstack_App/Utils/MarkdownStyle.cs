@@ -51,7 +51,7 @@
                         string base64Font = Convert.ToBase64String(fontBytes);
 
                         string css_dark = "@font-face { font-family: 'Nunito'; src: url('data:font/ttf;base64," + base64Font + "') format('truetype'); }" +
-                                          "html { min-height: 100%; margin: 0; padding: 0; } " +
+                                          "html { min-height: 100%; margin: 0 15px; padding: 0; } " +
                                           "body { background-color: #020617; color: #cbd5e1; max-width: 800px; font-family: 'Nunito', sans-serif; line-height: 1.6; min-height: 100%; margin: 0 auto; padding: 10px 10px 100px 10px; box-sizing: border-box; } " +
                                           "h1, h2, h3, h4, h5, h6 { color: #f8fafc; margin-top: 24px; margin-bottom: 12px; } " +
                                           "blockquote { background: #0f172a; padding: 10px 20px; border-radius: 8px; border-left: 4px solid #3b82f6; margin: 16px 0; }" +

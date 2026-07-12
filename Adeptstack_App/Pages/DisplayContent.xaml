@@ -4,7 +4,7 @@
              x:Class="Adeptstack_App.DisplayContent"
              BackgroundColor="#020617">
 
-    <Grid Margin="20,0">
+    <Grid Margin="0,0">
         <!-- Layer 1: Der Content (WebView regelt das Scrolling jetzt selbst) -->
         <WebView x:Name="web" 
                  BackgroundColor="#020617" 

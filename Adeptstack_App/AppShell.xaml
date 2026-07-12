@@ -56,14 +56,8 @@
                 Route="Changelogs"/>
 
         <ShellContent
-                Title="Newsletter"
-                Icon="changes.png"/>
-                <!--ContentTemplate="{DataTemplate local:Changelogs}"
-                Route="Changelogs"/>-->
-
-        <ShellContent
                 Title="Settings"
-                Icon="changes.png"
+                Icon="settings.png"
                 ContentTemplate="{DataTemplate local:Pages.SettingsPage}"
                 Route="Settings"/>
     </FlyoutItem>
