@@ -15,8 +15,8 @@
     <ApplicationId>com.adeptstack.adeptstack_app</ApplicationId>
     <ApplicationIdGuid>9d54e310-f8de-42c9-a1ec-53b67f096b5b</ApplicationIdGuid>
 
-    <ApplicationDisplayVersion>2.3.1</ApplicationDisplayVersion>
-    <ApplicationVersion>17</ApplicationVersion>
+    <ApplicationDisplayVersion>2.3.2</ApplicationDisplayVersion>
+    <ApplicationVersion>18</ApplicationVersion>
     <Version>$(ApplicationDisplayVersion)</Version>
 
     <SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'ios'">11.0</SupportedOSPlatformVersion>
