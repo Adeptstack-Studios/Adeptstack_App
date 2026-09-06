@@ -1,6 +1,7 @@
 using Adeptstack_App.ContextClasses;
 using Adeptstack_App.Net;
 using Adeptstack_App.Utils;
+using Markdig;
 using Microsoft.Maui.ApplicationModel;
 using System.Diagnostics;
 
@@ -8,6 +9,10 @@ namespace Adeptstack_App;
 
 public partial class DisplayContent : ContentPage
 {
+    private static readonly MarkdownPipeline MarkdownPipeline = new MarkdownPipelineBuilder()
+        .UseAdvancedExtensions()
+        .Build();
+
     public DisplayContent(NewsContext news)
     {
         InitializeComponent();
@@ -69,7 +74,7 @@ public partial class DisplayContent : ContentPage
                                     {(string.IsNullOrEmpty(imgUrl) ? "" : $"<img src='{imgUrl}' style='width: 100%; border-radius: 12px; margin-top: 8px;' />")}
                                 </div>";
 
-                string markdownBody = Markdig.Markdown.ToHtml(content);
+                string markdownBody = Markdig.Markdown.ToHtml(content, MarkdownPipeline);
 
                 string fullBody = headerHtml + markdownBody;
 
