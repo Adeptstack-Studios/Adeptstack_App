@@ -4,62 +4,17 @@
     xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
     xmlns:local="clr-namespace:Adeptstack_App"
-    Shell.FlyoutBehavior="Disabled"
     Shell.BackgroundColor="#0f172a"
     Shell.TitleColor="White"
     Shell.ForegroundColor="White"
     Shell.UnselectedColor="#94a3b8"
     Shell.TabBarBackgroundColor="#0f172a"
     Shell.TabBarTitleColor="White"
-    Shell.TabBarUnselectedColor="#94a3b8">
+    Shell.TabBarUnselectedColor="#94a3b8"
+    FlyoutBackgroundColor="#0f172a"
+    FlyoutWidth="240">
 
-    <!--<Shell.FlyoutHeader>
-        <Border 
-                StrokeThickness="0">
-            <Grid ColumnDefinitions="Auto, *"
-                    Padding="25"
-                  ColumnSpacing="20">
-                <Image Grid.Column="0"
-                Source="adeptstack.png"
-                   Aspect="AspectFill"
-                   HeightRequest="50"
-                   WidthRequest="50"/>
-
-                <Label Grid.Column="1"
-                   Text="Adeptstack"
-                   VerticalTextAlignment="Center"
-                   FontSize="28"
-                   FontAttributes="Bold"/>
-            </Grid>
-        </Border>
-    </Shell.FlyoutHeader>
-
-    <Shell.FlyoutFooter>
-        <Border BackgroundColor="#181416" StrokeThickness="0">
-            <VerticalStackLayout>
-                <Label Text="© - Adeptstack" HorizontalTextAlignment="Center" Padding="0, 10"/>
-            </VerticalStackLayout>
-        </Border>
-    </Shell.FlyoutFooter>-->
-
-    <FlyoutItem Title="10" >
-        <ShellContent 
-                Title="News"
-                Icon="news.png"
-                ContentTemplate="{DataTemplate local:MainPage}"
-                Route="MainPage" />
-
-        <ShellContent
-                Title="Changelogs"
-                Icon="changes.png"
-                ContentTemplate="{DataTemplate local:Changelogs}"
-                Route="Changelogs"/>
-
-        <ShellContent
-                Title="Settings"
-                Icon="settings.png"
-                ContentTemplate="{DataTemplate local:Pages.SettingsPage}"
-                Route="Settings"/>
-    </FlyoutItem>
+    <!-- Die Navigationseinträge werden in AppShell.xaml.cs aufgebaut:
+         TabBar auf Android/iOS, Flyout auf Windows. -->
 
 </Shell>
