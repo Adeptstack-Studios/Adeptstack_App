@@ -1,5 +1,5 @@
 using Adeptstack_App.Net;
-using OneSignalSDK.DotNet;
+using Adeptstack_App.Utils;
 
 namespace Adeptstack_App.Pages;
 
@@ -8,39 +8,26 @@ public partial class SettingsPage : ContentPage
 	public SettingsPage()
 	{
 		InitializeComponent();
+
+        // Ohne OneSignal (Windows, Mac) gibt es nichts zu schalten.
+        notificationsSection.IsVisible = PushNotifications.IsSupported;
     }
 
     protected override void OnAppearing()
     {
         base.OnAppearing();
-        changelogPushNotificationsSwitch.IsToggled = GetChangelogTagFromOneSignal();
-    }
 
-    public bool GetChangelogTagFromOneSignal()
-    {
-        IDictionary<string, string> tags = OneSignal.User.GetTags();
-
-        if (tags != null && tags.TryGetValue("WantsChangelogs", out string tagValue))
+        if (PushNotifications.IsSupported)
         {
-            return tagValue.ToLower() == "true";
+            changelogPushNotificationsSwitch.IsToggled = PushNotifications.WantsChangelogs();
         }
-        return true;
     }
 
     private async void changelogPushNotificationsSwitch_Toggled(object sender, ToggledEventArgs e)
     {
         if (await Web.IsConnectedToInternetAsync())
         {
-            bool isEnabled = e.Value;
-
-            if (isEnabled)
-            {
-                OneSignal.User.AddTag("WantsChangelogs", "true");
-            }
-            else
-            {
-                OneSignal.User.RemoveTag("WantsChangelogs");
-            } 
+            PushNotifications.SetWantsChangelogs(e.Value);
         }
         else
         {

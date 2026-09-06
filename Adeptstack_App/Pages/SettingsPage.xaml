@@ -7,7 +7,7 @@
 
     <Grid RowDefinitions="*, Auto" Padding="20">
 
-        <VerticalStackLayout Grid.Row="0" Spacing="5">
+        <VerticalStackLayout x:Name="notificationsSection" Grid.Row="0" Spacing="5">
 
             <Label Text="NOTIFICATIONS" 
                    TextColor="#64748B" 
