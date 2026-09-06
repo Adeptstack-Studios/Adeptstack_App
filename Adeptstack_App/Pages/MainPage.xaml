@@ -6,12 +6,12 @@
 
     <!-- Shell.TitleView -->
     <Shell.TitleView>
-        <Grid ColumnDefinitions="*, Auto" Padding="0,0,16,0">
+        <Grid ColumnDefinitions="*, Auto" Padding="10,0,16,0">
             <Label x:Name="headerTitle" 
                    Text="Adeptstack News" 
                    TextColor="#f8fafc" 
                    VerticalOptions="Center" 
-                   FontSize="21" 
+                   FontSize="24" 
                    FontAttributes="Bold"
                    FontFamily="Roboto"/>
 

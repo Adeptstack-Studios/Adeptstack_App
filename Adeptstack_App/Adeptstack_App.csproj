@@ -15,8 +15,8 @@
     <ApplicationId>com.adeptstack.adeptstack_app</ApplicationId>
     <ApplicationIdGuid>9d54e310-f8de-42c9-a1ec-53b67f096b5b</ApplicationIdGuid>
 
-    <ApplicationDisplayVersion>2.3.1</ApplicationDisplayVersion>
-    <ApplicationVersion>17</ApplicationVersion>
+    <ApplicationDisplayVersion>2.3.2</ApplicationDisplayVersion>
+    <ApplicationVersion>18</ApplicationVersion>
     <Version>$(ApplicationDisplayVersion)</Version>
 
     <SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'ios'">11.0</SupportedOSPlatformVersion>
@@ -92,7 +92,8 @@
   <ItemGroup>
     <PackageReference Include="Markdig" Version="1.3.2" />
     <PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="10.0.9" />
-    <PackageReference Include="OneSignalSDK.DotNet" Version="6.2.1" />
+    <!-- Nur Android/iOS: auf anderen TFMs liefert das Paket einen Stub, der beim ersten Zugriff wirft. -->
+    <PackageReference Include="OneSignalSDK.DotNet" Version="6.2.1" Condition="$(TargetFramework.Contains('-android')) Or $(TargetFramework.Contains('-ios'))" />
     <PackageReference Include="System.Text.Json" Version="10.0.9" />
     <PackageReference Include="Microsoft.Maui.Controls" Version="10.0.80" />
     <PackageReference Include="Microsoft.Maui.Controls.Compatibility" Version="10.0.80" />
