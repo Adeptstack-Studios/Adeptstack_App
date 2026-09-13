@@ -4,26 +4,36 @@
              x:Class="Adeptstack_App.DisplayContent"
              BackgroundColor="#020617">
 
+    <ContentPage.ToolbarItems>
+        <ToolbarItem x:Name="bookmarkItem"
+                     Text="Bookmark"
+                     IconImageSource="bookmark.png"
+                     Clicked="Bookmark_Clicked" />
+        <ToolbarItem Text="Share"
+                     IconImageSource="share.png"
+                     Clicked="Share_Clicked" />
+    </ContentPage.ToolbarItems>
+
     <Grid Margin="0,0">
         <!-- Layer 1: Der Content (WebView regelt das Scrolling jetzt selbst) -->
-        <WebView x:Name="web" 
-                 BackgroundColor="#020617" 
+        <WebView x:Name="web"
+                 BackgroundColor="#020617"
                  Navigating="web_Navigating" />
 
         <!-- Layer 2: Empty / Error State (Design angepasst an MainPage) -->
         <Grid x:Name="nothing" IsVisible="False" BackgroundColor="#020617">
             <VerticalStackLayout HorizontalOptions="Center" VerticalOptions="Center" Spacing="8">
-                <Label Text="No Content Available" 
-                       TextColor="#f8fafc" 
-                       FontSize="20" 
-                       FontAttributes="Bold" 
+                <Label Text="No Content Available"
+                       TextColor="#f8fafc"
+                       FontSize="20"
+                       FontAttributes="Bold"
                        HorizontalTextAlignment="Center" />
 
-                <Label x:Name="internet" 
-                       Text="Please check your internet connection." 
-                       TextColor="#94a3b8" 
-                       FontSize="14" 
-                       IsVisible="False" 
+                <Label x:Name="internet"
+                       Text="Please check your internet connection."
+                       TextColor="#94a3b8"
+                       FontSize="14"
+                       IsVisible="False"
                        HorizontalTextAlignment="Center" />
             </VerticalStackLayout>
         </Grid>

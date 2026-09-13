@@ -26,12 +26,15 @@ namespace Adeptstack_App.Net
             }
         }
 
+        /// <summary>
+        /// include=unlisted liefert gelistete und ungelistete Apps.
+        /// </summary>
         public static List<ContextClasses.AppContext> GetApps()
         {
             try
             {
                 HttpClient client = new HttpClient();
-                string html = client.GetStringAsync("https://api.adeptstack.net/api/apps/get").Result;
+                string html = client.GetStringAsync("https://api.adeptstack.net/api/apps/get?include=unlisted").Result;
                 var result = JsonSerializer.Deserialize<List<ContextClasses.AppContext>>(html);
                 return result;
             }

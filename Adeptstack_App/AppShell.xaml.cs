@@ -6,6 +6,7 @@ public partial class AppShell : Shell
     {
         ("News",       "news.png",     "MainPage",   typeof(MainPage)),
         ("Changelogs", "changes.png",  "Changelogs", typeof(Changelogs)),
+        ("Bookmarks",  "bookmark.png", "Bookmarks",  typeof(Pages.BookmarksPage)),
         ("Settings",   "settings.png", "Settings",   typeof(Pages.SettingsPage)),
     };
 
