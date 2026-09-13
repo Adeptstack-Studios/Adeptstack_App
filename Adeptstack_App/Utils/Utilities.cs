@@ -1,10 +1,54 @@
-﻿using System.Net.NetworkInformation;
+using Adeptstack_App.ContextClasses;
+using System.Globalization;
+using System.Net.NetworkInformation;
+using System.Text;
 using System.Text.RegularExpressions;
 
 namespace Adeptstack_App.Utils
 {
     internal class Utilities
     {
+        public const string WebsiteUrl = "https://www.adeptstack.net";
+
+        /// <summary>
+        /// Link auf den Blogartikel. Die API liefert den Slug mit, falls er fehlt
+        /// wird er wie auf der Website aus dem Titel gebildet.
+        /// </summary>
+        public static string GetNewsUrl(NewsContext news)
+        {
+            string slug = string.IsNullOrWhiteSpace(news.slug) ? Slugify(news.title) : news.slug;
+            return $"{WebsiteUrl}/blog/{slug}";
+        }
+
+        /// <summary>
+        /// Einzelne Changelogs haben auf der Website keine eigene Seite,
+        /// deshalb zeigt der Link auf die Changelog-Übersicht der App.
+        /// </summary>
+        public static string GetChangelogUrl(string appSlug)
+        {
+            return string.IsNullOrWhiteSpace(appSlug) ? $"{WebsiteUrl}/changelogs" : $"{WebsiteUrl}/changelogs/{appSlug}";
+        }
+
+        // "PC-Info v3.2.0 (4.1.0)" -> "pc-info-v3-2-0-4-1-0"
+        public static string Slugify(string text)
+        {
+            if (string.IsNullOrWhiteSpace(text))
+            {
+                return "";
+            }
+
+            var builder = new StringBuilder();
+            foreach (char c in text.ToLowerInvariant().Normalize(NormalizationForm.FormD))
+            {
+                if (CharUnicodeInfo.GetUnicodeCategory(c) != UnicodeCategory.NonSpacingMark)
+                {
+                    builder.Append(c);
+                }
+            }
+
+            return Regex.Replace(builder.ToString(), "[^a-z0-9]+", "-").Trim('-');
+        }
+
         //public static bool IsConnectedToInternet()
         //{
         //    string host = "adeptstack.vercel.app";

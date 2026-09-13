@@ -86,8 +86,7 @@ public partial class AppChangelog : ContentPage
 
     private void Changelog_Clicked(object sender, ChangelogContext e)
     {
-        // Da die DisplayContent-Seite jetzt die ID direkt als API-Call umwandelt (haben wir vorher repariert!), 
-        // klappt das hier nahtlos.
-        Navigation.PushAsync(new DisplayContent(e));
+        // App mitgeben: DisplayContent braucht Name und Slug (Share-Link) dann nicht erneut von der API.
+        Navigation.PushAsync(new DisplayContent(e, this.app));
     }
 }

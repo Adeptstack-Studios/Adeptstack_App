@@ -3,7 +3,9 @@ using Adeptstack_App.Net;
 using Adeptstack_App.Utils;
 using Markdig;
 using Microsoft.Maui.ApplicationModel;
+using Microsoft.Maui.ApplicationModel.DataTransfer;
 using System.Diagnostics;
+using AppContext = Adeptstack_App.ContextClasses.AppContext;
 
 namespace Adeptstack_App;
 
@@ -13,40 +15,54 @@ public partial class DisplayContent : ContentPage
         .UseAdvancedExtensions()
         .Build();
 
+    private string _shareTitle;
+    private string _shareUrl;
+
     public DisplayContent(NewsContext news)
     {
         InitializeComponent();
         this.Title = news.title;
 
+        _shareTitle = news.title;
+        _shareUrl = Utilities.GetNewsUrl(news);
+
         LoadContentAsync(news.content, news.imageUrl, news.title, news.category, news.publishedAt, news.description);
     }
 
-    public DisplayContent(ChangelogContext changelog)
+    /// <param name="app">Optional: ist die App schon bekannt, spart das den zusätzlichen API-Call für Name und Slug.</param>
+    public DisplayContent(ChangelogContext changelog, AppContext app = null)
     {
         InitializeComponent();
         this.Title = changelog.title;
 
-        LoadChangelogDataAsync(changelog);
+        _shareTitle = changelog.title;
+        _shareUrl = Utilities.GetChangelogUrl(app?.slug);
+
+        LoadChangelogDataAsync(changelog, app);
     }
 
-    private async void LoadChangelogDataAsync(ChangelogContext changelog)
+    private async void LoadChangelogDataAsync(ChangelogContext changelog, AppContext app)
     {
-        string appName = "CHANGELOG";
+        string appName = string.IsNullOrEmpty(app?.name) ? "CHANGELOG" : app.name;
 
-        await Task.Run(() =>
+        if (app == null)
         {
-            try
+            await Task.Run(() =>
             {
-                var appData = Web.GetAppById(changelog.appId);
-                if (appData != null && !string.IsNullOrEmpty(appData.name))
+                try
                 {
-                    appName = appData.name;
+                    var appData = Web.GetAppById(changelog.appId);
+                    if (appData != null && !string.IsNullOrEmpty(appData.name))
+                    {
+                        appName = appData.name;
+                        _shareUrl = Utilities.GetChangelogUrl(appData.slug);
+                    }
                 }
-            }
-            catch
-            {
-            }
-        });
+                catch
+                {
+                }
+            });
+        }
 
         LoadContentAsync(changelog.content, changelog.imageUrl, changelog.title, appName, changelog.publishedAt, changelog.description);
     }
@@ -91,6 +107,23 @@ public partial class DisplayContent : ContentPage
                 nothing.IsVisible = true;
             }
         });
+    }
+
+    private async void Share_Clicked(object sender, EventArgs e)
+    {
+        try
+        {
+            await Share.Default.RequestAsync(new ShareTextRequest
+            {
+                Title = _shareTitle,
+                Text = _shareTitle,
+                Uri = _shareUrl
+            });
+        }
+        catch (Exception ex)
+        {
+            Debug.WriteLine(ex.ToString());
+        }
     }
 
     private async void web_Navigating(object sender, WebNavigatingEventArgs e)
