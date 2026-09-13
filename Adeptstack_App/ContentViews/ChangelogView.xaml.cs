@@ -26,6 +26,8 @@ public partial class ChangelogView : ContentView
 
         CardContextMenu.Attach(clickedOn,
             () => Changelog.title,
+            () => "Changelog",
+            () => Changelog.imageUrl,
             () => Bookmarks.IsBookmarked(Changelog),
             () => Bookmarks.Toggle(Changelog),
             GetShareTextAsync);

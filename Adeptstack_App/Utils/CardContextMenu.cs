@@ -1,18 +1,22 @@
+using Adeptstack_App.Pages;
+
 namespace Adeptstack_App.Utils
 {
     /// <summary>
     /// Kontextmenü (Teilen / Lesezeichen) für News- und Changelog-Karten.
     /// Windows bekommt ein natives Rechtsklick-Menü. MAUI hat keine Long-Press-Geste,
-    /// deshalb hängt auf Android, iOS und Mac ein nativer Long-Press am Button und öffnet ein Action Sheet.
+    /// deshalb hängt auf Android, iOS und Mac ein nativer Long-Press am Button und öffnet das <see cref="CardActionSheet"/>.
     /// </summary>
     static class CardContextMenu
     {
-        private const string ShareText = "Share";
-        private const string BookmarkText = "Bookmark";
-        private const string RemoveBookmarkText = "Remove Bookmark";
+        internal const string ShareText = "Share";
+        internal const string BookmarkText = "Bookmark";
+        internal const string RemoveBookmarkText = "Remove Bookmark";
 
         /// <param name="target">Der transparente Button, der über der ganzen Karte liegt.</param>
-        public static void Attach(View target, Func<string> getTitle, Func<bool> isBookmarked, Action toggleBookmark, Func<Task<string>> getShareText)
+        /// <param name="getCaption">Kleine Zeile über dem Titel in der Vorschau des Bottom Sheets.</param>
+        /// <param name="getImageUrl">Vorschaubild im Bottom Sheet.</param>
+        public static void Attach(View target, Func<string> getTitle, Func<string> getCaption, Func<string> getImageUrl, Func<bool> isBookmarked, Action toggleBookmark, Func<Task<string>> getShareText)
         {
             async Task ShareAsync() => await Utilities.ShareAsync(getTitle(), await getShareText());
 
@@ -42,7 +46,11 @@ namespace Adeptstack_App.Utils
                     };
                 }
             };
-#elif ANDROID
+#else
+            Task ShowSheetAsync() => CardActionSheet.ShowAsync(getTitle(), getCaption(), getImageUrl(), isBookmarked, toggleBookmark, ShareAsync);
+#endif
+
+#if ANDROID
             target.HandlerChanged += (s, e) =>
             {
                 if (target.Handler?.PlatformView is Android.Views.View view)
@@ -52,7 +60,7 @@ namespace Adeptstack_App.Utils
                         // Handled verhindert, dass nach dem Loslassen zusätzlich der normale Klick auslöst.
                         args.Handled = true;
                         view.PerformHapticFeedback(Android.Views.FeedbackConstants.LongPress);
-                        await ShowActionSheetAsync(getTitle(), isBookmarked, toggleBookmark, ShareAsync);
+                        await ShowSheetAsync();
                     };
                 }
             };
@@ -65,33 +73,12 @@ namespace Adeptstack_App.Utils
                     {
                         if (recognizer.State == UIKit.UIGestureRecognizerState.Began)
                         {
-                            await ShowActionSheetAsync(getTitle(), isBookmarked, toggleBookmark, ShareAsync);
+                            await ShowSheetAsync();
                         }
                     }));
                 }
             };
 #endif
-        }
-
-        private static async Task ShowActionSheetAsync(string title, Func<bool> isBookmarked, Action toggleBookmark, Func<Task> share)
-        {
-            Page page = Application.Current?.Windows.FirstOrDefault()?.Page;
-            if (page == null)
-            {
-                return;
-            }
-
-            string bookmarkText = isBookmarked() ? RemoveBookmarkText : BookmarkText;
-            string choice = await page.DisplayActionSheetAsync(title, "Cancel", null, ShareText, bookmarkText);
-
-            if (choice == ShareText)
-            {
-                await share();
-            }
-            else if (choice == bookmarkText)
-            {
-                toggleBookmark();
-            }
         }
     }
 }
