@@ -26,19 +26,30 @@ namespace Adeptstack_App.Net
             }
         }
 
+        /// <summary>
+        /// /products?include=unlisted liefert gelistete und ungelistete Produkte.
+        /// Solange der Endpoint noch nicht live ist, wird auf /apps/get zurückgegriffen.
+        /// </summary>
         public static List<ContextClasses.AppContext> GetApps()
+        {
+            return GetAppsFrom("https://api.adeptstack.net/api/products?include=unlisted")
+                ?? GetAppsFrom("https://api.adeptstack.net/api/apps/get")
+                ?? new();
+        }
+
+        private static List<ContextClasses.AppContext> GetAppsFrom(string url)
         {
             try
             {
                 HttpClient client = new HttpClient();
-                string html = client.GetStringAsync("https://api.adeptstack.net/api/apps/get").Result;
+                string html = client.GetStringAsync(url).Result;
                 var result = JsonSerializer.Deserialize<List<ContextClasses.AppContext>>(html);
                 return result;
             }
             catch (Exception e)
             {
                 Debug.WriteLine(e.ToString());
-                return new();
+                return null;
             }
         }
 

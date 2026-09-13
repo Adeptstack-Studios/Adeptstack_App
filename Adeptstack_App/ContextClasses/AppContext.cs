@@ -24,5 +24,6 @@ namespace Adeptstack_App.ContextClasses
         public ChangelogContext latestMainVersion { get; set; }
         public bool highlighted { get; set; }
         public bool legacy { get; set; }
+        public string visibility { get; set; }
     }
 }
