@@ -21,6 +21,8 @@ public partial class NewsView : ContentView
 
         CardContextMenu.Attach(clickedOn,
             () => News.title,
+            () => News.category,
+            () => News.imageUrl,
             () => Bookmarks.IsBookmarked(News),
             () => Bookmarks.Toggle(News),
             () => Task.FromResult(Utilities.GetNewsShareText(News)));
