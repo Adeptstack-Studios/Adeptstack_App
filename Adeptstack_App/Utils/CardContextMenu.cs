@@ -12,9 +12,9 @@ namespace Adeptstack_App.Utils
         private const string RemoveBookmarkText = "Remove Bookmark";
 
         /// <param name="target">Der transparente Button, der über der ganzen Karte liegt.</param>
-        public static void Attach(View target, Func<string> getTitle, Func<bool> isBookmarked, Action toggleBookmark, Func<Task<string>> getShareUrl)
+        public static void Attach(View target, Func<string> getTitle, Func<bool> isBookmarked, Action toggleBookmark, Func<Task<string>> getShareText)
         {
-            async Task ShareAsync() => await Utilities.ShareAsync(getTitle(), await getShareUrl());
+            async Task ShareAsync() => await Utilities.ShareAsync(getTitle(), await getShareText());
 
 #if WINDOWS
             var shareItem = new MenuFlyoutItem { Text = ShareText, IconImageSource = "share.png" };

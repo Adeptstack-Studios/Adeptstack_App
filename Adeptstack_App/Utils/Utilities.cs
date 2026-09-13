@@ -31,15 +31,36 @@ namespace Adeptstack_App.Utils
             return string.IsNullOrWhiteSpace(appSlug) ? $"{WebsiteUrl}/changelogs" : $"{WebsiteUrl}/changelogs/{appSlug}";
         }
 
-        public static async Task ShareAsync(string title, string url)
+        // source=app: die Website zeigt Besuchern über geteilte Links ein Popup zum App-Download.
+        private const string AppSourceQuery = "?source=app";
+        private const string ShareSignature = "Shared via the Adeptstack App";
+
+        public static string GetNewsShareText(NewsContext news)
+        {
+            return $"Hey! I found this article on Adeptstack and thought you might like it: \"{news.title}\"\n" +
+                   $"{GetNewsUrl(news)}{AppSourceQuery}\n\n" +
+                   ShareSignature;
+        }
+
+        public static string GetChangelogShareText(ChangelogContext changelog, string url)
+        {
+            return $"Hey! {changelog.title} is out. Take a look at what's new:\n" +
+                   $"{url}{AppSourceQuery}\n\n" +
+                   ShareSignature;
+        }
+
+        /// <summary>
+        /// Der Link steckt bewusst im Text statt in ShareTextRequest.Uri: Windows übergibt Text und
+        /// Link als getrennte Formate, und viele Ziel-Apps übernehmen nur eins davon.
+        /// </summary>
+        public static async Task ShareAsync(string title, string text)
         {
             try
             {
                 await Share.Default.RequestAsync(new ShareTextRequest
                 {
                     Title = title,
-                    Text = title,
-                    Uri = url
+                    Text = text
                 });
             }
             catch (Exception e)

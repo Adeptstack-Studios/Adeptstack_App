@@ -23,7 +23,7 @@ public partial class NewsView : ContentView
             () => News.title,
             () => Bookmarks.IsBookmarked(News),
             () => Bookmarks.Toggle(News),
-            () => Task.FromResult(Utilities.GetNewsUrl(News)));
+            () => Task.FromResult(Utilities.GetNewsShareText(News)));
     }
 
     private void clickedOn_Clicked(object sender, EventArgs e)

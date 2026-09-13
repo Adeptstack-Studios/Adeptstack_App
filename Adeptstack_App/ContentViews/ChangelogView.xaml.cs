@@ -28,13 +28,13 @@ public partial class ChangelogView : ContentView
             () => Changelog.title,
             () => Bookmarks.IsBookmarked(Changelog),
             () => Bookmarks.Toggle(Changelog),
-            GetShareUrlAsync);
+            GetShareTextAsync);
     }
 
-    private async Task<string> GetShareUrlAsync()
+    private async Task<string> GetShareTextAsync()
     {
         AppSlug ??= await Task.Run(() => Web.GetAppById(Changelog.appId)?.slug);
-        return Utilities.GetChangelogUrl(AppSlug);
+        return Utilities.GetChangelogShareText(Changelog, Utilities.GetChangelogUrl(AppSlug));
     }
 
     private void clickedOn_Clicked(object sender, EventArgs e)
