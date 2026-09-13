@@ -8,9 +8,13 @@ namespace Adeptstack_App.Pages;
 /// </summary>
 public partial class CardActionSheet : ContentPage
 {
+    // Ab diesem Anteil der Sheet-Höhe schließt das Loslassen das Sheet, darunter schnappt es zurück.
+    private const double DragDismissThreshold = 0.25;
+
     private readonly Action _toggleBookmark;
     private readonly Func<Task> _share;
     private bool _closing;
+    private double _dragOffset;
 
     private CardActionSheet(string title, string caption, string imageUrl, bool bookmarked, Action toggleBookmark, Func<Task> share)
     {
@@ -72,6 +76,41 @@ public partial class CardActionSheet : ContentPage
             sheet.TranslateToAsync(0, sheet.Height, 200, Easing.CubicIn));
 
         await Navigation.PopModalAsync(false);
+    }
+
+    private async void Sheet_PanUpdated(object sender, PanUpdatedEventArgs e)
+    {
+        if (_closing || sheet.Height <= 0)
+        {
+            return;
+        }
+
+        switch (e.StatusType)
+        {
+            case GestureStatus.Running:
+                // Nur nach unten, nach oben bleibt das Sheet an seinem Platz.
+                _dragOffset = Math.Max(0, e.TotalY);
+                sheet.TranslationY = _dragOffset;
+                backdrop.Opacity = 1 - Math.Min(1, _dragOffset / sheet.Height);
+                break;
+
+            // Completed liefert kein TotalY mehr, deshalb zählt der letzte Wert aus Running.
+            case GestureStatus.Completed:
+            case GestureStatus.Canceled:
+                if (_dragOffset > sheet.Height * DragDismissThreshold)
+                {
+                    await CloseAsync();
+                }
+                else
+                {
+                    await Task.WhenAll(
+                        backdrop.FadeToAsync(1, 150),
+                        sheet.TranslateToAsync(0, 0, 150, Easing.CubicOut));
+                }
+
+                _dragOffset = 0;
+                break;
+        }
     }
 
     private async void Backdrop_Tapped(object sender, TappedEventArgs e)

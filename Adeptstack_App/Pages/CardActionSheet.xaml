@@ -14,85 +14,91 @@
             </BoxView.GestureRecognizers>
         </BoxView>
 
-        <!-- TranslationY startet unterhalb des Bildschirms, OnAppearing fährt das Sheet hoch -->
-        <Border x:Name="sheet"
-                VerticalOptions="End"
-                MaximumWidthRequest="600"
-                TranslationY="600"
-                BackgroundColor="#0f172a"
-                Stroke="#1e293b"
-                StrokeThickness="1"
-                StrokeShape="RoundRectangle 20,20,0,0"
-                Padding="16,10,16,28">
+        <!-- Die Ziehgeste liegt auf diesem feststehenden Container und nicht auf dem Sheet selbst:
+             bewegt sich das Element unter dem Finger mit, springen die gemessenen Werte auf Android hin und her. -->
+        <Grid VerticalOptions="End" MaximumWidthRequest="600" BackgroundColor="Transparent">
+            <Grid.GestureRecognizers>
+                <PanGestureRecognizer PanUpdated="Sheet_PanUpdated" />
+            </Grid.GestureRecognizers>
 
-            <VerticalStackLayout>
-                <!-- Griff -->
-                <BoxView WidthRequest="36"
-                         HeightRequest="4"
-                         CornerRadius="2"
-                         Color="#334155"
-                         HorizontalOptions="Center"
-                         Margin="0,0,0,14" />
+            <!-- TranslationY startet unterhalb des Bildschirms, OnAppearing fährt das Sheet hoch -->
+            <Border x:Name="sheet"
+                    TranslationY="600"
+                    BackgroundColor="#0f172a"
+                    Stroke="#1e293b"
+                    StrokeThickness="1"
+                    StrokeShape="RoundRectangle 20,20,0,0"
+                    Padding="16,10,16,28">
 
-                <!-- Vorschau der Karte -->
-                <Grid ColumnDefinitions="Auto, *" ColumnSpacing="12" Padding="0,0,0,14">
-                    <Border x:Name="previewImageFrame"
-                            WidthRequest="64"
-                            HeightRequest="44"
-                            BackgroundColor="#1e293b"
-                            StrokeThickness="0"
-                            StrokeShape="RoundRectangle 8">
-                        <Image x:Name="previewImage" Aspect="AspectFill" />
-                    </Border>
+                <VerticalStackLayout>
+                    <!-- Griff -->
+                    <BoxView WidthRequest="36"
+                             HeightRequest="4"
+                             CornerRadius="2"
+                             Color="#334155"
+                             HorizontalOptions="Center"
+                             Margin="0,0,0,14" />
 
-                    <VerticalStackLayout Grid.Column="1" VerticalOptions="Center" Spacing="2">
-                        <Label x:Name="captionLabel"
-                               TextColor="#3b82f6"
-                               FontFamily="OpenSansSemibold"
-                               FontSize="11"
-                               TextTransform="Uppercase"
-                               CharacterSpacing="1" />
+                    <!-- Vorschau der Karte -->
+                    <Grid ColumnDefinitions="Auto, *" ColumnSpacing="12" Padding="0,0,0,14">
+                        <Border x:Name="previewImageFrame"
+                                WidthRequest="64"
+                                HeightRequest="44"
+                                BackgroundColor="#1e293b"
+                                StrokeThickness="0"
+                                StrokeShape="RoundRectangle 8">
+                            <Image x:Name="previewImage" Aspect="AspectFill" />
+                        </Border>
 
-                        <Label x:Name="titleLabel"
+                        <VerticalStackLayout Grid.Column="1" VerticalOptions="Center" Spacing="2">
+                            <Label x:Name="captionLabel"
+                                   TextColor="#3b82f6"
+                                   FontFamily="OpenSansSemibold"
+                                   FontSize="11"
+                                   TextTransform="Uppercase"
+                                   CharacterSpacing="1" />
+
+                            <Label x:Name="titleLabel"
+                                   TextColor="#f8fafc"
+                                   FontFamily="OpenSansSemibold"
+                                   FontSize="15"
+                                   MaxLines="1"
+                                   LineBreakMode="TailTruncation" />
+                        </VerticalStackLayout>
+                    </Grid>
+
+                    <BoxView HeightRequest="1" Color="#1e293b" />
+
+                    <!-- Transparenter Hintergrund, damit die ganze Zeile den Tap bekommt -->
+                    <Grid ColumnDefinitions="Auto, *" ColumnSpacing="14" Padding="4,14,4,10" BackgroundColor="Transparent">
+                        <Grid.GestureRecognizers>
+                            <TapGestureRecognizer Tapped="Share_Tapped" />
+                        </Grid.GestureRecognizers>
+
+                        <Image Source="share.png" WidthRequest="22" HeightRequest="22" VerticalOptions="Center" />
+                        <Label x:Name="shareLabel"
+                               Grid.Column="1"
                                TextColor="#f8fafc"
-                               FontFamily="OpenSansSemibold"
+                               FontFamily="OpenSansRegular"
                                FontSize="15"
-                               MaxLines="1"
-                               LineBreakMode="TailTruncation" />
-                    </VerticalStackLayout>
-                </Grid>
+                               VerticalOptions="Center" />
+                    </Grid>
 
-                <BoxView HeightRequest="1" Color="#1e293b" />
+                    <Grid ColumnDefinitions="Auto, *" ColumnSpacing="14" Padding="4,10,4,4" BackgroundColor="Transparent">
+                        <Grid.GestureRecognizers>
+                            <TapGestureRecognizer Tapped="Bookmark_Tapped" />
+                        </Grid.GestureRecognizers>
 
-                <!-- Transparenter Hintergrund, damit die ganze Zeile den Tap bekommt -->
-                <Grid ColumnDefinitions="Auto, *" ColumnSpacing="14" Padding="4,14,4,10" BackgroundColor="Transparent">
-                    <Grid.GestureRecognizers>
-                        <TapGestureRecognizer Tapped="Share_Tapped" />
-                    </Grid.GestureRecognizers>
-
-                    <Image Source="share.png" WidthRequest="22" HeightRequest="22" VerticalOptions="Center" />
-                    <Label x:Name="shareLabel"
-                           Grid.Column="1"
-                           TextColor="#f8fafc"
-                           FontFamily="OpenSansRegular"
-                           FontSize="15"
-                           VerticalOptions="Center" />
-                </Grid>
-
-                <Grid ColumnDefinitions="Auto, *" ColumnSpacing="14" Padding="4,10,4,4" BackgroundColor="Transparent">
-                    <Grid.GestureRecognizers>
-                        <TapGestureRecognizer Tapped="Bookmark_Tapped" />
-                    </Grid.GestureRecognizers>
-
-                    <Image x:Name="bookmarkIcon" WidthRequest="22" HeightRequest="22" VerticalOptions="Center" />
-                    <Label x:Name="bookmarkLabel"
-                           Grid.Column="1"
-                           TextColor="#f8fafc"
-                           FontFamily="OpenSansRegular"
-                           FontSize="15"
-                           VerticalOptions="Center" />
-                </Grid>
-            </VerticalStackLayout>
-        </Border>
+                        <Image x:Name="bookmarkIcon" WidthRequest="22" HeightRequest="22" VerticalOptions="Center" />
+                        <Label x:Name="bookmarkLabel"
+                               Grid.Column="1"
+                               TextColor="#f8fafc"
+                               FontFamily="OpenSansRegular"
+                               FontSize="15"
+                               VerticalOptions="Center" />
+                    </Grid>
+                </VerticalStackLayout>
+            </Border>
+        </Grid>
     </Grid>
 </ContentPage>
