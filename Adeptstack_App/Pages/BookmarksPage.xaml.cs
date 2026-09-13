@@ -15,7 +15,20 @@ public partial class BookmarksPage : ContentPage
     protected override void OnAppearing()
     {
         base.OnAppearing();
+        Bookmarks.Changed += Bookmarks_Changed;
         RenderBookmarks();
+    }
+
+    protected override void OnDisappearing()
+    {
+        base.OnDisappearing();
+        Bookmarks.Changed -= Bookmarks_Changed;
+    }
+
+    // Lesezeichen können auch direkt hier über das Kontextmenü einer Karte entfernt werden.
+    private void Bookmarks_Changed(object sender, EventArgs e)
+    {
+        Dispatcher.Dispatch(RenderBookmarks);
     }
 
     private void RenderBookmarks()

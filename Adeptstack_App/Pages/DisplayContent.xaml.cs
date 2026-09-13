@@ -3,7 +3,6 @@ using Adeptstack_App.Net;
 using Adeptstack_App.Utils;
 using Markdig;
 using Microsoft.Maui.ApplicationModel;
-using Microsoft.Maui.ApplicationModel.DataTransfer;
 using System.Diagnostics;
 using AppContext = Adeptstack_App.ContextClasses.AppContext;
 
@@ -132,19 +131,7 @@ public partial class DisplayContent : ContentPage
 
     private async void Share_Clicked(object sender, EventArgs e)
     {
-        try
-        {
-            await Share.Default.RequestAsync(new ShareTextRequest
-            {
-                Title = _shareTitle,
-                Text = _shareTitle,
-                Uri = _shareUrl
-            });
-        }
-        catch (Exception ex)
-        {
-            Debug.WriteLine(ex.ToString());
-        }
+        await Utilities.ShareAsync(_shareTitle, _shareUrl);
     }
 
     private async void web_Navigating(object sender, WebNavigatingEventArgs e)

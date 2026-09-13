@@ -1,4 +1,6 @@
 using Adeptstack_App.ContextClasses;
+using Microsoft.Maui.ApplicationModel.DataTransfer;
+using System.Diagnostics;
 using System.Globalization;
 using System.Net.NetworkInformation;
 using System.Text;
@@ -27,6 +29,23 @@ namespace Adeptstack_App.Utils
         public static string GetChangelogUrl(string appSlug)
         {
             return string.IsNullOrWhiteSpace(appSlug) ? $"{WebsiteUrl}/changelogs" : $"{WebsiteUrl}/changelogs/{appSlug}";
+        }
+
+        public static async Task ShareAsync(string title, string url)
+        {
+            try
+            {
+                await Share.Default.RequestAsync(new ShareTextRequest
+                {
+                    Title = title,
+                    Text = title,
+                    Uri = url
+                });
+            }
+            catch (Exception e)
+            {
+                Debug.WriteLine(e.ToString());
+            }
         }
 
         // "PC-Info v3.2.0 (4.1.0)" -> "pc-info-v3-2-0-4-1-0"

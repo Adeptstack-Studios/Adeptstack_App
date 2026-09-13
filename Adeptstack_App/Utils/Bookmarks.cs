@@ -21,6 +21,8 @@ namespace Adeptstack_App.Utils
         private static readonly object Sync = new();
         private static BookmarkStore _store;
 
+        public static event EventHandler Changed;
+
         public static List<NewsContext> GetNews()
         {
             lock (Sync) return Load().news.ToList();
@@ -44,13 +46,21 @@ namespace Adeptstack_App.Utils
         /// <returns>true, wenn der Beitrag danach gemerkt ist.</returns>
         public static bool Toggle(NewsContext news)
         {
-            lock (Sync) return Toggle(Load().news, news, n => n.id == news.id);
+            bool bookmarked;
+            lock (Sync) bookmarked = Toggle(Load().news, news, n => n.id == news.id);
+
+            Changed?.Invoke(null, EventArgs.Empty);
+            return bookmarked;
         }
 
         /// <returns>true, wenn der Changelog danach gemerkt ist.</returns>
         public static bool Toggle(ChangelogContext changelog)
         {
-            lock (Sync) return Toggle(Load().changelogs, changelog, c => c.id == changelog.id);
+            bool bookmarked;
+            lock (Sync) bookmarked = Toggle(Load().changelogs, changelog, c => c.id == changelog.id);
+
+            Changed?.Invoke(null, EventArgs.Empty);
+            return bookmarked;
         }
 
         private static bool Toggle<T>(List<T> list, T item, Predicate<T> matches)
