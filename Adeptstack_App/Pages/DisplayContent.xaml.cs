@@ -3,7 +3,6 @@ using Adeptstack_App.Net;
 using Adeptstack_App.Utils;
 using Markdig;
 using Microsoft.Maui.ApplicationModel;
-using Microsoft.Maui.ApplicationModel.DataTransfer;
 using System.Diagnostics;
 using AppContext = Adeptstack_App.ContextClasses.AppContext;
 
@@ -17,6 +16,7 @@ public partial class DisplayContent : ContentPage
 
     private string _shareTitle;
     private string _shareUrl;
+    private Func<string> _getShareText;
     private Func<bool> _isBookmarked;
     private Func<bool> _toggleBookmark;
 
@@ -26,7 +26,7 @@ public partial class DisplayContent : ContentPage
         this.Title = news.title;
 
         _shareTitle = news.title;
-        _shareUrl = Utilities.GetNewsUrl(news);
+        _getShareText = () => Utilities.GetNewsShareText(news);
         _isBookmarked = () => Bookmarks.IsBookmarked(news);
         _toggleBookmark = () => Bookmarks.Toggle(news);
         UpdateBookmarkItem();
@@ -42,6 +42,8 @@ public partial class DisplayContent : ContentPage
 
         _shareTitle = changelog.title;
         _shareUrl = Utilities.GetChangelogUrl(app?.slug);
+        // Erst beim Teilen auswerten: ohne übergebene App wird _shareUrl nachgeladen.
+        _getShareText = () => Utilities.GetChangelogShareText(changelog, _shareUrl);
         _isBookmarked = () => Bookmarks.IsBookmarked(changelog);
         _toggleBookmark = () => Bookmarks.Toggle(changelog);
         UpdateBookmarkItem();
@@ -132,19 +134,7 @@ public partial class DisplayContent : ContentPage
 
     private async void Share_Clicked(object sender, EventArgs e)
     {
-        try
-        {
-            await Share.Default.RequestAsync(new ShareTextRequest
-            {
-                Title = _shareTitle,
-                Text = _shareTitle,
-                Uri = _shareUrl
-            });
-        }
-        catch (Exception ex)
-        {
-            Debug.WriteLine(ex.ToString());
-        }
+        await Utilities.ShareAsync(_shareTitle, _getShareText());
     }
 
     private async void web_Navigating(object sender, WebNavigatingEventArgs e)

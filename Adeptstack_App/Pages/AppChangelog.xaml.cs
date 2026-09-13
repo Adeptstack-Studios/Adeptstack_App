@@ -58,6 +58,7 @@ public partial class AppChangelog : ContentPage
                         ChangelogView changelogView = new ChangelogView
                         {
                             Changelog = changelogItem,
+                            AppSlug = this.app.slug,
                             Margin = new Thickness(8, 8, 8, 16) // Sorgt für saubere Abstände zwischen den Karten
                         };
                         changelogView.ChangelogClicked += Changelog_Clicked;

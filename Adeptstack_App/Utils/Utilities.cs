@@ -1,4 +1,6 @@
 using Adeptstack_App.ContextClasses;
+using Microsoft.Maui.ApplicationModel.DataTransfer;
+using System.Diagnostics;
 using System.Globalization;
 using System.Net.NetworkInformation;
 using System.Text;
@@ -27,6 +29,44 @@ namespace Adeptstack_App.Utils
         public static string GetChangelogUrl(string appSlug)
         {
             return string.IsNullOrWhiteSpace(appSlug) ? $"{WebsiteUrl}/changelogs" : $"{WebsiteUrl}/changelogs/{appSlug}";
+        }
+
+        // source=app: die Website zeigt Besuchern über geteilte Links ein Popup zum App-Download.
+        private const string AppSourceQuery = "?source=app";
+        private const string ShareSignature = "Shared via the Adeptstack App";
+
+        public static string GetNewsShareText(NewsContext news)
+        {
+            return $"Hey! I found this article on Adeptstack and thought you might like it: \"{news.title}\"\n" +
+                   $"{GetNewsUrl(news)}{AppSourceQuery}\n\n" +
+                   ShareSignature;
+        }
+
+        public static string GetChangelogShareText(ChangelogContext changelog, string url)
+        {
+            return $"Hey! {changelog.title} is out. Take a look at what's new:\n" +
+                   $"{url}{AppSourceQuery}\n\n" +
+                   ShareSignature;
+        }
+
+        /// <summary>
+        /// Der Link steckt bewusst im Text statt in ShareTextRequest.Uri: Windows übergibt Text und
+        /// Link als getrennte Formate, und viele Ziel-Apps übernehmen nur eins davon.
+        /// </summary>
+        public static async Task ShareAsync(string title, string text)
+        {
+            try
+            {
+                await Share.Default.RequestAsync(new ShareTextRequest
+                {
+                    Title = title,
+                    Text = text
+                });
+            }
+            catch (Exception e)
+            {
+                Debug.WriteLine(e.ToString());
+            }
         }
 
         // "PC-Info v3.2.0 (4.1.0)" -> "pc-info-v3-2-0-4-1-0"
