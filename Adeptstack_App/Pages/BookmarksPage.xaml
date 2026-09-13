@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="Adeptstack_App.Pages.BookmarksPage"
+             BackgroundColor="#020617"
+             Title="Bookmarks">
+
+    <Grid>
+        <!-- Layer 1: Content -->
+        <ScrollView>
+            <VerticalStackLayout Padding="16,24,16,24" Spacing="8" MaximumWidthRequest="1150">
+
+                <Label x:Name="newsHeader"
+                       Text="NEWS"
+                       TextColor="#64748B"
+                       FontSize="12"
+                       FontAttributes="Bold"
+                       Margin="10,0,0,0"/>
+
+                <FlexLayout x:Name="newsLayout"
+                            Wrap="Wrap"
+                            JustifyContent="Center"
+                            AlignItems="Start"
+                            AlignContent="Start" />
+
+                <Label x:Name="changelogsHeader"
+                       Text="CHANGELOGS"
+                       TextColor="#64748B"
+                       FontSize="12"
+                       FontAttributes="Bold"
+                       Margin="10,0,0,0"/>
+
+                <FlexLayout x:Name="changelogsLayout"
+                            Wrap="Wrap"
+                            JustifyContent="Center"
+                            AlignItems="Start"
+                            AlignContent="Start" />
+            </VerticalStackLayout>
+        </ScrollView>
+
+        <!-- Layer 2: Empty State -->
+        <Grid x:Name="nothing" IsVisible="False" BackgroundColor="#020617">
+            <VerticalStackLayout HorizontalOptions="Center" VerticalOptions="Center" Spacing="8" Padding="24">
+                <Label Text="No Bookmarks Yet"
+                       TextColor="#f8fafc"
+                       FontSize="20"
+                       FontAttributes="Bold"
+                       HorizontalTextAlignment="Center" />
+
+                <Label Text="Tap the bookmark icon on a post or changelog to save it here."
+                       TextColor="#94a3b8"
+                       FontSize="14"
+                       HorizontalTextAlignment="Center" />
+            </VerticalStackLayout>
+        </Grid>
+    </Grid>
+</ContentPage>

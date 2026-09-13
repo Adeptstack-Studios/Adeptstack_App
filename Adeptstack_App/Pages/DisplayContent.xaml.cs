@@ -17,6 +17,8 @@ public partial class DisplayContent : ContentPage
 
     private string _shareTitle;
     private string _shareUrl;
+    private Func<bool> _isBookmarked;
+    private Func<bool> _toggleBookmark;
 
     public DisplayContent(NewsContext news)
     {
@@ -25,6 +27,9 @@ public partial class DisplayContent : ContentPage
 
         _shareTitle = news.title;
         _shareUrl = Utilities.GetNewsUrl(news);
+        _isBookmarked = () => Bookmarks.IsBookmarked(news);
+        _toggleBookmark = () => Bookmarks.Toggle(news);
+        UpdateBookmarkItem();
 
         LoadContentAsync(news.content, news.imageUrl, news.title, news.category, news.publishedAt, news.description);
     }
@@ -37,6 +42,9 @@ public partial class DisplayContent : ContentPage
 
         _shareTitle = changelog.title;
         _shareUrl = Utilities.GetChangelogUrl(app?.slug);
+        _isBookmarked = () => Bookmarks.IsBookmarked(changelog);
+        _toggleBookmark = () => Bookmarks.Toggle(changelog);
+        UpdateBookmarkItem();
 
         LoadChangelogDataAsync(changelog, app);
     }
@@ -107,6 +115,19 @@ public partial class DisplayContent : ContentPage
                 nothing.IsVisible = true;
             }
         });
+    }
+
+    private void UpdateBookmarkItem()
+    {
+        bool bookmarked = _isBookmarked();
+        bookmarkItem.IconImageSource = bookmarked ? "bookmark_filled.png" : "bookmark.png";
+        bookmarkItem.Text = bookmarked ? "Remove Bookmark" : "Bookmark";
+    }
+
+    private void Bookmark_Clicked(object sender, EventArgs e)
+    {
+        _toggleBookmark();
+        UpdateBookmarkItem();
     }
 
     private async void Share_Clicked(object sender, EventArgs e)

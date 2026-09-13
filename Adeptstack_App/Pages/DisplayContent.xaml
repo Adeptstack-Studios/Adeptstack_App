@@ -5,6 +5,10 @@
              BackgroundColor="#020617">
 
     <ContentPage.ToolbarItems>
+        <ToolbarItem x:Name="bookmarkItem"
+                     Text="Bookmark"
+                     IconImageSource="bookmark.png"
+                     Clicked="Bookmark_Clicked" />
         <ToolbarItem Text="Share"
                      IconImageSource="share.png"
                      Clicked="Share_Clicked" />
