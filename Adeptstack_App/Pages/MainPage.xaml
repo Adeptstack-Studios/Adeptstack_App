@@ -44,17 +44,57 @@
     <Grid>
         <!-- Layer 1: Der Content -->
         <RefreshView x:Name="refresh" Refreshing="RefreshView_Refreshing" RefreshColor="#3b82f6">
-            <ScrollView>
-                <VerticalStackLayout Padding="16,24,16,24">
-                    <ScrollView Orientation="Horizontal" HorizontalScrollBarVisibility="Never" Margin="0,0,0,24">
+            <ScrollView x:Name="scroll" Scrolled="Scroll_Scrolled">
+                <VerticalStackLayout Padding="16,24,16,24" SizeChanged="Content_SizeChanged">
+                    <ScrollView Orientation="Horizontal" HorizontalScrollBarVisibility="Never" Margin="0,0,0,16">
                         <HorizontalStackLayout x:Name="categoryLayout" Spacing="12" HorizontalOptions="Center" />
                     </ScrollView>
 
-                    <FlexLayout x:Name="newsLayout" 
-                                Wrap="Wrap" 
-                                JustifyContent="Center" 
+                    <!-- Trefferanzahl und Sortierung -->
+                    <Grid ColumnDefinitions="*, Auto"
+                          MaximumWidthRequest="1130"
+                          Margin="10,0,10,8">
+                        <Label x:Name="resultCountLabel"
+                               TextColor="#94a3b8"
+                               FontFamily="OpenSansRegular"
+                               FontSize="13"
+                               VerticalOptions="Center" />
+
+                        <Button x:Name="sortButton"
+                                Grid.Column="1"
+                                Text="NEWEST ▾"
+                                FontFamily="OpenSansSemibold"
+                                FontSize="12"
+                                CornerRadius="18"
+                                HeightRequest="36"
+                                Padding="16,0"
+                                BackgroundColor="#1e293b"
+                                TextColor="#f8fafc"
+                                Clicked="Sort_Clicked" />
+                    </Grid>
+
+                    <FlexLayout x:Name="newsLayout"
+                                Wrap="Wrap"
+                                JustifyContent="Center"
                                 AlignItems="Start"
                                 MaximumWidthRequest="1150"/>
+
+                    <!-- Kein Treffer für Suche/Filter. Bewusst kein Overlay, damit die Chips bedienbar bleiben. -->
+                    <Label x:Name="noResultsLabel"
+                           Text="No results found"
+                           IsVisible="False"
+                           TextColor="#94a3b8"
+                           FontSize="16"
+                           HorizontalTextAlignment="Center"
+                           Margin="0,48,0,0" />
+
+                    <!-- Nachladen der nächsten Seite beim Scrollen -->
+                    <ActivityIndicator x:Name="pageLoading"
+                                       IsRunning="False"
+                                       IsVisible="False"
+                                       Color="#3b82f6"
+                                       HorizontalOptions="Center"
+                                       Margin="0,8,0,8" />
                 </VerticalStackLayout>
             </ScrollView>
         </RefreshView>

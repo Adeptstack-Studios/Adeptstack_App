@@ -30,7 +30,7 @@ public partial class DisplayContent : ContentPage
         _toggleBookmark = () => Bookmarks.Toggle(news);
         UpdateBookmarkItem();
 
-        LoadContentAsync(news.content, news.imageUrl, news.title, news.category, news.publishedAt, news.description);
+        LoadContentAsync(news.content, news.imageUrl, news.title, news.category, news.publishedAt, news.description, news.ReadingTimeText);
     }
 
     /// <param name="app">Optional: ist die App schon bekannt, spart das den zusätzlichen API-Call für den Namen.</param>
@@ -73,7 +73,8 @@ public partial class DisplayContent : ContentPage
         LoadContentAsync(changelog.content, changelog.imageUrl, changelog.title, appName, changelog.publishedAt, changelog.description);
     }
 
-    public async void LoadContentAsync(string content, string imgUrl, string title, string category, DateTime date, string description)
+    /// <param name="dateSuffix">Optional hinter dem Datum, z. B. "5 min read".</param>
+    public async void LoadContentAsync(string content, string imgUrl, string title, string category, DateTime date, string description, string dateSuffix = null)
     {
         bool isConnected = await Web.IsConnectedToInternetAsync();
 
@@ -89,7 +90,7 @@ public partial class DisplayContent : ContentPage
                                 <div style='margin-bottom: 40px; margin-top: 48px;'>
                                     <div style='display: flex; justify-content: space-between; font-size: 13px; font-weight: bold; margin-bottom: 16px;'>
                                         <span style='color: #3b82f6; text-transform: uppercase; letter-spacing: 1px;'>{category}</span>
-                                        <span style='color: #94a3b8;'>{date:MMM dd, yyyy}</span>
+                                        <span style='color: #94a3b8;'>{date:MMM dd, yyyy}{(string.IsNullOrEmpty(dateSuffix) ? "" : $" · {dateSuffix}")}</span>
                                     </div>
                                     <h1 style='color: #f8fafc; font-size: 26px; line-height: 1.3; margin-top: 0; margin-bottom: 16px;'>{title}</h1>
                                     {(string.IsNullOrEmpty(description) ? "" : $"<p style='color: #94a3b8; font-size: 16px; line-height: 1.5; margin-top: 0; margin-bottom: 32px;'>{description}</p>")}

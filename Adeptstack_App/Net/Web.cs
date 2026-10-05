@@ -77,19 +77,68 @@ namespace Adeptstack_App.Net
             }
         }
 
-        public static List<NewsContext> GetNews()
+        // --- Gefilterte Listen mit Pagination ---
+
+        private const string ApiBaseUrl = "https://api.adeptstack.net/api";
+        private static readonly HttpClient _apiClient = new HttpClient { Timeout = TimeSpan.FromSeconds(15) };
+
+        /// <summary>
+        /// Eine Seite einer Liste. Total kommt aus dem Header X-Total-Count und zählt alle Treffer, nicht nur diese Seite.
+        /// Success ist false bei Netzwerkfehlern und Fehlerstatus (400 bei ungültigen Parametern, 403/429 beim Rate-Limit).
+        /// </summary>
+        public record PagedResult<T>(List<T> Items, int Total, bool Success);
+
+        /// <param name="category">null = alle Kategorien.</param>
+        /// <param name="sort">z. B. "publishedAt,desc" oder "readingTime,asc".</param>
+        public static Task<PagedResult<NewsContext>> GetNewsPageAsync(string category, string query, string sort, int page, int size)
         {
+            return GetPageAsync<NewsContext>("/news/get", new()
+            {
+                ["include"] = "unlisted",
+                ["category"] = category,
+                ["q"] = query,
+                ["sort"] = sort,
+                ["page"] = page.ToString(),
+                ["size"] = size.ToString()
+            });
+        }
+
+        public static async Task<List<FilterOption>> GetNewsCategoriesAsync()
+        {
+            return (await GetPageAsync<FilterOption>("/news/categories", new() { ["include"] = "unlisted" })).Items;
+        }
+
+        private static async Task<PagedResult<T>> GetPageAsync<T>(string path, Dictionary<string, string> query)
+        {
+            string queryString = string.Join("&", query
+                .Where(p => !string.IsNullOrWhiteSpace(p.Value))
+                .Select(p => $"{p.Key}={Uri.EscapeDataString(p.Value.Trim())}"));
+
             try
             {
-                HttpClient client = new HttpClient();
-                string html = client.GetStringAsync("https://api.adeptstack.net/api/news/get").Result;
-                var result = JsonSerializer.Deserialize<List<NewsContext>>(html);
-                return result;
+                // ConfigureAwait(false): Changelogs enthalten den kompletten Markdown-Content,
+                // das Parsen soll nicht auf dem UI-Thread laufen.
+                using var response = await _apiClient.GetAsync($"{ApiBaseUrl}{path}?{queryString}").ConfigureAwait(false);
+                string body = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
+
+                if (!response.IsSuccessStatusCode)
+                {
+                    // Bei 400 steht der Grund im Feld "message"
+                    Debug.WriteLine($"GET {path}?{queryString} -> {(int)response.StatusCode}: {body}");
+                    return new(new(), 0, false);
+                }
+
+                var items = JsonSerializer.Deserialize<List<T>>(body) ?? new();
+                int total = response.Headers.TryGetValues("X-Total-Count", out var values) && int.TryParse(values.FirstOrDefault(), out int count)
+                    ? count
+                    : items.Count;
+
+                return new(items, total, true);
             }
             catch (Exception e)
             {
                 Debug.WriteLine(e.ToString());
-                return new();
+                return new(new(), 0, false);
             }
         }
     }

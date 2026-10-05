@@ -41,11 +41,23 @@
                            TextTransform="Uppercase"
                            CharacterSpacing="1" />
 
-                    <Label Grid.Column="1" 
-                           Text="{Binding News.publishedAt, StringFormat='{0:MMM dd, yyyy}', FallbackValue='Apr 01, 2026'}" 
-                           TextColor="#94a3b8" 
-                           FontFamily="OpenSansRegular" 
-                           FontSize="12" />
+                    <HorizontalStackLayout Grid.Column="1" Spacing="6">
+                        <Label Text="{Binding News.publishedAt, StringFormat='{0:MMM dd, yyyy}', FallbackValue='Apr 01, 2026'}"
+                               TextColor="#94a3b8"
+                               FontFamily="OpenSansRegular"
+                               FontSize="12" />
+
+                        <Label Text="·"
+                               IsVisible="{Binding News.HasReadingTime}"
+                               TextColor="#475569"
+                               FontSize="12" />
+
+                        <Label Text="{Binding News.ReadingTimeText}"
+                               IsVisible="{Binding News.HasReadingTime}"
+                               TextColor="#94a3b8"
+                               FontFamily="OpenSansRegular"
+                               FontSize="12" />
+                    </HorizontalStackLayout>
                 </Grid>
 
                 <Label Text="{Binding News.title, FallbackValue='Update Title'}" 
