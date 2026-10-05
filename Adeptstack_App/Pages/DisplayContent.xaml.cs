@@ -18,10 +18,12 @@ public partial class DisplayContent : ContentPage
     private Func<string> _getShareText;
     private Func<bool> _isBookmarked;
     private Func<bool> _toggleBookmark;
+    private Task _transition;
 
     public DisplayContent(NewsContext news)
     {
         InitializeComponent();
+        _transition = PageTransition.WaitAsync(this);
         this.Title = news.title;
 
         _shareTitle = news.title;
@@ -37,6 +39,7 @@ public partial class DisplayContent : ContentPage
     public DisplayContent(ChangelogContext changelog, AppContext app = null)
     {
         InitializeComponent();
+        _transition = PageTransition.WaitAsync(this);
         this.Title = changelog.title;
 
         _shareTitle = changelog.title;
@@ -56,17 +59,17 @@ public partial class DisplayContent : ContentPage
         {
             await Task.Run(() =>
             {
-                try
+            try
+            {
+                var appData = Web.GetAppById(changelog.appId);
+                if (appData != null && !string.IsNullOrEmpty(appData.name))
                 {
-                    var appData = Web.GetAppById(changelog.appId);
-                    if (appData != null && !string.IsNullOrEmpty(appData.name))
-                    {
-                        appName = appData.name;
-                    }
+                    appName = appData.name;
                 }
-                catch
-                {
-                }
+            }
+            catch
+            {
+            }
             });
         }
 
@@ -76,33 +79,41 @@ public partial class DisplayContent : ContentPage
     /// <param name="dateSuffix">Optional hinter dem Datum, z. B. "5 min read".</param>
     public async void LoadContentAsync(string content, string imgUrl, string title, string category, DateTime date, string description, string dateSuffix = null)
     {
-        bool isConnected = await Web.IsConnectedToInternetAsync();
+        var connected = Web.IsConnectedToInternetAsync();
+
+        // Markdown im Hintergrund umwandeln, während die Seite noch hereinfährt
+        string html = string.IsNullOrEmpty(content) ? null : await Task.Run(() =>
+        {
+            string headerHtml = $@"
+                            <div style='margin-bottom: 40px; margin-top: 48px;'>
+                                <div style='display: flex; justify-content: space-between; font-size: 13px; font-weight: bold; margin-bottom: 16px;'>
+                                    <span style='color: #3b82f6; text-transform: uppercase; letter-spacing: 1px;'>{category}</span>
+                                    <span style='color: #94a3b8;'>{date:MMM dd, yyyy}{(string.IsNullOrEmpty(dateSuffix) ? "" : $" · {dateSuffix}")}</span>
+                                </div>
+                                <h1 style='color: #f8fafc; font-size: 26px; line-height: 1.3; margin-top: 0; margin-bottom: 16px;'>{title}</h1>
+                                {(string.IsNullOrEmpty(description) ? "" : $"<p style='color: #94a3b8; font-size: 16px; line-height: 1.5; margin-top: 0; margin-bottom: 32px;'>{description}</p>")}
+                                {(string.IsNullOrEmpty(imgUrl) ? "" : $"<img src='{imgUrl}' style='width: 100%; border-radius: 12px; margin-top: 8px;' />")}
+                            </div>";
+
+            string markdownBody = Markdig.Markdown.ToHtml(content, MarkdownPipeline);
+
+            string fullBody = headerHtml + markdownBody;
+
+            string css = MarkdownStyle.CSS();
+            return MarkdownStyle.GetFullHTML(css, fullBody);
+        });
+
+        // Das WebView erst nach der Einschub-Animation befüllen
+        await _transition;
+        bool isConnected = await connected;
 
         Dispatcher.Dispatch(() =>
         {
             internet.IsVisible = !isConnected;
 
-            if (!string.IsNullOrEmpty(content))
+            if (html != null)
             {
                 nothing.IsVisible = false;
-
-                string headerHtml = $@"
-                                <div style='margin-bottom: 40px; margin-top: 48px;'>
-                                    <div style='display: flex; justify-content: space-between; font-size: 13px; font-weight: bold; margin-bottom: 16px;'>
-                                        <span style='color: #3b82f6; text-transform: uppercase; letter-spacing: 1px;'>{category}</span>
-                                        <span style='color: #94a3b8;'>{date:MMM dd, yyyy}{(string.IsNullOrEmpty(dateSuffix) ? "" : $" · {dateSuffix}")}</span>
-                                    </div>
-                                    <h1 style='color: #f8fafc; font-size: 26px; line-height: 1.3; margin-top: 0; margin-bottom: 16px;'>{title}</h1>
-                                    {(string.IsNullOrEmpty(description) ? "" : $"<p style='color: #94a3b8; font-size: 16px; line-height: 1.5; margin-top: 0; margin-bottom: 32px;'>{description}</p>")}
-                                    {(string.IsNullOrEmpty(imgUrl) ? "" : $"<img src='{imgUrl}' style='width: 100%; border-radius: 12px; margin-top: 8px;' />")}
-                                </div>";
-
-                string markdownBody = Markdig.Markdown.ToHtml(content, MarkdownPipeline);
-
-                string fullBody = headerHtml + markdownBody;
-
-                string css = MarkdownStyle.CSS();
-                string html = MarkdownStyle.GetFullHTML(css, fullBody);
 
                 web.Source = new HtmlWebViewSource
                 {

@@ -29,6 +29,7 @@ public partial class AppChangelog : ContentPage
     private readonly bool _isAllApps;
     private readonly (string Label, string Sort)[] _sortOptions;
     private readonly PagedLoader<ChangelogContext> _loader;
+    private readonly Task _transition;
 
     private AppContext _selectedApp; // null = alle
     private string _channel; // null = alle
@@ -56,8 +57,17 @@ public partial class AppChangelog : ContentPage
         _isAllApps = app == null;
         _sortOptions = _isAllApps ? SortOptions.Append(AppSortOption).ToArray() : SortOptions;
 
+        _transition = PageTransition.WaitAsync(this);
+
         _loader = new PagedLoader<ChangelogContext>(
-            (page, size) => Web.GetChangelogsPageAsync(_selectedApp?.id.ToString(), _channel, _sortOptions[_sortIndex].Sort, page, size),
+            async (page, size) =>
+            {
+                var result = await Web.GetChangelogsPageAsync(_selectedApp?.id.ToString(), _channel, _sortOptions[_sortIndex].Sort, page, size);
+
+                // Karten erst nach der Einschub-Animation aufbauen
+                await _transition;
+                return result;
+            },
             c => c.id);
 
         appChips.IsVisible = _isAllApps;
@@ -72,15 +82,10 @@ public partial class AppChangelog : ContentPage
         busy.IsRunning = true;
         nothing.IsVisible = false;
 
-        bool isConnected = await Web.IsConnectedToInternetAsync();
-        internet.IsVisible = !isConnected;
-
-        if (isConnected)
-        {
-            await LoadChannelsAsync();
-        }
-
-        await ReloadAsync();
+        // Alles parallel, damit die Inhalte möglichst direkt nach der Animation da sind
+        var connected = Web.IsConnectedToInternetAsync();
+        await Task.WhenAll(LoadChannelsAsync(), ReloadAsync());
+        internet.IsVisible = !await connected;
 
         refresh.IsRefreshing = false;
         refresh.IsEnabled = true;
@@ -117,6 +122,8 @@ public partial class AppChangelog : ContentPage
     {
         AppContext app = _selectedApp;
         var channels = await Web.GetChangelogChannelsAsync(app?.id.ToString());
+
+        await _transition;
 
         // Inzwischen eine andere App gewählt
         if (app != _selectedApp)
