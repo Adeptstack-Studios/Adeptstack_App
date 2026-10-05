@@ -61,22 +61,6 @@ namespace Adeptstack_App.Net
             }
         }
 
-        public static List<ChangelogContext> GetChangelogs(int appId)
-        {
-            try
-            {
-                HttpClient client = new HttpClient();
-                string html = client.GetStringAsync($"https://api.adeptstack.net/api/changelogs/getBy?appId={appId}").Result;
-                var result = JsonSerializer.Deserialize<List<ChangelogContext>>(html);
-                return result;
-            }
-            catch (Exception e)
-            {
-                Debug.WriteLine(e.ToString());
-                return new();
-            }
-        }
-
         // --- Gefilterte Listen mit Pagination ---
 
         private const string ApiBaseUrl = "https://api.adeptstack.net/api";
@@ -106,6 +90,28 @@ namespace Adeptstack_App.Net
         public static async Task<List<FilterOption>> GetNewsCategoriesAsync()
         {
             return (await GetPageAsync<FilterOption>("/news/categories", new() { ["include"] = "unlisted" })).Items;
+        }
+
+        /// <param name="app">App-ID oder Slug, null = alle Apps.</param>
+        /// <param name="channel">null = alle Channels.</param>
+        /// <param name="sort">z. B. "publishedAt,desc" oder "version,desc".</param>
+        public static Task<PagedResult<ChangelogContext>> GetChangelogsPageAsync(string app, string channel, string sort, int page, int size)
+        {
+            return GetPageAsync<ChangelogContext>("/changelogs/get", new()
+            {
+                ["include"] = "unlisted",
+                ["app"] = app,
+                ["channel"] = channel,
+                ["sort"] = sort,
+                ["page"] = page.ToString(),
+                ["size"] = size.ToString()
+            });
+        }
+
+        /// <param name="app">App-ID oder Slug, null = Channels aller Apps.</param>
+        public static async Task<List<FilterOption>> GetChangelogChannelsAsync(string app)
+        {
+            return (await GetPageAsync<FilterOption>("/changelogs/channels", new() { ["include"] = "unlisted", ["app"] = app })).Items;
         }
 
         private static async Task<PagedResult<T>> GetPageAsync<T>(string path, Dictionary<string, string> query)
