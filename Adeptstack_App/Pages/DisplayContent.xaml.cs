@@ -15,7 +15,6 @@ public partial class DisplayContent : ContentPage
         .Build();
 
     private string _shareTitle;
-    private string _shareUrl;
     private Func<string> _getShareText;
     private Func<bool> _isBookmarked;
     private Func<bool> _toggleBookmark;
@@ -34,16 +33,14 @@ public partial class DisplayContent : ContentPage
         LoadContentAsync(news.content, news.imageUrl, news.title, news.category, news.publishedAt, news.description);
     }
 
-    /// <param name="app">Optional: ist die App schon bekannt, spart das den zusätzlichen API-Call für Name und Slug.</param>
+    /// <param name="app">Optional: ist die App schon bekannt, spart das den zusätzlichen API-Call für den Namen.</param>
     public DisplayContent(ChangelogContext changelog, AppContext app = null)
     {
         InitializeComponent();
         this.Title = changelog.title;
 
         _shareTitle = changelog.title;
-        _shareUrl = Utilities.GetChangelogUrl(app?.slug);
-        // Erst beim Teilen auswerten: ohne übergebene App wird _shareUrl nachgeladen.
-        _getShareText = () => Utilities.GetChangelogShareText(changelog, _shareUrl);
+        _getShareText = () => Utilities.GetChangelogShareText(changelog);
         _isBookmarked = () => Bookmarks.IsBookmarked(changelog);
         _toggleBookmark = () => Bookmarks.Toggle(changelog);
         UpdateBookmarkItem();
@@ -65,7 +62,6 @@ public partial class DisplayContent : ContentPage
                     if (appData != null && !string.IsNullOrEmpty(appData.name))
                     {
                         appName = appData.name;
-                        _shareUrl = Utilities.GetChangelogUrl(appData.slug);
                     }
                 }
                 catch
