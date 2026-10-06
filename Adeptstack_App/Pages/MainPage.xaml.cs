@@ -25,9 +25,16 @@ public partial class MainPage : ContentPage
     private int _sortIndex = 0;
     private CancellationTokenSource _searchDebounce;
 
+    private const string SortKey = "NewsSort";
+    private const string CategoryKey = "NewsCategory";
+
     public MainPage()
     {
         InitializeComponent();
+
+        _sortIndex = AppSettings.GetSortIndex(SortKey, SortOptions);
+        _currentCategory = AppSettings.GetFilter(CategoryKey);
+        UpdateSortButton();
 
         _loader = new PagedLoader<NewsContext>(
             (page, size) => Web.GetNewsPageAsync(_currentCategory, _searchQuery, SortOptions[_sortIndex].Sort, page, size),
@@ -50,9 +57,11 @@ public partial class MainPage : ContentPage
         {
             _categories = await Web.GetNewsCategoriesAsync();
 
+            // Gemerkte Kategorie gibt es nicht mehr
             if (!_categories.Any(c => string.Equals(c.name, _currentCategory, StringComparison.OrdinalIgnoreCase)))
             {
                 _currentCategory = null;
+                AppSettings.SetFilter(CategoryKey, null);
             }
         }
 
@@ -119,6 +128,7 @@ public partial class MainPage : ContentPage
         FilterChips.Build(categoryLayout, chips, _currentCategory, async category =>
         {
             _currentCategory = category;
+            AppSettings.SetFilter(CategoryKey, category);
             BuildCategoryUI();
             await ReloadAsync();
         });
@@ -134,8 +144,14 @@ public partial class MainPage : ContentPage
         }
 
         _sortIndex = index;
-        sortButton.Text = $"{SortOptions[index].Label.ToUpper()} ▾";
+        AppSettings.SetFilter(SortKey, SortOptions[index].Sort);
+        UpdateSortButton();
         await ReloadAsync();
+    }
+
+    private void UpdateSortButton()
+    {
+        sortButton.Text = $"{SortOptions[_sortIndex].Label.ToUpper()} ▾";
     }
 
     // --- Laden mit Pagination ---

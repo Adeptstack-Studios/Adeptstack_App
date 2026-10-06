@@ -36,6 +36,12 @@ public partial class AppChangelog : ContentPage
     private List<FilterOption> _channels = new List<FilterOption>();
     private int _sortIndex = 0;
 
+    private string SortKey => _isAllApps ? "AllUpdatesSort" : "ChangelogSort";
+    private const string AppKey = "AllUpdatesApp";
+
+    // Channels gehören zur App, also pro App bzw. für "All Updates" mit ausgewählter App
+    private string ChannelKey => $"Channel_{(_isAllApps ? "all_" : "")}{_selectedApp?.id.ToString() ?? "all"}";
+
     public AppChangelog(AppContext app) : this(new List<AppContext> { app }, app)
     {
         this.Title = $"{app.name} Updates";
@@ -56,6 +62,18 @@ public partial class AppChangelog : ContentPage
         _selectedApp = app;
         _isAllApps = app == null;
         _sortOptions = _isAllApps ? SortOptions.Append(AppSortOption).ToArray() : SortOptions;
+
+        // "All Updates" hat eine Sortierung mehr, deshalb getrennt merken
+        _sortIndex = AppSettings.GetSortIndex(SortKey, _sortOptions);
+        UpdateSortButton();
+
+        if (_isAllApps)
+        {
+            string appId = AppSettings.GetFilter(AppKey);
+            _selectedApp = _apps.FirstOrDefault(a => a.id.ToString() == appId);
+        }
+
+        _channel = AppSettings.GetFilter(ChannelKey);
 
         _transition = PageTransition.WaitAsync(this);
 
@@ -108,9 +126,10 @@ public partial class AppChangelog : ContentPage
         FilterChips.Build(appLayout, chips, _selectedApp?.id.ToString(), async appId =>
         {
             _selectedApp = _apps.FirstOrDefault(a => a.id.ToString() == appId);
+            AppSettings.SetFilter(AppKey, appId);
 
-            // Channels gehören zur App, also zurücksetzen
-            _channel = null;
+            // Channels gehören zur App, also den für diese App gemerkten nehmen
+            _channel = AppSettings.GetFilter(ChannelKey);
 
             BuildAppChips();
             await LoadChannelsAsync();
@@ -135,7 +154,14 @@ public partial class AppChangelog : ContentPage
 
         if (!_channels.Any(c => string.Equals(c.name, _channel, StringComparison.OrdinalIgnoreCase)))
         {
-            _channel = null;
+            // Gemerkten Channel gibt es nicht mehr: ohne Filter neu laden.
+            // Ohne Channels (offline) bleibt er stehen, sonst wäre er beim nächsten Mal weg.
+            if (_channel != null && _channels.Count > 0)
+            {
+                _channel = null;
+                AppSettings.SetFilter(ChannelKey, null);
+                await ReloadAsync();
+            }
         }
 
         BuildChannelChips();
@@ -152,6 +178,7 @@ public partial class AppChangelog : ContentPage
         FilterChips.Build(channelLayout, chips, _channel, async channel =>
         {
             _channel = channel;
+            AppSettings.SetFilter(ChannelKey, channel);
             BuildChannelChips();
             await ReloadAsync();
         });
@@ -167,8 +194,14 @@ public partial class AppChangelog : ContentPage
         }
 
         _sortIndex = index;
-        sortButton.Text = $"{_sortOptions[index].Label.ToUpper()} ▾";
+        AppSettings.SetFilter(SortKey, _sortOptions[index].Sort);
+        UpdateSortButton();
         await ReloadAsync();
+    }
+
+    private void UpdateSortButton()
+    {
+        sortButton.Text = $"{_sortOptions[_sortIndex].Label.ToUpper()} ▾";
     }
 
     // --- Laden mit Pagination ---
