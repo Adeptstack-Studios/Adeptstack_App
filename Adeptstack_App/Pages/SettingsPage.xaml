@@ -5,81 +5,297 @@
              BackgroundColor="#020617"
              Title="Settings">
 
-    <Grid RowDefinitions="*, Auto" Padding="20">
+    <ContentPage.Resources>
+        <Style x:Key="SectionHeader" TargetType="Label">
+            <Setter Property="TextColor" Value="#64748B" />
+            <Setter Property="FontSize" Value="12" />
+            <Setter Property="FontAttributes" Value="Bold" />
+            <Setter Property="Margin" Value="5,0,0,5" />
+        </Style>
 
-        <VerticalStackLayout x:Name="notificationsSection" Grid.Row="0" Spacing="5">
+        <Style x:Key="RowTitle" TargetType="Label">
+            <Setter Property="TextColor" Value="#F8FAFC" />
+            <Setter Property="FontSize" Value="16" />
+            <Setter Property="FontAttributes" Value="Bold" />
+        </Style>
 
-            <Label Text="NOTIFICATIONS" 
-                   TextColor="#64748B" 
-                   FontSize="12" 
-                   FontAttributes="Bold" 
-                   Margin="5,0,0,5"/>
+        <Style x:Key="RowSubtitle" TargetType="Label">
+            <Setter Property="TextColor" Value="#94A3B8" />
+            <Setter Property="FontSize" Value="12" />
+        </Style>
 
-            <Border BackgroundColor="#0F172A"
-                    Stroke="#1E293B"
-                    StrokeThickness="1"
-                    Padding="16,12">
+        <Style x:Key="RowValue" TargetType="Label">
+            <Setter Property="TextColor" Value="#3B82F6" />
+            <Setter Property="FontSize" Value="14" />
+            <Setter Property="FontAttributes" Value="Bold" />
+            <Setter Property="VerticalOptions" Value="Center" />
+        </Style>
 
-                <Border.StrokeShape>
-                    <RoundRectangle CornerRadius="12" />
-                </Border.StrokeShape>
+        <Style x:Key="Card" TargetType="Border">
+            <Setter Property="BackgroundColor" Value="#0F172A" />
+            <Setter Property="Stroke" Value="#1E293B" />
+            <Setter Property="StrokeThickness" Value="1" />
+            <Setter Property="StrokeShape" Value="RoundRectangle 12" />
+        </Style>
 
-                <Grid ColumnDefinitions="*, Auto" VerticalOptions="Center">
+        <Style x:Key="Divider" TargetType="BoxView">
+            <Setter Property="HeightRequest" Value="1" />
+            <Setter Property="Color" Value="#1E293B" />
+        </Style>
 
-                    <VerticalStackLayout Grid.Column="0" VerticalOptions="Center" Spacing="4">
-                        <Label Text="Changelog Push Notifications" 
-                               TextColor="#F8FAFC" 
-                               FontSize="16" 
-                               FontAttributes="Bold"/>
-                        <Label Text="Get notified when a new update drops." 
-                               TextColor="#94A3B8" 
-                               FontSize="12" />
+        <!-- Transparenter Hintergrund, damit die ganze Zeile den Tap bekommt -->
+        <Style x:Key="Row" TargetType="Grid">
+            <Setter Property="Padding" Value="16,12" />
+            <Setter Property="ColumnSpacing" Value="12" />
+            <Setter Property="BackgroundColor" Value="Transparent" />
+        </Style>
+
+        <Style TargetType="Switch">
+            <Setter Property="OnColor" Value="#3B82F6" />
+            <Setter Property="VerticalOptions" Value="Center" />
+        </Style>
+    </ContentPage.Resources>
+
+    <ScrollView>
+        <VerticalStackLayout Padding="20" Spacing="28" MaximumWidthRequest="700">
+
+            <!-- Benachrichtigungen (nur Android/iOS) -->
+            <VerticalStackLayout x:Name="notificationsSection" Spacing="5">
+                <Label Text="NOTIFICATIONS" Style="{StaticResource SectionHeader}" />
+
+                <Border Style="{StaticResource Card}">
+                    <VerticalStackLayout>
+                        <Grid Style="{StaticResource Row}" ColumnDefinitions="*, Auto">
+                            <VerticalStackLayout VerticalOptions="Center" Spacing="4">
+                                <Label Text="Changelog Push Notifications" Style="{StaticResource RowTitle}" />
+                                <Label Text="Get notified when a new update drops." Style="{StaticResource RowSubtitle}" />
+                            </VerticalStackLayout>
+
+                            <Switch Grid.Column="1"
+                                    x:Name="changelogPushNotificationsSwitch"
+                                    Toggled="changelogPushNotificationsSwitch_Toggled" />
+                        </Grid>
+
+                        <!-- Ohne System-Berechtigung kommt trotz Schalter nichts an -->
+                        <VerticalStackLayout x:Name="permissionWarning" IsVisible="False">
+                            <BoxView Style="{StaticResource Divider}" />
+                            <Grid Style="{StaticResource Row}" ColumnDefinitions="*, Auto">
+                                <VerticalStackLayout VerticalOptions="Center" Spacing="4">
+                                    <Label Text="Notifications are turned off" TextColor="#F59E0B" FontSize="14" FontAttributes="Bold" />
+                                    <Label Text="Allow notifications for Adeptstack in your system settings to receive them."
+                                           Style="{StaticResource RowSubtitle}" />
+                                </VerticalStackLayout>
+
+                                <Button Grid.Column="1"
+                                        Text="OPEN SETTINGS"
+                                        FontFamily="OpenSansSemibold"
+                                        FontSize="12"
+                                        CornerRadius="18"
+                                        HeightRequest="36"
+                                        Padding="16,0"
+                                        BackgroundColor="#1E293B"
+                                        TextColor="#F8FAFC"
+                                        VerticalOptions="Center"
+                                        Clicked="OpenSystemSettings_Clicked" />
+                            </Grid>
+                        </VerticalStackLayout>
                     </VerticalStackLayout>
+                </Border>
+            </VerticalStackLayout>
 
-                    <Switch Grid.Column="1" 
-                            x:Name="changelogPushNotificationsSwitch" 
-                            Toggled="changelogPushNotificationsSwitch_Toggled" 
-                            OnColor="#3B82F6" 
-                            VerticalOptions="Center"/>
-                </Grid>
-            </Border>
+            <!-- Lesen -->
+            <VerticalStackLayout Spacing="5">
+                <Label Text="READING" Style="{StaticResource SectionHeader}" />
+
+                <Border Style="{StaticResource Card}">
+                    <VerticalStackLayout>
+                        <Grid Style="{StaticResource Row}" ColumnDefinitions="*, Auto">
+                            <Grid.GestureRecognizers>
+                                <TapGestureRecognizer Tapped="TextSize_Tapped" />
+                            </Grid.GestureRecognizers>
+
+                            <VerticalStackLayout VerticalOptions="Center" Spacing="4">
+                                <Label Text="Text Size" Style="{StaticResource RowTitle}" />
+                                <Label Text="Applies to articles and changelogs." Style="{StaticResource RowSubtitle}" />
+                            </VerticalStackLayout>
+
+                            <Label Grid.Column="1" x:Name="textSizeLabel" Style="{StaticResource RowValue}" />
+                        </Grid>
+
+                        <!-- Auf Windows öffnet sich immer der Standardbrowser -->
+                        <VerticalStackLayout x:Name="openLinksInAppRow">
+                            <BoxView Style="{StaticResource Divider}" />
+                            <Grid Style="{StaticResource Row}" ColumnDefinitions="*, Auto">
+                                <VerticalStackLayout VerticalOptions="Center" Spacing="4">
+                                    <Label Text="Open Links in App" Style="{StaticResource RowTitle}" />
+                                    <Label Text="Off: links open in your default browser." Style="{StaticResource RowSubtitle}" />
+                                </VerticalStackLayout>
+
+                                <Switch Grid.Column="1"
+                                        x:Name="openLinksInAppSwitch"
+                                        Toggled="openLinksInAppSwitch_Toggled" />
+                            </Grid>
+                        </VerticalStackLayout>
+
+                        <BoxView Style="{StaticResource Divider}" />
+                        <Grid Style="{StaticResource Row}" ColumnDefinitions="*, Auto">
+                            <VerticalStackLayout VerticalOptions="Center" Spacing="4">
+                                <Label Text="Remember Sort &amp; Filters" Style="{StaticResource RowTitle}" />
+                                <Label Text="Keep your last sorting, category and channel." Style="{StaticResource RowSubtitle}" />
+                            </VerticalStackLayout>
+
+                            <Switch Grid.Column="1"
+                                    x:Name="rememberFiltersSwitch"
+                                    Toggled="rememberFiltersSwitch_Toggled" />
+                        </Grid>
+                    </VerticalStackLayout>
+                </Border>
+            </VerticalStackLayout>
+
+            <!-- Daten und Speicher -->
+            <VerticalStackLayout Spacing="5">
+                <Label Text="DATA &amp; STORAGE" Style="{StaticResource SectionHeader}" />
+
+                <Border Style="{StaticResource Card}">
+                    <VerticalStackLayout>
+                        <Grid Style="{StaticResource Row}" ColumnDefinitions="*, Auto">
+                            <VerticalStackLayout VerticalOptions="Center" Spacing="4">
+                                <Label Text="Data Saver" Style="{StaticResource RowTitle}" />
+                                <Label Text="Only load images on Wi-Fi." Style="{StaticResource RowSubtitle}" />
+                            </VerticalStackLayout>
+
+                            <Switch Grid.Column="1"
+                                    x:Name="dataSaverSwitch"
+                                    Toggled="dataSaverSwitch_Toggled" />
+                        </Grid>
+
+                        <BoxView Style="{StaticResource Divider}" />
+                        <Grid Style="{StaticResource Row}" ColumnDefinitions="*, Auto">
+                            <VerticalStackLayout VerticalOptions="Center" Spacing="4">
+                                <Label Text="Bookmarks" Style="{StaticResource RowTitle}" />
+                                <Label x:Name="bookmarkCountLabel" Style="{StaticResource RowSubtitle}" />
+                            </VerticalStackLayout>
+
+                            <Button Grid.Column="1"
+                                    x:Name="clearBookmarksButton"
+                                    Text="REMOVE ALL"
+                                    FontFamily="OpenSansSemibold"
+                                    FontSize="12"
+                                    CornerRadius="18"
+                                    HeightRequest="36"
+                                    Padding="16,0"
+                                    BackgroundColor="#1E293B"
+                                    TextColor="#F87171"
+                                    VerticalOptions="Center"
+                                    Clicked="ClearBookmarks_Clicked" />
+                        </Grid>
+                    </VerticalStackLayout>
+                </Border>
+            </VerticalStackLayout>
+
+            <!-- Über die App -->
+            <VerticalStackLayout Spacing="5">
+                <Label Text="ABOUT" Style="{StaticResource SectionHeader}" />
+
+                <Border Style="{StaticResource Card}">
+                    <VerticalStackLayout>
+                        <Grid Style="{StaticResource Row}" ColumnDefinitions="*, Auto">
+                            <Grid.GestureRecognizers>
+                                <TapGestureRecognizer Tapped="WhatsNew_Tapped" />
+                            </Grid.GestureRecognizers>
+
+                            <VerticalStackLayout VerticalOptions="Center" Spacing="4">
+                                <Label Text="What's New" Style="{StaticResource RowTitle}" />
+                                <Label x:Name="versionLabel" Style="{StaticResource RowSubtitle}" />
+                            </VerticalStackLayout>
+
+                            <Label Grid.Column="1" Text="›" Style="{StaticResource RowValue}" FontSize="22" />
+                        </Grid>
+
+                        <BoxView Style="{StaticResource Divider}" />
+                        <Grid Style="{StaticResource Row}" ColumnDefinitions="*, Auto">
+                            <Grid.GestureRecognizers>
+                                <TapGestureRecognizer Tapped="Feedback_Tapped" />
+                            </Grid.GestureRecognizers>
+
+                            <VerticalStackLayout VerticalOptions="Center" Spacing="4">
+                                <Label Text="Send Feedback" Style="{StaticResource RowTitle}" />
+                                <Label Text="Found a bug or have an idea? Let us know." Style="{StaticResource RowSubtitle}" />
+                            </VerticalStackLayout>
+
+                            <Label Grid.Column="1" Text="›" Style="{StaticResource RowValue}" FontSize="22" />
+                        </Grid>
+
+                        <!-- Nur wo die App in einem Store steht -->
+                        <VerticalStackLayout x:Name="rateRow">
+                            <BoxView Style="{StaticResource Divider}" />
+                            <Grid Style="{StaticResource Row}" ColumnDefinitions="*, Auto">
+                                <Grid.GestureRecognizers>
+                                    <TapGestureRecognizer Tapped="Rate_Tapped" />
+                                </Grid.GestureRecognizers>
+
+                                <VerticalStackLayout VerticalOptions="Center" Spacing="4">
+                                    <Label Text="Rate the App" Style="{StaticResource RowTitle}" />
+                                    <Label Text="A quick review helps a lot." Style="{StaticResource RowSubtitle}" />
+                                </VerticalStackLayout>
+
+                                <Label Grid.Column="1" Text="›" Style="{StaticResource RowValue}" FontSize="22" />
+                            </Grid>
+                        </VerticalStackLayout>
+
+                        <BoxView Style="{StaticResource Divider}" />
+                        <Grid Style="{StaticResource Row}" ColumnDefinitions="*, Auto">
+                            <Grid.GestureRecognizers>
+                                <TapGestureRecognizer Tapped="Licenses_Tapped" />
+                            </Grid.GestureRecognizers>
+
+                            <VerticalStackLayout VerticalOptions="Center" Spacing="4">
+                                <Label Text="Open Source Licenses" Style="{StaticResource RowTitle}" />
+                                <Label Text="Libraries this app is built with." Style="{StaticResource RowSubtitle}" />
+                            </VerticalStackLayout>
+
+                            <Label Grid.Column="1" Text="›" Style="{StaticResource RowValue}" FontSize="22" />
+                        </Grid>
+                    </VerticalStackLayout>
+                </Border>
+            </VerticalStackLayout>
+
+            <!-- Rechtliches -->
+            <VerticalStackLayout Spacing="15" HorizontalOptions="Center" Padding="0,10,0,10">
+
+                <HorizontalStackLayout Spacing="15" HorizontalOptions="Center">
+
+                    <Label Text="Terms of Use" TextColor="#3B82F6" FontSize="13" TextDecorations="Underline">
+                        <Label.GestureRecognizers>
+                            <TapGestureRecognizer Tapped="TermsOfUse_Tapped" />
+                        </Label.GestureRecognizers>
+                    </Label>
+
+                    <Label Text="•" TextColor="#475569" FontSize="13" VerticalOptions="Center"/>
+
+                    <Label Text="Privacy" TextColor="#3B82F6" FontSize="13" TextDecorations="Underline">
+                        <Label.GestureRecognizers>
+                            <TapGestureRecognizer Tapped="Privacy_Tapped" />
+                        </Label.GestureRecognizers>
+                    </Label>
+
+                    <Label Text="•" TextColor="#475569" FontSize="13" VerticalOptions="Center"/>
+
+                    <Label Text="Imprint" TextColor="#3B82F6" FontSize="13" TextDecorations="Underline">
+                        <Label.GestureRecognizers>
+                            <TapGestureRecognizer Tapped="Impressum_Tapped" />
+                        </Label.GestureRecognizers>
+                    </Label>
+
+                </HorizontalStackLayout>
+
+                <Label Text="© 2026 Adeptstack. All rights reserved."
+                       TextColor="#475569"
+                       FontSize="12"
+                       HorizontalOptions="Center" />
+
+            </VerticalStackLayout>
 
         </VerticalStackLayout>
-
-        <VerticalStackLayout Grid.Row="1" Spacing="15" HorizontalOptions="Center" Padding="0,20,0,10">
-
-            <HorizontalStackLayout Spacing="15" HorizontalOptions="Center">
-
-                <Label Text="Terms of Use" TextColor="#3B82F6" FontSize="13" TextDecorations="Underline">
-                    <Label.GestureRecognizers>
-                        <TapGestureRecognizer Tapped="TermsOfUse_Tapped" />
-                    </Label.GestureRecognizers>
-                </Label>
-
-                <Label Text="•" TextColor="#475569" FontSize="13" VerticalOptions="Center"/>
-
-                <Label Text="Privacy" TextColor="#3B82F6" FontSize="13" TextDecorations="Underline">
-                    <Label.GestureRecognizers>
-                        <TapGestureRecognizer Tapped="Privacy_Tapped" />
-                    </Label.GestureRecognizers>
-                </Label>
-
-                <Label Text="•" TextColor="#475569" FontSize="13" VerticalOptions="Center"/>
-
-                <Label Text="Imprint" TextColor="#3B82F6" FontSize="13" TextDecorations="Underline">
-                    <Label.GestureRecognizers>
-                        <TapGestureRecognizer Tapped="Impressum_Tapped" />
-                    </Label.GestureRecognizers>
-                </Label>
-
-            </HorizontalStackLayout>
-
-            <Label Text="© 2026 Adeptstack. All rights reserved." 
-                   TextColor="#475569" 
-                   FontSize="12" 
-                   HorizontalOptions="Center" />
-
-        </VerticalStackLayout>
-
-    </Grid>
+    </ScrollView>
 </ContentPage>
