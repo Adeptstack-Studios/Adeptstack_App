@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <ContentView xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-             x:Class="Adeptstack_App.ContentViews.ChangelogView" 
+             x:Class="Adeptstack_App.ContentViews.ChangelogView"
+             xmlns:utils="clr-namespace:Adeptstack_App.Utils"
              x:Name="this">
 
     <Border BindingContext="{x:Reference this}"
@@ -23,7 +24,7 @@
 
             <!-- Bild -->
             <Grid Grid.Row="0">
-                <Image Source="{Binding Changelog.imageUrl}" 
+                <Image Source="{Binding Changelog.imageUrl, Converter={x:Static utils:DataSaverImageConverter.Instance}}" 
                        Aspect="AspectFill" />
             </Grid>
 

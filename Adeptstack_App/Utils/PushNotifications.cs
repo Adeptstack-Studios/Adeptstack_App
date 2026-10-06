@@ -27,6 +27,18 @@ namespace Adeptstack_App.Utils
 #endif
         }
 
+        /// <summary>
+        /// Ob das System Benachrichtigungen erlaubt. Ohne Berechtigung kommt trotz Tag nichts an.
+        /// </summary>
+        public static bool HasPermission
+        {
+#if ANDROID || IOS
+            get => OneSignalSDK.DotNet.OneSignal.Notifications.Permission;
+#else
+            get => false;
+#endif
+        }
+
         public static bool WantsChangelogs()
         {
 #if ANDROID || IOS

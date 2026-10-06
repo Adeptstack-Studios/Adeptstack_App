@@ -1,5 +1,4 @@
 using Adeptstack_App.ContextClasses;
-using Adeptstack_App.Net;
 using Adeptstack_App.Utils;
 
 namespace Adeptstack_App.ContentViews;
@@ -15,11 +14,6 @@ public partial class ChangelogView : ContentView
         set => SetValue(ChangelogView.ChangelogProperty, value);
     }
 
-    /// <summary>
-    /// Slug der App für den Share-Link. Fehlt er (z. B. auf der Bookmarks-Seite), wird er beim Teilen von der API geholt.
-    /// </summary>
-    public string AppSlug { get; set; }
-
     public ChangelogView()
     {
         InitializeComponent();
@@ -30,13 +24,7 @@ public partial class ChangelogView : ContentView
             () => Changelog.imageUrl,
             () => Bookmarks.IsBookmarked(Changelog),
             () => Bookmarks.Toggle(Changelog),
-            GetShareTextAsync);
-    }
-
-    private async Task<string> GetShareTextAsync()
-    {
-        AppSlug ??= await Task.Run(() => Web.GetAppById(Changelog.appId)?.slug);
-        return Utilities.GetChangelogShareText(Changelog, Utilities.GetChangelogUrl(AppSlug));
+            () => Task.FromResult(Utilities.GetChangelogShareText(Changelog)));
     }
 
     private void clickedOn_Clicked(object sender, EventArgs e)

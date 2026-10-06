@@ -42,6 +42,17 @@ public partial class Changelogs : ContentPage
                 {
                     nothing.IsVisible = false;
 
+                    // Gemeinsamer Feed über alle Apps, mit App- und Channel-Filter
+                    if (apps.Count > 1)
+                    {
+                        AppView allUpdatesView = new AppView
+                        {
+                            App = new AppContext { name = "All Updates", slogan = "Every app in one feed", iconUrl = "changes.png" }
+                        };
+                        allUpdatesView.AppClicked += (s, a) => Navigation.PushAsync(new AppChangelog(apps));
+                        appsLayout.Children.Add(allUpdatesView);
+                    }
+
                     foreach (AppContext s in apps)
                     {
                         AppView appView = new AppView { App = s };

@@ -60,7 +60,7 @@
                                           "p { word-wrap: break-word; }" +
                                           "pre { background: #0f172a; padding: 12px 16px; border-radius: 10px; overflow-x: auto; border: 1px solid #1e293b; margin: 16px 0; }  div { border-radius: 11px; }" +
                                           "code { background: #1e293b; color: #f8fafc; padding: 3px 6px; border-radius: 5px; font-family: monospace; }" +
-                                          "table { display: block; width: max-content; max-width: 100%; overflow-x: auto; border-collapse: separate; border-spacing: 0; border: 1px solid #1e293b; border-radius: 10px; margin: 16px 0; font-size: 14px; }" +
+                                          "table { display: block; width: max-content; max-width: 100%; overflow-x: auto; border-collapse: separate; border-spacing: 0; border: 1px solid #1e293b; border-radius: 10px; margin: 16px 0; font-size: 0.875rem; }" +
                                           "th, td { border-right: 1px solid #1e293b; border-bottom: 1px solid #1e293b; padding: 8px 12px; text-align: left; vertical-align: top; }" +
                                           "th:last-child, td:last-child { border-right: none; }" +
                                           "tbody tr:last-child td { border-bottom: none; }" +

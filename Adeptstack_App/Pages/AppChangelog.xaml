@@ -7,17 +7,19 @@
     <Grid>
         <!-- Layer 1: Content -->
         <RefreshView x:Name="refresh" Refreshing="RefreshView_Refreshing" RefreshColor="#3b82f6">
-            <ScrollView>
-                <VerticalStackLayout Padding="16,24,16,24" Spacing="24">
+            <ScrollView x:Name="scroll" Scrolled="Scroll_Scrolled">
+                <VerticalStackLayout Padding="16,24,16,24" Spacing="16" SizeChanged="Content_SizeChanged">
 
                     <!-- Legacy Warning Banner -->
-                    <Border x:Name="legacy" 
-                            BackgroundColor="#1E1A18" 
-                            Stroke="#5C4424" 
-                            StrokeThickness="1" 
-                            Padding="16" 
+                    <Border x:Name="legacy"
+                            IsVisible="False"
+                            BackgroundColor="#1E1A18"
+                            Stroke="#5C4424"
+                            StrokeThickness="1"
+                            Padding="16"
                             MaximumWidthRequest="800"
-                            HorizontalOptions="Center">
+                            HorizontalOptions="Center"
+                            Margin="0,0,0,8">
                         <Border.StrokeShape>
                             <RoundRectangle CornerRadius="12" />
                         </Border.StrokeShape>
@@ -27,23 +29,71 @@
 
                             <VerticalStackLayout Grid.Column="1" VerticalOptions="Center" Spacing="4">
                                 <Label Text="Legacy Software" TextColor="#F59E0B" FontAttributes="Bold" FontSize="16" />
-                                <Label Text="This application is no longer actively developed and only receives security-related or limited updates." 
-                                       TextColor="#D97706" 
-                                       FontSize="14" 
+                                <Label Text="This application is no longer actively developed and only receives security-related or limited updates."
+                                       TextColor="#D97706"
+                                       FontSize="14"
                                        LineBreakMode="WordWrap" />
                             </VerticalStackLayout>
                         </Grid>
                     </Border>
 
-                    <!-- Changelogs FlexLayout -->
+                    <!-- App-Auswahl, nur bei "All Updates" -->
+                    <ScrollView x:Name="appChips" Orientation="Horizontal" HorizontalScrollBarVisibility="Never" IsVisible="False">
+                        <HorizontalStackLayout x:Name="appLayout" Spacing="12" HorizontalOptions="Center" />
+                    </ScrollView>
+
+                    <!-- Channels, nur wenn es mehr als einen gibt -->
+                    <ScrollView x:Name="channelChips" Orientation="Horizontal" HorizontalScrollBarVisibility="Never" IsVisible="False">
+                        <HorizontalStackLayout x:Name="channelLayout" Spacing="12" HorizontalOptions="Center" />
+                    </ScrollView>
+
+                    <!-- Trefferanzahl und Sortierung -->
+                    <Grid ColumnDefinitions="*, Auto"
+                          MaximumWidthRequest="1120"
+                          Margin="8,0,8,0">
+                        <Label x:Name="resultCountLabel"
+                               TextColor="#94a3b8"
+                               FontFamily="OpenSansRegular"
+                               FontSize="13"
+                               VerticalOptions="Center" />
+
+                        <Button x:Name="sortButton"
+                                Grid.Column="1"
+                                Text="NEWEST ▾"
+                                FontFamily="OpenSansSemibold"
+                                FontSize="12"
+                                CornerRadius="18"
+                                HeightRequest="36"
+                                Padding="16,0"
+                                BackgroundColor="#1e293b"
+                                TextColor="#f8fafc"
+                                Clicked="Sort_Clicked" />
+                    </Grid>
+
                     <!-- MaximumWidthRequest 1150 erlaubt genau 3 Karten (á ~340px) nebeneinander -->
-                    <FlexLayout x:Name="changelogsLayout" 
-                                MaximumWidthRequest="1150" 
-                                Wrap="Wrap" 
-                                JustifyContent="Center" 
+                    <FlexLayout x:Name="changelogsLayout"
+                                MaximumWidthRequest="1150"
+                                Wrap="Wrap"
+                                JustifyContent="Center"
                                 AlignItems="Start"
                                 AlignContent="Start"
                                 HorizontalOptions="Center" />
+
+                    <!-- Kein Treffer für den gewählten Channel. Bewusst kein Overlay, damit die Chips bedienbar bleiben. -->
+                    <Label x:Name="noResultsLabel"
+                           Text="No updates found"
+                           IsVisible="False"
+                           TextColor="#94a3b8"
+                           FontSize="16"
+                           HorizontalTextAlignment="Center"
+                           Margin="0,32,0,0" />
+
+                    <!-- Nachladen der nächsten Seite beim Scrollen -->
+                    <ActivityIndicator x:Name="pageLoading"
+                                       IsRunning="False"
+                                       IsVisible="False"
+                                       Color="#3b82f6"
+                                       HorizontalOptions="Center" />
                 </VerticalStackLayout>
             </ScrollView>
         </RefreshView>
@@ -51,27 +101,27 @@
         <!-- Layer 2: Empty / Error State -->
         <Grid x:Name="nothing" IsVisible="False" BackgroundColor="#020617">
             <VerticalStackLayout HorizontalOptions="Center" VerticalOptions="Center" Spacing="8">
-                <Label Text="No Updates Available" 
-                       TextColor="#f8fafc" 
-                       FontSize="20" 
-                       FontAttributes="Bold" 
+                <Label Text="No Updates Available"
+                       TextColor="#f8fafc"
+                       FontSize="20"
+                       FontAttributes="Bold"
                        HorizontalTextAlignment="Center" />
 
-                <Label x:Name="internet" 
-                       Text="Please check your internet connection." 
-                       TextColor="#94a3b8" 
-                       FontSize="14" 
-                       IsVisible="False" 
+                <Label x:Name="internet"
+                       Text="Please check your internet connection."
+                       TextColor="#94a3b8"
+                       FontSize="14"
+                       IsVisible="False"
                        HorizontalTextAlignment="Center" />
             </VerticalStackLayout>
         </Grid>
 
         <!-- Layer 3: Loading State (Halbtransparent) -->
         <Grid x:Name="loading" BackgroundColor="#CC020617" IsVisible="False">
-            <ActivityIndicator x:Name="busy" 
-                               IsRunning="True" 
-                               Color="#3b82f6" 
-                               HorizontalOptions="Center" 
+            <ActivityIndicator x:Name="busy"
+                               IsRunning="True"
+                               Color="#3b82f6"
+                               HorizontalOptions="Center"
                                VerticalOptions="Center" />
         </Grid>
     </Grid>

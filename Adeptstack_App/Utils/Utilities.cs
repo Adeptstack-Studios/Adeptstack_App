@@ -22,13 +22,9 @@ namespace Adeptstack_App.Utils
             return $"{WebsiteUrl}/blog/{slug}";
         }
 
-        /// <summary>
-        /// Einzelne Changelogs haben auf der Website keine eigene Seite,
-        /// deshalb zeigt der Link auf die Changelog-Übersicht der App.
-        /// </summary>
-        public static string GetChangelogUrl(string appSlug)
+        public static string GetChangelogUrl(ChangelogContext changelog)
         {
-            return string.IsNullOrWhiteSpace(appSlug) ? $"{WebsiteUrl}/changelogs" : $"{WebsiteUrl}/changelogs/{appSlug}";
+            return $"{WebsiteUrl}/changelogs/{changelog.id}";
         }
 
         // source=app: die Website zeigt Besuchern über geteilte Links ein Popup zum App-Download.
@@ -42,10 +38,10 @@ namespace Adeptstack_App.Utils
                    ShareSignature;
         }
 
-        public static string GetChangelogShareText(ChangelogContext changelog, string url)
+        public static string GetChangelogShareText(ChangelogContext changelog)
         {
             return $"Hey! {changelog.title} is out. Take a look at what's new:\n" +
-                   $"{url}{AppSourceQuery}\n\n" +
+                   $"{GetChangelogUrl(changelog)}{AppSourceQuery}\n\n" +
                    ShareSignature;
         }
 

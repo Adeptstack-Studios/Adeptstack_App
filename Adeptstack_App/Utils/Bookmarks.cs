@@ -63,6 +63,26 @@ namespace Adeptstack_App.Utils
             return bookmarked;
         }
 
+        public static int Count
+        {
+            get
+            {
+                lock (Sync) return Load().news.Count + Load().changelogs.Count;
+            }
+        }
+
+        public static void Clear()
+        {
+            lock (Sync)
+            {
+                Load().news.Clear();
+                Load().changelogs.Clear();
+                Save();
+            }
+
+            Changed?.Invoke(null, EventArgs.Empty);
+        }
+
         private static bool Toggle<T>(List<T> list, T item, Predicate<T> matches)
         {
             bool bookmarked = list.RemoveAll(matches) == 0;
