@@ -40,6 +40,13 @@
     <Title>Adeptstack App</Title>
   </PropertyGroup>
 
+  <!-- Play-Konsole "DEX-Codeoptimierung": Java-Code mit R8 verkleinern, optimieren und verschleiern.
+       AndroidR8ObfuscationMode braucht den Android-Workload ab 36.1.118, ältere Versionen ignorieren ihn (nur Shrinking). -->
+  <PropertyGroup Condition="$(TargetFramework.Contains('-android')) And '$(Configuration)' == 'Release'">
+    <AndroidLinkTool>r8</AndroidLinkTool>
+    <AndroidR8ObfuscationMode>private-members</AndroidR8ObfuscationMode>
+  </PropertyGroup>
+
   <PropertyGroup Condition="$(TargetFramework.Contains('-windows'))">
     <ApplicationIcon>Resources\AppIcon\adeptstack_icon.ico</ApplicationIcon>
   </PropertyGroup>
