@@ -362,3 +362,6 @@ MigrationBackup/
 # Fody - auto-generated XML schema
 FodyWeavers.xsd
 /com.adeptstack.adeptstack_app.aab
+
+# Lokale Notizen
+/RELEASE_NOTES_LOCAL.md
