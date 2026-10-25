@@ -15,8 +15,8 @@
     <ApplicationId>com.adeptstack.adeptstack_app</ApplicationId>
     <ApplicationIdGuid>9d54e310-f8de-42c9-a1ec-53b67f096b5b</ApplicationIdGuid>
 
-    <ApplicationDisplayVersion>2.5.0</ApplicationDisplayVersion>
-    <ApplicationVersion>21</ApplicationVersion>
+    <ApplicationDisplayVersion>2.5.1</ApplicationDisplayVersion>
+    <ApplicationVersion>22</ApplicationVersion>
     <Version>$(ApplicationDisplayVersion)</Version>
 
     <SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'ios'">11.0</SupportedOSPlatformVersion>
@@ -38,6 +38,13 @@
     <GenerateTemporaryStoreCertificate>True</GenerateTemporaryStoreCertificate>
     <HoursBetweenUpdateChecks>0</HoursBetweenUpdateChecks>
     <Title>Adeptstack App</Title>
+  </PropertyGroup>
+
+  <!-- Play-Konsole "DEX-Codeoptimierung": Java-Code mit R8 verkleinern, optimieren und verschleiern.
+       AndroidR8ObfuscationMode braucht den Android-Workload ab 36.1.118, ältere Versionen ignorieren ihn (nur Shrinking). -->
+  <PropertyGroup Condition="$(TargetFramework.Contains('-android')) And '$(Configuration)' == 'Release'">
+    <AndroidLinkTool>r8</AndroidLinkTool>
+    <AndroidR8ObfuscationMode>private-members</AndroidR8ObfuscationMode>
   </PropertyGroup>
 
   <PropertyGroup Condition="$(TargetFramework.Contains('-windows'))">
