@@ -84,12 +84,12 @@ public partial class MainPage : ContentPage
 
         if (isSearching)
         {
-            searchIconBtn.Source = "close.png";
+            AppTheming.SetIcon(searchIconBtn, "close");
             searchBar.Focus();
         }
         else
         {
-            searchIconBtn.Source = "search.png";
+            AppTheming.SetIcon(searchIconBtn, "search");
             searchBar.Text = string.Empty;
         }
     }

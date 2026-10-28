@@ -6,8 +6,8 @@
              x:Name="this">
 
     <Border WidthRequest="340"
-            BackgroundColor="#0f172a" 
-            Stroke="#1e293b" 
+            BackgroundColor="{DynamicResource Surface}" 
+            Stroke="{DynamicResource Border}" 
             StrokeThickness="1" 
             StrokeShape="RoundRectangle 16"
             Margin="10, 10, 10, 24">
@@ -25,7 +25,7 @@
             <BoxView Grid.Row="0" 
                      VerticalOptions="End" 
                      HeightRequest="1" 
-                     Color="#1e293b" />
+                     Color="{DynamicResource Border}" />
 
             <VerticalStackLayout Grid.Row="1" Padding="20" Spacing="8">
                 <Grid>
@@ -36,7 +36,7 @@
 
                     <Label Grid.Column="0" 
                            Text="{Binding News.category, FallbackValue='ADEPTSTACK'}" 
-                           TextColor="#3b82f6" 
+                           TextColor="{DynamicResource Accent}" 
                            FontFamily="OpenSansSemibold" 
                            FontSize="12" 
                            TextTransform="Uppercase"
@@ -44,32 +44,32 @@
 
                     <HorizontalStackLayout Grid.Column="1" Spacing="6">
                         <Label Text="{Binding News.publishedAt, StringFormat='{0:MMM dd, yyyy}', FallbackValue='Apr 01, 2026'}"
-                               TextColor="#94a3b8"
+                               TextColor="{DynamicResource TextSecondary}"
                                FontFamily="OpenSansRegular"
                                FontSize="12" />
 
                         <Label Text="·"
                                IsVisible="{Binding News.HasReadingTime}"
-                               TextColor="#475569"
+                               TextColor="{DynamicResource TextFaint}"
                                FontSize="12" />
 
                         <Label Text="{Binding News.ReadingTimeText}"
                                IsVisible="{Binding News.HasReadingTime}"
-                               TextColor="#94a3b8"
+                               TextColor="{DynamicResource TextSecondary}"
                                FontFamily="OpenSansRegular"
                                FontSize="12" />
                     </HorizontalStackLayout>
                 </Grid>
 
                 <Label Text="{Binding News.title, FallbackValue='Update Title'}" 
-                       TextColor="#f8fafc"
+                       TextColor="{DynamicResource TextPrimary}"
                        FontFamily="OpenSansSemibold" 
                        FontSize="18" 
                        LineBreakMode="TailTruncation"
                        MaxLines="2" />
 
                 <Label Text="{Binding News.description, FallbackValue='Hier steht eine kurze Zusammenfassung des Updates, damit man direkt weiß, worum es im Artikel geht.'}" 
-                       TextColor="#94a3b8" 
+                       TextColor="{DynamicResource TextSecondary}" 
                        FontFamily="OpenSansRegular" 
                        FontSize="14" 
                        LineBreakMode="TailTruncation"

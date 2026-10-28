@@ -2,36 +2,36 @@
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="Adeptstack_App.DisplayContent"
-             BackgroundColor="#020617">
+             BackgroundColor="{DynamicResource PageBackground}">
 
     <ContentPage.ToolbarItems>
         <ToolbarItem x:Name="bookmarkItem"
                      Text="Bookmark"
-                     IconImageSource="bookmark.png"
+                     IconImageSource="{AppThemeBinding Light=bookmark_dark.png, Dark=bookmark.png}"
                      Clicked="Bookmark_Clicked" />
         <ToolbarItem Text="Share"
-                     IconImageSource="share.png"
+                     IconImageSource="{AppThemeBinding Light=share_dark.png, Dark=share.png}"
                      Clicked="Share_Clicked" />
     </ContentPage.ToolbarItems>
 
     <Grid Margin="0,0">
         <!-- Layer 1: Der Content (WebView regelt das Scrolling jetzt selbst) -->
         <WebView x:Name="web"
-                 BackgroundColor="#020617"
+                 BackgroundColor="{DynamicResource PageBackground}"
                  Navigating="web_Navigating" />
 
         <!-- Layer 2: Empty / Error State (Design angepasst an MainPage) -->
-        <Grid x:Name="nothing" IsVisible="False" BackgroundColor="#020617">
+        <Grid x:Name="nothing" IsVisible="False" BackgroundColor="{DynamicResource PageBackground}">
             <VerticalStackLayout HorizontalOptions="Center" VerticalOptions="Center" Spacing="8">
                 <Label Text="No Content Available"
-                       TextColor="#f8fafc"
+                       TextColor="{DynamicResource TextPrimary}"
                        FontSize="20"
                        FontAttributes="Bold"
                        HorizontalTextAlignment="Center" />
 
                 <Label x:Name="internet"
                        Text="Please check your internet connection."
-                       TextColor="#94a3b8"
+                       TextColor="{DynamicResource TextSecondary}"
                        FontSize="14"
                        IsVisible="False"
                        HorizontalTextAlignment="Center" />

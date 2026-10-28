@@ -2,45 +2,45 @@
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="Adeptstack_App.Pages.SettingsPage"
-             BackgroundColor="#020617"
+             BackgroundColor="{DynamicResource PageBackground}"
              Title="Settings">
 
     <ContentPage.Resources>
         <Style x:Key="SectionHeader" TargetType="Label">
-            <Setter Property="TextColor" Value="#64748B" />
+            <Setter Property="TextColor" Value="{DynamicResource TextMuted}" />
             <Setter Property="FontSize" Value="12" />
             <Setter Property="FontAttributes" Value="Bold" />
             <Setter Property="Margin" Value="5,0,0,5" />
         </Style>
 
         <Style x:Key="RowTitle" TargetType="Label">
-            <Setter Property="TextColor" Value="#F8FAFC" />
+            <Setter Property="TextColor" Value="{DynamicResource TextPrimary}" />
             <Setter Property="FontSize" Value="16" />
             <Setter Property="FontAttributes" Value="Bold" />
         </Style>
 
         <Style x:Key="RowSubtitle" TargetType="Label">
-            <Setter Property="TextColor" Value="#94A3B8" />
+            <Setter Property="TextColor" Value="{DynamicResource TextSecondary}" />
             <Setter Property="FontSize" Value="12" />
         </Style>
 
         <Style x:Key="RowValue" TargetType="Label">
-            <Setter Property="TextColor" Value="#3B82F6" />
+            <Setter Property="TextColor" Value="{DynamicResource Accent}" />
             <Setter Property="FontSize" Value="14" />
             <Setter Property="FontAttributes" Value="Bold" />
             <Setter Property="VerticalOptions" Value="Center" />
         </Style>
 
         <Style x:Key="Card" TargetType="Border">
-            <Setter Property="BackgroundColor" Value="#0F172A" />
-            <Setter Property="Stroke" Value="#1E293B" />
+            <Setter Property="BackgroundColor" Value="{DynamicResource Surface}" />
+            <Setter Property="Stroke" Value="{DynamicResource Border}" />
             <Setter Property="StrokeThickness" Value="1" />
             <Setter Property="StrokeShape" Value="RoundRectangle 12" />
         </Style>
 
         <Style x:Key="Divider" TargetType="BoxView">
             <Setter Property="HeightRequest" Value="1" />
-            <Setter Property="Color" Value="#1E293B" />
+            <Setter Property="Color" Value="{DynamicResource Border}" />
         </Style>
 
         <!-- Transparenter Hintergrund, damit die ganze Zeile den Tap bekommt -->
@@ -51,13 +51,33 @@
         </Style>
 
         <Style TargetType="Switch">
-            <Setter Property="OnColor" Value="#3B82F6" />
+            <Setter Property="OnColor" Value="{DynamicResource Accent}" />
             <Setter Property="VerticalOptions" Value="Center" />
         </Style>
     </ContentPage.Resources>
 
     <ScrollView>
         <VerticalStackLayout Padding="20" Spacing="28" MaximumWidthRequest="700">
+
+            <!-- Darstellung -->
+            <VerticalStackLayout Spacing="5">
+                <Label Text="APPEARANCE" Style="{StaticResource SectionHeader}" />
+
+                <Border Style="{StaticResource Card}">
+                    <Grid Style="{StaticResource Row}" ColumnDefinitions="*, Auto">
+                        <Grid.GestureRecognizers>
+                            <TapGestureRecognizer Tapped="Theme_Tapped" />
+                        </Grid.GestureRecognizers>
+
+                        <VerticalStackLayout VerticalOptions="Center" Spacing="4">
+                            <Label Text="Theme" Style="{StaticResource RowTitle}" />
+                            <Label Text="System follows your device's light or dark mode." Style="{StaticResource RowSubtitle}" />
+                        </VerticalStackLayout>
+
+                        <Label Grid.Column="1" x:Name="themeLabel" Style="{StaticResource RowValue}" />
+                    </Grid>
+                </Border>
+            </VerticalStackLayout>
 
             <!-- Benachrichtigungen (nur Android/iOS) -->
             <VerticalStackLayout x:Name="notificationsSection" Spacing="5">
@@ -81,7 +101,7 @@
                             <BoxView Style="{StaticResource Divider}" />
                             <Grid Style="{StaticResource Row}" ColumnDefinitions="*, Auto">
                                 <VerticalStackLayout VerticalOptions="Center" Spacing="4">
-                                    <Label Text="Notifications are turned off" TextColor="#F59E0B" FontSize="14" FontAttributes="Bold" />
+                                    <Label Text="Notifications are turned off" TextColor="{DynamicResource Warning}" FontSize="14" FontAttributes="Bold" />
                                     <Label Text="Allow notifications for Adeptstack in your system settings to receive them."
                                            Style="{StaticResource RowSubtitle}" />
                                 </VerticalStackLayout>
@@ -93,8 +113,8 @@
                                         CornerRadius="18"
                                         HeightRequest="36"
                                         Padding="16,0"
-                                        BackgroundColor="#1E293B"
-                                        TextColor="#F8FAFC"
+                                        BackgroundColor="{DynamicResource SurfaceAlt}"
+                                        TextColor="{DynamicResource TextPrimary}"
                                         VerticalOptions="Center"
                                         Clicked="OpenSystemSettings_Clicked" />
                             </Grid>
@@ -184,8 +204,8 @@
                                     CornerRadius="18"
                                     HeightRequest="36"
                                     Padding="16,0"
-                                    BackgroundColor="#1E293B"
-                                    TextColor="#F87171"
+                                    BackgroundColor="{DynamicResource SurfaceAlt}"
+                                    TextColor="{DynamicResource Danger}"
                                     VerticalOptions="Center"
                                     Clicked="ClearBookmarks_Clicked" />
                         </Grid>
@@ -265,23 +285,23 @@
 
                 <HorizontalStackLayout Spacing="15" HorizontalOptions="Center">
 
-                    <Label Text="Terms of Use" TextColor="#3B82F6" FontSize="13" TextDecorations="Underline">
+                    <Label Text="Terms of Use" TextColor="{DynamicResource Accent}" FontSize="13" TextDecorations="Underline">
                         <Label.GestureRecognizers>
                             <TapGestureRecognizer Tapped="TermsOfUse_Tapped" />
                         </Label.GestureRecognizers>
                     </Label>
 
-                    <Label Text="•" TextColor="#475569" FontSize="13" VerticalOptions="Center"/>
+                    <Label Text="•" TextColor="{DynamicResource TextFaint}" FontSize="13" VerticalOptions="Center"/>
 
-                    <Label Text="Privacy" TextColor="#3B82F6" FontSize="13" TextDecorations="Underline">
+                    <Label Text="Privacy" TextColor="{DynamicResource Accent}" FontSize="13" TextDecorations="Underline">
                         <Label.GestureRecognizers>
                             <TapGestureRecognizer Tapped="Privacy_Tapped" />
                         </Label.GestureRecognizers>
                     </Label>
 
-                    <Label Text="•" TextColor="#475569" FontSize="13" VerticalOptions="Center"/>
+                    <Label Text="•" TextColor="{DynamicResource TextFaint}" FontSize="13" VerticalOptions="Center"/>
 
-                    <Label Text="Imprint" TextColor="#3B82F6" FontSize="13" TextDecorations="Underline">
+                    <Label Text="Imprint" TextColor="{DynamicResource Accent}" FontSize="13" TextDecorations="Underline">
                         <Label.GestureRecognizers>
                             <TapGestureRecognizer Tapped="Impressum_Tapped" />
                         </Label.GestureRecognizers>
@@ -290,7 +310,7 @@
                 </HorizontalStackLayout>
 
                 <Label Text="© 2026 Adeptstack. All rights reserved."
-                       TextColor="#475569"
+                       TextColor="{DynamicResource TextFaint}"
                        FontSize="12"
                        HorizontalOptions="Center" />
 

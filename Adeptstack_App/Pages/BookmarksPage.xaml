@@ -2,7 +2,7 @@
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="Adeptstack_App.Pages.BookmarksPage"
-             BackgroundColor="#020617"
+             BackgroundColor="{DynamicResource PageBackground}"
              Title="Bookmarks">
 
     <Grid>
@@ -12,7 +12,7 @@
 
                 <Label x:Name="newsHeader"
                        Text="NEWS"
-                       TextColor="#64748B"
+                       TextColor="{DynamicResource TextMuted}"
                        FontSize="12"
                        FontAttributes="Bold"
                        Margin="10,0,0,0"/>
@@ -25,7 +25,7 @@
 
                 <Label x:Name="changelogsHeader"
                        Text="CHANGELOGS"
-                       TextColor="#64748B"
+                       TextColor="{DynamicResource TextMuted}"
                        FontSize="12"
                        FontAttributes="Bold"
                        Margin="10,0,0,0"/>
@@ -39,16 +39,16 @@
         </ScrollView>
 
         <!-- Layer 2: Empty State -->
-        <Grid x:Name="nothing" IsVisible="False" BackgroundColor="#020617">
+        <Grid x:Name="nothing" IsVisible="False" BackgroundColor="{DynamicResource PageBackground}">
             <VerticalStackLayout HorizontalOptions="Center" VerticalOptions="Center" Spacing="8" Padding="24">
                 <Label Text="No Bookmarks Yet"
-                       TextColor="#f8fafc"
+                       TextColor="{DynamicResource TextPrimary}"
                        FontSize="20"
                        FontAttributes="Bold"
                        HorizontalTextAlignment="Center" />
 
                 <Label Text="Tap the bookmark icon on a post or changelog to save it here."
-                       TextColor="#94a3b8"
+                       TextColor="{DynamicResource TextSecondary}"
                        FontSize="14"
                        HorizontalTextAlignment="Center" />
             </VerticalStackLayout>

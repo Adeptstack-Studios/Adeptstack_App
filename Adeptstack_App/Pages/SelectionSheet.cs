@@ -1,3 +1,5 @@
+using Adeptstack_App.Utils;
+
 namespace Adeptstack_App.Pages;
 
 /// <summary>
@@ -17,14 +19,14 @@ public class SelectionSheet : BottomSheet
                 new Label
                 {
                     Text = title,
-                    TextColor = Color.FromArgb("#3b82f6"),
+                    TextColor = AppTheming.Get("Accent"),
                     FontFamily = "OpenSansSemibold",
                     FontSize = 11,
                     TextTransform = TextTransform.Uppercase,
                     CharacterSpacing = 1,
                     Padding = new Thickness(4, 0, 4, 14)
                 },
-                new BoxView { HeightRequest = 1, Color = Color.FromArgb("#1e293b") }
+                new BoxView { HeightRequest = 1, Color = AppTheming.Get("Border") }
             }
         };
 
@@ -44,7 +46,7 @@ public class SelectionSheet : BottomSheet
             row.Add(new Label
             {
                 Text = options[i],
-                TextColor = isSelected ? Color.FromArgb("#3b82f6") : Color.FromArgb("#f8fafc"),
+                TextColor = isSelected ? AppTheming.Get("Accent") : AppTheming.Get("TextPrimary"),
                 FontFamily = isSelected ? "OpenSansSemibold" : "OpenSansRegular",
                 FontSize = 15,
                 VerticalOptions = LayoutOptions.Center
@@ -54,7 +56,7 @@ public class SelectionSheet : BottomSheet
             {
                 Text = "✓",
                 IsVisible = isSelected,
-                TextColor = Color.FromArgb("#3b82f6"),
+                TextColor = AppTheming.Get("Accent"),
                 FontSize = 16,
                 VerticalOptions = LayoutOptions.Center
             }, 1);

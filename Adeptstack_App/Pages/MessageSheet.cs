@@ -1,3 +1,5 @@
+using Adeptstack_App.Utils;
+
 namespace Adeptstack_App.Pages;
 
 /// <summary>
@@ -20,7 +22,7 @@ public class MessageSheet : BottomSheet
                 new Label
                 {
                     Text = title,
-                    TextColor = Color.FromArgb("#f8fafc"),
+                    TextColor = AppTheming.Get("TextPrimary"),
                     FontFamily = "OpenSansSemibold",
                     FontSize = 18
                 }
@@ -32,7 +34,7 @@ public class MessageSheet : BottomSheet
             layout.Add(new Label
             {
                 Text = message,
-                TextColor = Color.FromArgb("#94a3b8"),
+                TextColor = AppTheming.Get("TextSecondary"),
                 FontFamily = "OpenSansRegular",
                 FontSize = 14,
                 LineHeight = 1.2
@@ -47,7 +49,7 @@ public class MessageSheet : BottomSheet
             {
                 if (i > 0)
                 {
-                    list.Add(new BoxView { HeightRequest = 1, Color = Color.FromArgb("#1e293b") });
+                    list.Add(new BoxView { HeightRequest = 1, Color = AppTheming.Get("Border") });
                 }
 
                 list.Add(new VerticalStackLayout
@@ -56,8 +58,8 @@ public class MessageSheet : BottomSheet
                     Spacing = 2,
                     Children =
                     {
-                        new Label { Text = items[i].Title, TextColor = Color.FromArgb("#f8fafc"), FontFamily = "OpenSansSemibold", FontSize = 15 },
-                        new Label { Text = items[i].Subtitle, TextColor = Color.FromArgb("#94a3b8"), FontFamily = "OpenSansRegular", FontSize = 13 }
+                        new Label { Text = items[i].Title, TextColor = AppTheming.Get("TextPrimary"), FontFamily = "OpenSansSemibold", FontSize = 15 },
+                        new Label { Text = items[i].Subtitle, TextColor = AppTheming.Get("TextSecondary"), FontFamily = "OpenSansRegular", FontSize = 13 }
                     }
                 });
             }
@@ -71,12 +73,12 @@ public class MessageSheet : BottomSheet
         if (cancel != null)
         {
             buttons.ColumnDefinitions = new ColumnDefinitionCollection(new ColumnDefinition(GridLength.Star), new ColumnDefinition(GridLength.Star));
-            buttons.Add(CreateButton(cancel, Color.FromArgb("#1e293b"), Color.FromArgb("#f8fafc"), false));
+            buttons.Add(CreateButton(cancel, AppTheming.Get("SurfaceAlt"), AppTheming.Get("TextPrimary"), false));
         }
 
         var confirmButton = destructive
             ? CreateButton(confirm, Color.FromArgb("#dc2626"), Colors.White, true)
-            : CreateButton(confirm, Color.FromArgb("#3b82f6"), Colors.White, true);
+            : CreateButton(confirm, AppTheming.Get("Accent"), Colors.White, true);
         buttons.Add(confirmButton, cancel != null ? 1 : 0);
 
         layout.Add(buttons);

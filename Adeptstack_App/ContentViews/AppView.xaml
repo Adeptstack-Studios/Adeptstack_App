@@ -8,11 +8,11 @@
     <Border BindingContext="{x:Reference this}" 
             WidthRequest="340" 
             HeightRequest="80" 
-            BackgroundColor="#0f172a" 
+            BackgroundColor="{DynamicResource Surface}" 
             Margin="10,10,10,16" 
             StrokeShape="RoundRectangle 16" 
             StrokeThickness="1" 
-            Stroke="#1e293b">
+            Stroke="{DynamicResource Border}">
 
         <!-- Der Trigger dimmt jetzt die gesamte Karte auf 40% runter -->
         <Border.Triggers>
@@ -29,24 +29,24 @@
 
             <!-- Icon -->
             <Grid Grid.Column="0" Padding="15">
-                <Image Source="{Binding App.iconUrl}" Aspect="AspectFill" WidthRequest="40" HeightRequest="40" VerticalOptions="Center" />
+                <Image x:Name="iconImage" Source="{Binding App.iconUrl}" Aspect="AspectFill" WidthRequest="40" HeightRequest="40" VerticalOptions="Center" />
             </Grid>
 
             <!-- Text -->
             <VerticalStackLayout Grid.Column="1" VerticalOptions="Center">
                 <Grid Margin="0,0,0,0">
-                    <Label Text="{Binding App.name, FallbackValue='Title'}" TextColor="#f8fafc" VerticalTextAlignment="Center" FontFamily="OpenSansSemibold" FontSize="18" />
+                    <Label Text="{Binding App.name, FallbackValue='Title'}" TextColor="{DynamicResource TextPrimary}" VerticalTextAlignment="Center" FontFamily="OpenSansSemibold" FontSize="18" />
                 </Grid>
 
                 <FlexLayout JustifyContent="SpaceBetween" AlignItems="Center" Wrap="NoWrap">
-                    <Label Text="{Binding App.slogan, FallbackValue='slogan'}" TextColor="#94a3b8" VerticalTextAlignment="Center" FontFamily="OpenSansRegular" FontSize="13" />
+                    <Label Text="{Binding App.slogan, FallbackValue='slogan'}" TextColor="{DynamicResource TextSecondary}" VerticalTextAlignment="Center" FontFamily="OpenSansRegular" FontSize="13" />
                 </FlexLayout>
             </VerticalStackLayout>
 
             <!-- DEIN BADGE: Originale Form, nicht mehr gepresst, nur farblich modernisiert -->
             <Grid Grid.Column="1" VerticalOptions="Start" HorizontalOptions="End" Margin="15,10" IsVisible="{Binding App.legacy, FallbackValue=False}">
-                <Border StrokeShape="RoundRectangle 5" Padding="5,2" BackgroundColor="#1e293b" Stroke="#475569" StrokeThickness="1">
-                    <Label Text="Legacy" TextColor="#cbd5e1" FontSize="12" FontAttributes="Bold" />
+                <Border StrokeShape="RoundRectangle 5" Padding="5,2" BackgroundColor="{DynamicResource SurfaceAlt}" Stroke="{DynamicResource BorderStrong}" StrokeThickness="1">
+                    <Label Text="Legacy" TextColor="{DynamicResource TextBody}" FontSize="12" FontAttributes="Bold" />
                 </Border>
             </Grid>
 

@@ -60,6 +60,7 @@ public partial class SettingsPage : ContentPage
 
         _isLoading = false;
 
+        themeLabel.Text = AppTheming.Options.First(o => o.Theme == AppTheming.Setting).Label;
         textSizeLabel.Text = AppSettings.TextSizes[AppSettings.TextSizeIndex].Label;
         UpdatePermissionWarning();
         UpdateBookmarkCount();
@@ -84,6 +85,23 @@ public partial class SettingsPage : ContentPage
     private void Window_Resumed(object sender, EventArgs e)
     {
         Dispatcher.Dispatch(UpdatePermissionWarning);
+    }
+
+    // --- Darstellung ---
+
+    private async void Theme_Tapped(object sender, TappedEventArgs e)
+    {
+        var options = AppTheming.Options.Select(o => o.Label).ToList();
+        int current = Array.FindIndex(AppTheming.Options, o => o.Theme == AppTheming.Setting);
+        int index = await SelectionSheet.PickAsync(this, "Theme", options, current);
+
+        if (index < 0)
+        {
+            return;
+        }
+
+        AppTheming.Setting = AppTheming.Options[index].Theme;
+        themeLabel.Text = options[index];
     }
 
     // --- Benachrichtigungen ---

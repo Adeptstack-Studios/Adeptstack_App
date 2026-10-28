@@ -2,12 +2,12 @@
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="Adeptstack_App.Changelogs"
-             BackgroundColor="#020617"
+             BackgroundColor="{DynamicResource PageBackground}"
              Title="Adeptstack Changelogs">
 
     <Grid>
         <!-- Layer 1: Content -->
-        <RefreshView x:Name="refresh" Refreshing="RefreshView_Refreshing" RefreshColor="#3b82f6">
+        <RefreshView x:Name="refresh" Refreshing="RefreshView_Refreshing" RefreshColor="{DynamicResource Accent}">
             <ScrollView>
                 <Grid Padding="16,24,16,24">
                     <FlexLayout x:Name="appsLayout" 
@@ -21,17 +21,17 @@
         </RefreshView>
 
         <!-- Layer 2: Empty / Error State -->
-        <Grid x:Name="nothing" IsVisible="False" BackgroundColor="#020617">
+        <Grid x:Name="nothing" IsVisible="False" BackgroundColor="{DynamicResource PageBackground}">
             <VerticalStackLayout HorizontalOptions="Center" VerticalOptions="Center" Spacing="8">
                 <Label Text="No Apps Available" 
-                       TextColor="#f8fafc" 
+                       TextColor="{DynamicResource TextPrimary}" 
                        FontSize="20" 
                        FontAttributes="Bold" 
                        HorizontalTextAlignment="Center" />
 
                 <Label x:Name="internet" 
                        Text="Please check your internet connection." 
-                       TextColor="#94a3b8" 
+                       TextColor="{DynamicResource TextSecondary}" 
                        FontSize="14" 
                        IsVisible="False" 
                        HorizontalTextAlignment="Center" />
@@ -39,10 +39,10 @@
         </Grid>
 
         <!-- Layer 3: Loading State -->
-        <Grid x:Name="loading" BackgroundColor="#CC020617" IsVisible="False">
+        <Grid x:Name="loading" BackgroundColor="{DynamicResource Overlay}" IsVisible="False">
             <ActivityIndicator x:Name="busy" 
                                IsRunning="True" 
-                               Color="#3b82f6" 
+                               Color="{DynamicResource Accent}" 
                                HorizontalOptions="Center" 
                                VerticalOptions="Center" />
         </Grid>

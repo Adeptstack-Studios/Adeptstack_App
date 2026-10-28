@@ -1,6 +1,7 @@
 using Adeptstack_App.ContentViews;
 using Adeptstack_App.ContextClasses;
 using Adeptstack_App.Net;
+using Adeptstack_App.Utils;
 using Microsoft.Maui.Layouts;
 using AppContext = Adeptstack_App.ContextClasses.AppContext;
 
@@ -47,8 +48,9 @@ public partial class Changelogs : ContentPage
                     {
                         AppView allUpdatesView = new AppView
                         {
-                            App = new AppContext { name = "All Updates", slogan = "Every app in one feed", iconUrl = "changes.png" }
+                            App = new AppContext { name = "All Updates", slogan = "Every app in one feed" }
                         };
+                        AppTheming.SetIcon(allUpdatesView.IconImage, "changes");
                         allUpdatesView.AppClicked += (s, a) => Navigation.PushAsync(new AppChangelog(apps));
                         appsLayout.Children.Add(allUpdatesView);
                     }
