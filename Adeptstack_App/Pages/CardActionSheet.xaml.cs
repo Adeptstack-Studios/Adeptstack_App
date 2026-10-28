@@ -25,7 +25,14 @@ public partial class CardActionSheet : BottomSheet
 
         shareLabel.Text = CardContextMenu.ShareText;
         bookmarkLabel.Text = bookmarked ? CardContextMenu.RemoveBookmarkText : CardContextMenu.BookmarkText;
-        bookmarkIcon.Source = bookmarked ? "bookmark_filled.png" : "bookmark.png";
+        if (bookmarked)
+        {
+            bookmarkIcon.Source = "bookmark_filled.png";
+        }
+        else
+        {
+            AppTheming.SetIcon(bookmarkIcon, "bookmark");
+        }
     }
 
     public static Task ShowAsync(string title, string caption, string imageUrl, Func<bool> isBookmarked, Action toggleBookmark, Func<Task> share)

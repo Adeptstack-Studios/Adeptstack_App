@@ -4,14 +4,14 @@
     xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
     xmlns:local="clr-namespace:Adeptstack_App"
-    Shell.BackgroundColor="#0f172a"
-    Shell.TitleColor="White"
-    Shell.ForegroundColor="White"
-    Shell.UnselectedColor="#94a3b8"
-    Shell.TabBarBackgroundColor="#0f172a"
-    Shell.TabBarTitleColor="White"
-    Shell.TabBarUnselectedColor="#94a3b8"
-    FlyoutBackgroundColor="#0f172a"
+    Shell.BackgroundColor="{DynamicResource Surface}"
+    Shell.TitleColor="{DynamicResource TextPrimary}"
+    Shell.ForegroundColor="{DynamicResource TextPrimary}"
+    Shell.UnselectedColor="{DynamicResource TextSecondary}"
+    Shell.TabBarBackgroundColor="{DynamicResource Surface}"
+    Shell.TabBarTitleColor="{DynamicResource TextPrimary}"
+    Shell.TabBarUnselectedColor="{DynamicResource TextSecondary}"
+    FlyoutBackgroundColor="{DynamicResource Surface}"
     FlyoutWidth="240">
 
     <!-- Die Navigationseinträge werden in AppShell.xaml.cs aufgebaut:

@@ -43,10 +43,12 @@ namespace Adeptstack_App.Utils
                     FontSize = 12,
                     CornerRadius = 20,
                     HeightRequest = 36,
-                    Padding = new Thickness(16, 0),
-                    BackgroundColor = isSelected ? Color.FromArgb("#3b82f6") : Color.FromArgb("#1e293b"),
-                    TextColor = isSelected ? Colors.White : Color.FromArgb("#94a3b8")
+                    Padding = new Thickness(16, 0)
                 };
+
+                // Dynamisch, damit die Chips bei einem Theme-Wechsel mitziehen
+                btn.SetDynamicResource(Button.BackgroundColorProperty, isSelected ? "Accent" : "SurfaceAlt");
+                btn.SetDynamicResource(Button.TextColorProperty, isSelected ? "OnAccent" : "TextSecondary");
 
                 btn.Clicked += (s, e) =>
                 {

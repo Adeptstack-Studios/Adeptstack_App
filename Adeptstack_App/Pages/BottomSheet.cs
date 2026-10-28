@@ -1,3 +1,4 @@
+using Adeptstack_App.Utils;
 using Microsoft.Maui.Controls.PlatformConfiguration;
 using Microsoft.Maui.Controls.PlatformConfiguration.iOSSpecific;
 using Microsoft.Maui.Controls.Shapes;
@@ -24,7 +25,7 @@ public class BottomSheet : ContentPage
         BackgroundColor = Colors.Transparent;
         On<iOS>().SetModalPresentationStyle(UIModalPresentationStyle.OverFullScreen);
 
-        _backdrop = new BoxView { Color = Color.FromArgb("#99020617"), Opacity = 0 };
+        _backdrop = new BoxView { Color = AppTheming.Get("Backdrop"), Opacity = 0 };
         var backdropTap = new TapGestureRecognizer();
         backdropTap.Tapped += async (s, e) => await CloseAsync();
         _backdrop.GestureRecognizers.Add(backdropTap);
@@ -35,8 +36,8 @@ public class BottomSheet : ContentPage
         _sheet = new Border
         {
             TranslationY = 600,
-            BackgroundColor = Color.FromArgb("#0f172a"),
-            Stroke = Color.FromArgb("#1e293b"),
+            BackgroundColor = AppTheming.Get("Surface"),
+            Stroke = AppTheming.Get("Border"),
             StrokeThickness = 1,
             StrokeShape = new RoundRectangle { CornerRadius = new CornerRadius(20, 20, 0, 0) },
             Padding = new Thickness(16, 10, 16, 28),
@@ -50,7 +51,7 @@ public class BottomSheet : ContentPage
                         WidthRequest = 36,
                         HeightRequest = 4,
                         CornerRadius = 2,
-                        Color = Color.FromArgb("#334155"),
+                        Color = AppTheming.Get("BorderStrong"),
                         HorizontalOptions = LayoutOptions.Center,
                         Margin = new Thickness(0, 0, 0, 14)
                     },

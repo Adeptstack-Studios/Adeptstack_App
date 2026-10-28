@@ -18,13 +18,15 @@ public partial class DisplayContent : ContentPage
     // Im Datensparmodus fliegen die <img>-Tags raus, sonst lädt das WebView sie trotzdem
     private static readonly Regex ImageTag = new Regex("<img[^>]*>", RegexOptions.IgnoreCase | RegexOptions.Compiled);
     private const string DataSaverPlaceholder =
-        "<p style='color: #64748b; font-size: 0.8125rem; font-style: italic;'>Image hidden (Data Saver)</p>";
+        "<p style='color: var(--text-muted); font-size: 0.8125rem; font-style: italic;'>Image hidden (Data Saver)</p>";
 
     private string _shareTitle;
     private Func<string> _getShareText;
     private Func<bool> _isBookmarked;
     private Func<bool> _toggleBookmark;
     private Task _transition;
+    private Action _render;
+    private AppTheme _renderedTheme;
 
     public DisplayContent(NewsContext news)
     {
@@ -57,6 +59,29 @@ public partial class DisplayContent : ContentPage
         LoadChangelogDataAsync(changelog, app);
     }
 
+    protected override void OnAppearing()
+    {
+        base.OnAppearing();
+        Application.Current.RequestedThemeChanged += App_RequestedThemeChanged;
+
+        // Das Theme wurde geändert, während die Seite im Hintergrund lag (z. B. in den Einstellungen)
+        if (_render != null && Application.Current.RequestedTheme != _renderedTheme)
+        {
+            _render();
+        }
+    }
+
+    protected override void OnDisappearing()
+    {
+        base.OnDisappearing();
+        Application.Current.RequestedThemeChanged -= App_RequestedThemeChanged;
+    }
+
+    private void App_RequestedThemeChanged(object sender, AppThemeChangedEventArgs e)
+    {
+        _render?.Invoke();
+    }
+
     private async void LoadChangelogDataAsync(ChangelogContext changelog, AppContext app)
     {
         string appName = string.IsNullOrEmpty(app?.name) ? "CHANGELOG" : app.name;
@@ -85,9 +110,14 @@ public partial class DisplayContent : ContentPage
     /// <param name="dateSuffix">Optional hinter dem Datum, z. B. "5 min read".</param>
     public async void LoadContentAsync(string content, string imgUrl, string title, string category, DateTime date, string description, string dateSuffix = null)
     {
+        // Bei einem Theme-Wechsel neu aufbauen, die Farben stecken im HTML
+        _render = () => LoadContentAsync(content, imgUrl, title, category, date, description, dateSuffix);
+        _renderedTheme = Application.Current.RequestedTheme;
+
         var connected = Web.IsConnectedToInternetAsync();
         bool loadImages = AppSettings.ShouldLoadImages;
         int textSize = AppSettings.TextSizePercent;
+        string themeCss = MarkdownStyle.ThemeCSS();
 
         // Markdown im Hintergrund umwandeln, während die Seite noch hereinfährt
         string html = string.IsNullOrEmpty(content) ? null : await Task.Run(() =>
@@ -96,11 +126,11 @@ public partial class DisplayContent : ContentPage
             string headerHtml = $@"
                             <div style='margin-bottom: 40px; margin-top: 48px;'>
                                 <div style='display: flex; justify-content: space-between; font-size: 0.8125rem; font-weight: bold; margin-bottom: 16px;'>
-                                    <span style='color: #3b82f6; text-transform: uppercase; letter-spacing: 1px;'>{category}</span>
-                                    <span style='color: #94a3b8;'>{date:MMM dd, yyyy}{(string.IsNullOrEmpty(dateSuffix) ? "" : $" · {dateSuffix}")}</span>
+                                    <span style='color: var(--accent); text-transform: uppercase; letter-spacing: 1px;'>{category}</span>
+                                    <span style='color: var(--text-secondary);'>{date:MMM dd, yyyy}{(string.IsNullOrEmpty(dateSuffix) ? "" : $" · {dateSuffix}")}</span>
                                 </div>
-                                <h1 style='color: #f8fafc; font-size: 1.625rem; line-height: 1.3; margin-top: 0; margin-bottom: 16px;'>{title}</h1>
-                                {(string.IsNullOrEmpty(description) ? "" : $"<p style='color: #94a3b8; font-size: 1rem; line-height: 1.5; margin-top: 0; margin-bottom: 32px;'>{description}</p>")}
+                                <h1 style='color: var(--text); font-size: 1.625rem; line-height: 1.3; margin-top: 0; margin-bottom: 16px;'>{title}</h1>
+                                {(string.IsNullOrEmpty(description) ? "" : $"<p style='color: var(--text-secondary); font-size: 1rem; line-height: 1.5; margin-top: 0; margin-bottom: 32px;'>{description}</p>")}
                                 {(string.IsNullOrEmpty(imgUrl) || !loadImages ? "" : $"<img src='{imgUrl}' style='width: 100%; border-radius: 12px; margin-top: 8px;' />")}
                             </div>";
 
@@ -113,7 +143,7 @@ public partial class DisplayContent : ContentPage
 
             string fullBody = headerHtml + markdownBody;
 
-            string css = MarkdownStyle.CSS() + $"html {{ font-size: {textSize}%; }}";
+            string css = MarkdownStyle.CSS() + themeCss + $"html {{ font-size: {textSize}%; }}";
             return MarkdownStyle.GetFullHTML(css, fullBody);
         });
 
@@ -144,7 +174,14 @@ public partial class DisplayContent : ContentPage
     private void UpdateBookmarkItem()
     {
         bool bookmarked = _isBookmarked();
-        bookmarkItem.IconImageSource = bookmarked ? "bookmark_filled.png" : "bookmark.png";
+        if (bookmarked)
+        {
+            bookmarkItem.IconImageSource = "bookmark_filled.png";
+        }
+        else
+        {
+            AppTheming.SetIcon(bookmarkItem, "bookmark");
+        }
         bookmarkItem.Text = bookmarked ? "Remove Bookmark" : "Bookmark";
     }
 

@@ -19,6 +19,11 @@ public partial class AppView : ContentView
         InitializeComponent();
     }
 
+    /// <summary>
+    /// Für Symbole aus der App statt einer Icon-URL, z. B. bei "All Updates".
+    /// </summary>
+    public Image IconImage => iconImage;
+
     private void clickedOn_Clicked(object sender, EventArgs e)
     {
         AppClicked?.Invoke(this, App);

@@ -2,19 +2,19 @@
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="Adeptstack_App.AppChangelog"
-             BackgroundColor="#020617">
+             BackgroundColor="{DynamicResource PageBackground}">
 
     <Grid>
         <!-- Layer 1: Content -->
-        <RefreshView x:Name="refresh" Refreshing="RefreshView_Refreshing" RefreshColor="#3b82f6">
+        <RefreshView x:Name="refresh" Refreshing="RefreshView_Refreshing" RefreshColor="{DynamicResource Accent}">
             <ScrollView x:Name="scroll" Scrolled="Scroll_Scrolled">
                 <VerticalStackLayout Padding="16,24,16,24" Spacing="16" SizeChanged="Content_SizeChanged">
 
                     <!-- Legacy Warning Banner -->
                     <Border x:Name="legacy"
                             IsVisible="False"
-                            BackgroundColor="#1E1A18"
-                            Stroke="#5C4424"
+                            BackgroundColor="{DynamicResource WarningBackground}"
+                            Stroke="{DynamicResource WarningBorder}"
                             StrokeThickness="1"
                             Padding="16"
                             MaximumWidthRequest="800"
@@ -25,12 +25,12 @@
                         </Border.StrokeShape>
 
                         <Grid ColumnDefinitions="Auto, *" ColumnSpacing="16" VerticalOptions="Center">
-                            <Label Grid.Column="0" Text="&#x26A0;" TextColor="#F59E0B" FontSize="28" VerticalOptions="Center" />
+                            <Label Grid.Column="0" Text="&#x26A0;" TextColor="{DynamicResource Warning}" FontSize="28" VerticalOptions="Center" />
 
                             <VerticalStackLayout Grid.Column="1" VerticalOptions="Center" Spacing="4">
-                                <Label Text="Legacy Software" TextColor="#F59E0B" FontAttributes="Bold" FontSize="16" />
+                                <Label Text="Legacy Software" TextColor="{DynamicResource Warning}" FontAttributes="Bold" FontSize="16" />
                                 <Label Text="This application is no longer actively developed and only receives security-related or limited updates."
-                                       TextColor="#D97706"
+                                       TextColor="{DynamicResource WarningText}"
                                        FontSize="14"
                                        LineBreakMode="WordWrap" />
                             </VerticalStackLayout>
@@ -52,7 +52,7 @@
                           MaximumWidthRequest="1120"
                           Margin="8,0,8,0">
                         <Label x:Name="resultCountLabel"
-                               TextColor="#94a3b8"
+                               TextColor="{DynamicResource TextSecondary}"
                                FontFamily="OpenSansRegular"
                                FontSize="13"
                                VerticalOptions="Center" />
@@ -65,8 +65,8 @@
                                 CornerRadius="18"
                                 HeightRequest="36"
                                 Padding="16,0"
-                                BackgroundColor="#1e293b"
-                                TextColor="#f8fafc"
+                                BackgroundColor="{DynamicResource SurfaceAlt}"
+                                TextColor="{DynamicResource TextPrimary}"
                                 Clicked="Sort_Clicked" />
                     </Grid>
 
@@ -83,7 +83,7 @@
                     <Label x:Name="noResultsLabel"
                            Text="No updates found"
                            IsVisible="False"
-                           TextColor="#94a3b8"
+                           TextColor="{DynamicResource TextSecondary}"
                            FontSize="16"
                            HorizontalTextAlignment="Center"
                            Margin="0,32,0,0" />
@@ -92,24 +92,24 @@
                     <ActivityIndicator x:Name="pageLoading"
                                        IsRunning="False"
                                        IsVisible="False"
-                                       Color="#3b82f6"
+                                       Color="{DynamicResource Accent}"
                                        HorizontalOptions="Center" />
                 </VerticalStackLayout>
             </ScrollView>
         </RefreshView>
 
         <!-- Layer 2: Empty / Error State -->
-        <Grid x:Name="nothing" IsVisible="False" BackgroundColor="#020617">
+        <Grid x:Name="nothing" IsVisible="False" BackgroundColor="{DynamicResource PageBackground}">
             <VerticalStackLayout HorizontalOptions="Center" VerticalOptions="Center" Spacing="8">
                 <Label Text="No Updates Available"
-                       TextColor="#f8fafc"
+                       TextColor="{DynamicResource TextPrimary}"
                        FontSize="20"
                        FontAttributes="Bold"
                        HorizontalTextAlignment="Center" />
 
                 <Label x:Name="internet"
                        Text="Please check your internet connection."
-                       TextColor="#94a3b8"
+                       TextColor="{DynamicResource TextSecondary}"
                        FontSize="14"
                        IsVisible="False"
                        HorizontalTextAlignment="Center" />
@@ -117,10 +117,10 @@
         </Grid>
 
         <!-- Layer 3: Loading State (Halbtransparent) -->
-        <Grid x:Name="loading" BackgroundColor="#CC020617" IsVisible="False">
+        <Grid x:Name="loading" BackgroundColor="{DynamicResource Overlay}" IsVisible="False">
             <ActivityIndicator x:Name="busy"
                                IsRunning="True"
-                               Color="#3b82f6"
+                               Color="{DynamicResource Accent}"
                                HorizontalOptions="Center"
                                VerticalOptions="Center" />
         </Grid>

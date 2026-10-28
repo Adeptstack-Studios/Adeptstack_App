@@ -2,14 +2,14 @@
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="Adeptstack_App.MainPage"
-             BackgroundColor="#020617">
+             BackgroundColor="{DynamicResource PageBackground}">
 
     <!-- Shell.TitleView -->
     <Shell.TitleView>
         <Grid ColumnDefinitions="*, Auto" Padding="10,0,16,0">
             <Label x:Name="headerTitle" 
                    Text="Adeptstack News" 
-                   TextColor="#f8fafc" 
+                   TextColor="{DynamicResource TextPrimary}" 
                    VerticalOptions="Center" 
                    FontSize="24" 
                    FontAttributes="Bold"
@@ -18,16 +18,16 @@
             <SearchBar x:Name="searchBar" 
                        IsVisible="False" 
                        Placeholder="Search updates..." 
-                       TextColor="#f8fafc" 
-                       PlaceholderColor="#94a3b8" 
-                       CancelButtonColor="#f8fafc" 
+                       TextColor="{DynamicResource TextPrimary}" 
+                       PlaceholderColor="{DynamicResource TextSecondary}" 
+                       CancelButtonColor="{DynamicResource TextPrimary}" 
                        BackgroundColor="Transparent"
                        TextChanged="SearchBar_TextChanged" 
                        VerticalOptions="Center" />
 
             <Image x:Name="searchIconBtn"
                Grid.Column="1"
-               Source="search.png" 
+               Source="{AppThemeBinding Light=search_dark.png, Dark=search.png}" 
                Aspect="AspectFit"
                WidthRequest="28" 
                HeightRequest="28" 
@@ -43,7 +43,7 @@
 
     <Grid>
         <!-- Layer 1: Der Content -->
-        <RefreshView x:Name="refresh" Refreshing="RefreshView_Refreshing" RefreshColor="#3b82f6">
+        <RefreshView x:Name="refresh" Refreshing="RefreshView_Refreshing" RefreshColor="{DynamicResource Accent}">
             <ScrollView x:Name="scroll" Scrolled="Scroll_Scrolled">
                 <VerticalStackLayout Padding="16,24,16,24" SizeChanged="Content_SizeChanged">
                     <ScrollView Orientation="Horizontal" HorizontalScrollBarVisibility="Never" Margin="0,0,0,16">
@@ -55,7 +55,7 @@
                           MaximumWidthRequest="1130"
                           Margin="10,0,10,8">
                         <Label x:Name="resultCountLabel"
-                               TextColor="#94a3b8"
+                               TextColor="{DynamicResource TextSecondary}"
                                FontFamily="OpenSansRegular"
                                FontSize="13"
                                VerticalOptions="Center" />
@@ -68,8 +68,8 @@
                                 CornerRadius="18"
                                 HeightRequest="36"
                                 Padding="16,0"
-                                BackgroundColor="#1e293b"
-                                TextColor="#f8fafc"
+                                BackgroundColor="{DynamicResource SurfaceAlt}"
+                                TextColor="{DynamicResource TextPrimary}"
                                 Clicked="Sort_Clicked" />
                     </Grid>
 
@@ -83,7 +83,7 @@
                     <Label x:Name="noResultsLabel"
                            Text="No results found"
                            IsVisible="False"
-                           TextColor="#94a3b8"
+                           TextColor="{DynamicResource TextSecondary}"
                            FontSize="16"
                            HorizontalTextAlignment="Center"
                            Margin="0,48,0,0" />
@@ -92,7 +92,7 @@
                     <ActivityIndicator x:Name="pageLoading"
                                        IsRunning="False"
                                        IsVisible="False"
-                                       Color="#3b82f6"
+                                       Color="{DynamicResource Accent}"
                                        HorizontalOptions="Center"
                                        Margin="0,8,0,8" />
                 </VerticalStackLayout>
@@ -100,18 +100,18 @@
         </RefreshView>
 
         <!-- Layer 2: Empty / Error State -->
-        <Grid x:Name="nothing" IsVisible="False" BackgroundColor="#020617">
+        <Grid x:Name="nothing" IsVisible="False" BackgroundColor="{DynamicResource PageBackground}">
             <VerticalStackLayout HorizontalOptions="Center" VerticalOptions="Center" Spacing="8">
                 <Label x:Name="emptyStateLabel"
                        Text="No Updates Available" 
-                       TextColor="#f8fafc" 
+                       TextColor="{DynamicResource TextPrimary}" 
                        FontSize="20" 
                        FontAttributes="Bold" 
                        HorizontalTextAlignment="Center" />
 
                 <Label x:Name="internet" 
                        Text="Please check your internet connection." 
-                       TextColor="#94a3b8" 
+                       TextColor="{DynamicResource TextSecondary}" 
                        FontSize="14" 
                        IsVisible="False" 
                        HorizontalTextAlignment="Center" />
@@ -119,10 +119,10 @@
         </Grid>
 
         <!-- Layer 3: Loading State -->
-        <Grid x:Name="loading" BackgroundColor="#CC020617" IsVisible="False">
+        <Grid x:Name="loading" BackgroundColor="{DynamicResource Overlay}" IsVisible="False">
             <ActivityIndicator x:Name="busy" 
                                IsRunning="True" 
-                               Color="#3b82f6" 
+                               Color="{DynamicResource Accent}" 
                                HorizontalOptions="Center" 
                                VerticalOptions="Center" />
         </Grid>

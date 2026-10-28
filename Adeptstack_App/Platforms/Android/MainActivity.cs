@@ -1,7 +1,7 @@
 ﻿using Android.App;
 using Android.Content.PM;
 using Android.OS;
-using AndroidX.Activity;
+using Adeptstack_App.Utils;
 using Microsoft.Maui;
 
 namespace Adeptstack_App;
@@ -11,11 +11,12 @@ public class MainActivity : MauiAppCompatActivity
 {
 	protected override void OnCreate(Bundle? savedInstanceState)
 	{
-		// Randlose Anzeige auch unter Android < 15 wie ab SDK 35. Die App ist immer dunkel,
-		// daher transparente Systemleisten mit hellen Symbolen.
-		var barStyle = SystemBarStyle.Dark(Android.Graphics.Color.Transparent);
-		EdgeToEdge.Enable(this, barStyle, barStyle);
+		// Randlose Anzeige auch unter Android < 15 wie ab SDK 35. Die App steht hier noch nicht,
+		// daher erst dunkel und nach dem Start passend zum Theme.
+		SystemBars.Apply(this, true, new Android.Graphics.Color(0x0f, 0x17, 0x2a));
 
 		base.OnCreate(savedInstanceState);
+
+		AppTheming.ApplySystemBars(this);
 	}
 }
