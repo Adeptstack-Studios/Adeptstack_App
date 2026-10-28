@@ -35,6 +35,16 @@ public static class MauiProgram
 
         PushNotifications.Initialize(oneSignalAppId);
 
+#if ANDROID
+        // Ein horizontaler ScrollView ist auf Android ein vertikaler NestedScrollView mit einem HorizontalScrollView darin.
+        // Beim Antippen meldet er beim äußeren ScrollView ein vertikales Nested Scroll an. Wird horizontal gewischt,
+        // fehlt die Abmeldung, und der äußere ScrollView lässt sich danach nicht mehr vertikal scrollen (Filter-Chips).
+        Microsoft.Maui.Handlers.ScrollViewHandler.Mapper.AppendToMapping(nameof(IScrollView.Orientation), (handler, view) =>
+        {
+            handler.PlatformView.NestedScrollingEnabled = view.Orientation != ScrollOrientation.Horizontal;
+        });
+#endif
+
         return builder.Build();
     }
 }
