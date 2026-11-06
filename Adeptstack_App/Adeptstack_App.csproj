@@ -16,7 +16,7 @@
     <ApplicationIdGuid>9d54e310-f8de-42c9-a1ec-53b67f096b5b</ApplicationIdGuid>
 
     <ApplicationDisplayVersion>2.5.1</ApplicationDisplayVersion>
-    <ApplicationVersion>22</ApplicationVersion>
+    <ApplicationVersion>24</ApplicationVersion>
     <Version>$(ApplicationDisplayVersion)</Version>
 
     <SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'ios'">11.0</SupportedOSPlatformVersion>
@@ -46,6 +46,26 @@
     <AndroidLinkTool>r8</AndroidLinkTool>
     <AndroidR8ObfuscationMode>private-members</AndroidR8ObfuscationMode>
   </PropertyGroup>
+
+  <!-- Bei inkrementellen Release-Builds verliert das SDK manchmal die R8-Regeln der Bibliotheken
+       (libraryprojectimports.cache ohne proguard.txt). R8 entfernt dann z. B. die OneSignal-Module,
+       die per Reflection geladen werden, und die App stürzt beim Start ab. Daher die Regeln immer mitgeben. -->
+  <Target Name="_AddLibraryProguardRules" AfterTargets="_CalculateProguardConfigurationFiles" Condition="'$(AndroidLinkTool)' == 'r8'">
+    <ItemGroup>
+      <_ProguardConfiguration Include="$(IntermediateOutputPath)lp\*\jl\proguard.txt" />
+      <_ProguardConfiguration Include="$(IntermediateOutputPath)aapt_rules.txt" Condition="Exists('$(IntermediateOutputPath)aapt_rules.txt')" />
+    </ItemGroup>
+    <Error Condition="!Exists('$(IntermediateOutputPath)lp')" Text="Keine Bibliotheks-Regeln für R8 gefunden ($(IntermediateOutputPath)lp fehlt)." />
+  </Target>
+
+  <!-- Sicherheitsnetz: so ein Build darf nie wieder in den Store -->
+  <Target Name="_CheckOneSignalKept" AfterTargets="_CompileToDalvik" Condition="'$(AndroidLinkTool)' == 'r8' And '$(AndroidProguardMappingFile)' != ''">
+    <PropertyGroup>
+      <_MappingFile>$([MSBuild]::NormalizePath('$(MSBuildProjectDirectory)', '$(AndroidProguardMappingFile)'))</_MappingFile>
+    </PropertyGroup>
+    <Error Condition="Exists('$(_MappingFile)') And !$([System.IO.File]::ReadAllText('$(_MappingFile)').Contains('com.onesignal.notifications.NotificationsModule ->'))"
+           Text="R8 hat die OneSignal-Module entfernt, die App würde beim Start abstürzen. obj\Release löschen und neu bauen." />
+  </Target>
 
   <PropertyGroup Condition="$(TargetFramework.Contains('-windows'))">
     <ApplicationIcon>Resources\AppIcon\adeptstack_icon.ico</ApplicationIcon>
