@@ -24,6 +24,7 @@ namespace Adeptstack_App.Utils
 #if ANDROID || IOS
             OneSignalSDK.DotNet.OneSignal.Initialize(appId);
             _ = OneSignalSDK.DotNet.OneSignal.Notifications.RequestPermissionAsync(true);
+            EnsureChangelogTag();
 #endif
         }
 
@@ -39,31 +40,61 @@ namespace Adeptstack_App.Utils
 #endif
         }
 
+        /// <summary>
+        /// Lokale Kopie der Wahl, Standard "an". Direkt nach dem Start hat OneSignal die Tags
+        /// eventuell noch nicht geladen, dann darf ein fehlendes Tag kein bewusstes "false" überschreiben.
+        /// </summary>
+        private static bool LocalWantsChangelogs
+        {
+            get => Preferences.Default.Get(ChangelogTag, true);
+            set => Preferences.Default.Set(ChangelogTag, value);
+        }
+
         public static bool WantsChangelogs()
         {
 #if ANDROID || IOS
-            IDictionary<string, string> tags = OneSignalSDK.DotNet.OneSignal.User.GetTags();
+            string tagValue = GetChangelogTag();
 
-            if (tags != null && tags.TryGetValue(ChangelogTag, out string tagValue))
+            if (tagValue != null)
             {
-                return tagValue.ToLower() == "true";
+                LocalWantsChangelogs = tagValue.ToLower() == "true";
             }
 #endif
-            return true;
+            return LocalWantsChangelogs;
         }
 
+        /// <summary>
+        /// Immer ausdrücklich "true" oder "false": Das Backend schickt Release-Pushes nur an "true",
+        /// ein fehlendes Tag sieht dort aus wie "aus".
+        /// </summary>
         public static void SetWantsChangelogs(bool wanted)
         {
+            LocalWantsChangelogs = wanted;
 #if ANDROID || IOS
-            if (wanted)
+            OneSignalSDK.DotNet.OneSignal.User.AddTag(ChangelogTag, wanted ? "true" : "false");
+#endif
+        }
+
+        /// <summary>
+        /// Fehlt das Tag (Neuinstallation, neues Gerät, frühere Versionen haben es beim Ausschalten gelöscht),
+        /// wird es aus der lokalen Wahl nachgetragen. Sonst zeigt der Schalter "an", aber es kommt nichts.
+        /// </summary>
+        private static void EnsureChangelogTag()
+        {
+#if ANDROID || IOS
+            if (GetChangelogTag() == null)
             {
-                OneSignalSDK.DotNet.OneSignal.User.AddTag(ChangelogTag, "true");
-            }
-            else
-            {
-                OneSignalSDK.DotNet.OneSignal.User.RemoveTag(ChangelogTag);
+                OneSignalSDK.DotNet.OneSignal.User.AddTag(ChangelogTag, LocalWantsChangelogs ? "true" : "false");
             }
 #endif
         }
+
+#if ANDROID || IOS
+        private static string GetChangelogTag()
+        {
+            IDictionary<string, string> tags = OneSignalSDK.DotNet.OneSignal.User.GetTags();
+            return tags != null && tags.TryGetValue(ChangelogTag, out string tagValue) ? tagValue : null;
+        }
+#endif
     }
 }
