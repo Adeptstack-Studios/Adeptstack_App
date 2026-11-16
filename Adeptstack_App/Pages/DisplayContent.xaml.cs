@@ -4,6 +4,7 @@ using Adeptstack_App.Utils;
 using Markdig;
 using Microsoft.Maui.ApplicationModel;
 using System.Diagnostics;
+using System.Net;
 using System.Text.RegularExpressions;
 using AppContext = Adeptstack_App.ContextClasses.AppContext;
 
@@ -20,10 +21,10 @@ public partial class DisplayContent : ContentPage
     private const string DataSaverPlaceholder =
         "<p style='color: var(--text-muted); font-size: 0.8125rem; font-style: italic;'>Image hidden (Data Saver)</p>";
 
-    private string _shareTitle;
     // So lange wartet ein Changelog ohne bekannte App höchstens auf deren Namen
     private static readonly TimeSpan AppNameTimeout = TimeSpan.FromSeconds(3);
 
+    private string _shareTitle;
     private Func<string> _getShareText;
     private Func<bool> _isBookmarked;
     private Func<bool> _toggleBookmark;
@@ -96,8 +97,8 @@ public partial class DisplayContent : ContentPage
 
             if (await Task.WhenAny(lookup, Task.Delay(AppNameTimeout)) == lookup && !string.IsNullOrEmpty(lookup.Result?.name))
             {
-            }
                 appName = lookup.Result.name;
+            }
         }
 
         LoadContentAsync(changelog.content, changelog.imageUrl, changelog.title, appName, changelog.publishedAt, changelog.description);
@@ -118,16 +119,23 @@ public partial class DisplayContent : ContentPage
         // Markdown im Hintergrund umwandeln, während die Seite noch hereinfährt
         string html = string.IsNullOrEmpty(content) ? null : await Task.Run(() =>
         {
+            // Die Felder aus der API sind reiner Text, kein HTML: ein "<" im Titel würde sonst die Seite zerlegen
+            // Eigene Variablen: die Parameter stecken auch in _render und würden beim nächsten Aufbau doppelt kodiert.
+            string categoryHtml = WebUtility.HtmlEncode(category);
+            string titleHtml = WebUtility.HtmlEncode(title);
+            string descriptionHtml = WebUtility.HtmlEncode(description);
+            string imgUrlHtml = WebUtility.HtmlEncode(imgUrl);
+
             // Größen in rem, damit die Schriftgröße aus den Einstellungen alles mitskaliert
             string headerHtml = $@"
                             <div style='margin-bottom: 40px; margin-top: 48px;'>
                                 <div style='display: flex; justify-content: space-between; font-size: 0.8125rem; font-weight: bold; margin-bottom: 16px;'>
-                                    <span style='color: var(--accent); text-transform: uppercase; letter-spacing: 1px;'>{category}</span>
+                                    <span style='color: var(--accent); text-transform: uppercase; letter-spacing: 1px;'>{categoryHtml}</span>
                                     <span style='color: var(--text-secondary);'>{date:MMM dd, yyyy}{(string.IsNullOrEmpty(dateSuffix) ? "" : $" · {dateSuffix}")}</span>
                                 </div>
-                                <h1 style='color: var(--text); font-size: 1.625rem; line-height: 1.3; margin-top: 0; margin-bottom: 16px;'>{title}</h1>
-                                {(string.IsNullOrEmpty(description) ? "" : $"<p style='color: var(--text-secondary); font-size: 1rem; line-height: 1.5; margin-top: 0; margin-bottom: 32px;'>{description}</p>")}
-                                {(string.IsNullOrEmpty(imgUrl) || !loadImages ? "" : $"<img src='{imgUrl}' style='width: 100%; border-radius: 12px; margin-top: 8px;' />")}
+                                <h1 style='color: var(--text); font-size: 1.625rem; line-height: 1.3; margin-top: 0; margin-bottom: 16px;'>{titleHtml}</h1>
+                                {(string.IsNullOrEmpty(descriptionHtml) ? "" : $"<p style='color: var(--text-secondary); font-size: 1rem; line-height: 1.5; margin-top: 0; margin-bottom: 32px;'>{descriptionHtml}</p>")}
+                                {(string.IsNullOrEmpty(imgUrlHtml) || !loadImages ? "" : $"<img src='{imgUrlHtml}' style='width: 100%; border-radius: 12px; margin-top: 8px;' />")}
                             </div>";
 
             string markdownBody = Markdig.Markdown.ToHtml(content, MarkdownPipeline);
