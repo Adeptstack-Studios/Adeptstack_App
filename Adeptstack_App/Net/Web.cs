@@ -12,19 +12,52 @@ namespace Adeptstack_App.Net
         private static readonly HttpClient _httpClient = new HttpClient { Timeout = TimeSpan.FromSeconds(3) };
         private static readonly HttpClient _apiClient = new HttpClient { Timeout = TimeSpan.FromSeconds(15) };
 
+        // Für die Gegenprobe an der eigenen API, wenn der schnelle Test fehlschlägt
+        private static readonly TimeSpan ApiProbeTimeout = TimeSpan.FromSeconds(5);
+
         public static async Task<bool> IsConnectedToInternetAsync()
         {
+            // Flugmodus oder gar kein Netz: nicht erst auf Timeouts warten
+            if (Connectivity.Current.NetworkAccess == NetworkAccess.None)
+            {
+                return false;
+            }
+
             try
             {
                 var request = new HttpRequestMessage(HttpMethod.Head, "https://clients3.google.com/generate_204");
                 using (var response = await _httpClient.SendAsync(request))
                 {
-                    return response.IsSuccessStatusCode;
+                    if (response.IsSuccessStatusCode)
+                    {
+                        return true;
+                    }
                 }
             }
             catch (Exception e)
             {
                 System.Diagnostics.Debug.WriteLine($"Connection test failed: {e.Message}");
+            }
+
+            return await IsApiReachableAsync();
+        }
+
+        /// <summary>
+        /// Google kann gesperrt oder langsam sein, obwohl die eigene API erreichbar ist.
+        /// Jede Antwort zählt, auch ein Fehlerstatus: dann steht die Verbindung.
+        /// </summary>
+        private static async Task<bool> IsApiReachableAsync()
+        {
+            try
+            {
+                using var timeout = new CancellationTokenSource(ApiProbeTimeout);
+                var request = new HttpRequestMessage(HttpMethod.Head, $"{ApiBaseUrl}/news/categories");
+                using var response = await _apiClient.SendAsync(request, HttpCompletionOption.ResponseHeadersRead, timeout.Token);
+                return true;
+            }
+            catch (Exception e)
+            {
+                System.Diagnostics.Debug.WriteLine($"API probe failed: {e.Message}");
                 return false;
             }
         }
