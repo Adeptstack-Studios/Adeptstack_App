@@ -55,13 +55,20 @@ public partial class MainPage : ContentPage
 
         if (isConnected)
         {
-            _categories = await Web.GetNewsCategoriesAsync();
+            var categories = await Web.GetNewsCategoriesAsync();
 
-            // Gemerkte Kategorie gibt es nicht mehr
-            if (!_categories.Any(c => string.Equals(c.name, _currentCategory, StringComparison.OrdinalIgnoreCase)))
+            // Leer heißt auch: Abruf fehlgeschlagen (z. B. Rate-Limit). Dann bleiben die Chips und
+            // die gemerkte Kategorie stehen, sonst wäre sie beim nächsten Mal weg.
+            if (categories.Count > 0)
             {
-                _currentCategory = null;
-                AppSettings.SetFilter(CategoryKey, null);
+                _categories = categories;
+
+                // Gemerkte Kategorie gibt es nicht mehr
+                if (!_categories.Any(c => string.Equals(c.name, _currentCategory, StringComparison.OrdinalIgnoreCase)))
+                {
+                    _currentCategory = null;
+                    AppSettings.SetFilter(CategoryKey, null);
+                }
             }
         }
 
