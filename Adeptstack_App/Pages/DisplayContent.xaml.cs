@@ -101,7 +101,7 @@ public partial class DisplayContent : ContentPage
             }
         }
 
-        LoadContentAsync(changelog.content, changelog.imageUrl, changelog.title, appName, changelog.publishedAt, changelog.description);
+        LoadContentAsync(changelog.content, changelog.imageUrl, changelog.title, appName, changelog.publishedAt, changelog.description, changelog.IsUpcoming ? "Upcoming" : null);
     }
 
     /// <param name="dateSuffix">Optional hinter dem Datum, z. B. "5 min read".</param>
