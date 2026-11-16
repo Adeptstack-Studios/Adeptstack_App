@@ -198,7 +198,13 @@ public partial class DisplayContent : ContentPage
 
     private async void web_Navigating(object sender, WebNavigatingEventArgs e)
     {
-        if (e.Url != "file:///android_asset/" && !e.Url.Contains("data:text/html") && !e.Url.StartsWith("about:blank"))
+        // Der eigene Inhalt: Basis-URL auf Android, data- bzw. about:blank-URL auf den anderen Plattformen.
+        // StartsWith statt Contains, sonst lädt ein Link mit "data:text/html" irgendwo in der URL im WebView.
+        bool isOwnContent = e.Url == "file:///android_asset/"
+            || e.Url.StartsWith("data:text/html", StringComparison.OrdinalIgnoreCase)
+            || e.Url.StartsWith("about:blank", StringComparison.OrdinalIgnoreCase);
+
+        if (!isOwnContent)
         {
             e.Cancel = true;
             await AppSettings.OpenLinkAsync(e.Url);
