@@ -70,7 +70,9 @@ namespace Adeptstack_App.Net
             try
             {
                 string json = await _apiClient.GetStringAsync($"{ApiBaseUrl}/apps/get?include=unlisted").ConfigureAwait(false);
-                return JsonSerializer.Deserialize<List<ContextClasses.AppContext>>(json) ?? new();
+                var apps = JsonSerializer.Deserialize<List<ContextClasses.AppContext>>(json) ?? new();
+                apps.RemoveAll(a => a == null);
+                return apps;
             }
             catch (Exception e)
             {
@@ -119,7 +121,7 @@ namespace Adeptstack_App.Net
 
         public static async Task<List<FilterOption>> GetNewsCategoriesAsync()
         {
-            return (await GetPageAsync<FilterOption>("/news/categories", new() { ["include"] = "unlisted" })).Items;
+            return WithName((await GetPageAsync<FilterOption>("/news/categories", new() { ["include"] = "unlisted" })).Items);
         }
 
         /// <param name="app">App-ID oder Slug, null = alle Apps.</param>
@@ -141,7 +143,13 @@ namespace Adeptstack_App.Net
         /// <param name="app">App-ID oder Slug, null = Channels aller Apps.</param>
         public static async Task<List<FilterOption>> GetChangelogChannelsAsync(string app)
         {
-            return (await GetPageAsync<FilterOption>("/changelogs/channels", new() { ["include"] = "unlisted", ["app"] = app })).Items;
+            return WithName((await GetPageAsync<FilterOption>("/changelogs/channels", new() { ["include"] = "unlisted", ["app"] = app })).Items);
+        }
+
+        // Die Namen werden zu Chip-Beschriftungen: ein Eintrag ohne Namen würde dort die App abstürzen lassen
+        private static List<FilterOption> WithName(List<FilterOption> options)
+        {
+            return options.Where(o => !string.IsNullOrWhiteSpace(o?.name)).ToList();
         }
 
         private static async Task<PagedResult<T>> GetPageAsync<T>(string path, Dictionary<string, string> query)
