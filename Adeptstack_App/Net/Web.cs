@@ -7,7 +7,10 @@ namespace Adeptstack_App.Net
 {
     internal class Web
     {
+        private const string ApiBaseUrl = "https://api.adeptstack.net/api";
+
         private static readonly HttpClient _httpClient = new HttpClient { Timeout = TimeSpan.FromSeconds(3) };
+        private static readonly HttpClient _apiClient = new HttpClient { Timeout = TimeSpan.FromSeconds(15) };
 
         public static async Task<bool> IsConnectedToInternetAsync()
         {
@@ -29,14 +32,12 @@ namespace Adeptstack_App.Net
         /// <summary>
         /// include=unlisted liefert gelistete und ungelistete Apps.
         /// </summary>
-        public static List<ContextClasses.AppContext> GetApps()
+        public static async Task<List<ContextClasses.AppContext>> GetAppsAsync()
         {
             try
             {
-                HttpClient client = new HttpClient();
-                string html = client.GetStringAsync("https://api.adeptstack.net/api/apps/get?include=unlisted").Result;
-                var result = JsonSerializer.Deserialize<List<ContextClasses.AppContext>>(html);
-                return result;
+                string json = await _apiClient.GetStringAsync($"{ApiBaseUrl}/apps/get?include=unlisted").ConfigureAwait(false);
+                return JsonSerializer.Deserialize<List<ContextClasses.AppContext>>(json) ?? new();
             }
             catch (Exception e)
             {
@@ -45,26 +46,22 @@ namespace Adeptstack_App.Net
             }
         }
 
-        public static ContextClasses.AppContext GetAppById(int id)
+        /// <returns>null, wenn die App nicht geladen werden konnte.</returns>
+        public static async Task<ContextClasses.AppContext> GetAppByIdAsync(int id)
         {
             try
             {
-                HttpClient client = new HttpClient();
-                string html = client.GetStringAsync($"https://api.adeptstack.net/api/apps/get/{id}").Result;
-                var result = JsonSerializer.Deserialize<ContextClasses.AppContext>(html);
-                return result;
+                string json = await _apiClient.GetStringAsync($"{ApiBaseUrl}/apps/get/{id}").ConfigureAwait(false);
+                return JsonSerializer.Deserialize<ContextClasses.AppContext>(json);
             }
             catch (Exception e)
             {
                 Debug.WriteLine(e.ToString());
-                return new();
+                return null;
             }
         }
 
         // --- Gefilterte Listen mit Pagination ---
-
-        private const string ApiBaseUrl = "https://api.adeptstack.net/api";
-        private static readonly HttpClient _apiClient = new HttpClient { Timeout = TimeSpan.FromSeconds(15) };
 
         /// <summary>
         /// Eine Seite einer Liste. Total kommt aus dem Header X-Total-Count und zählt alle Treffer, nicht nur diese Seite.

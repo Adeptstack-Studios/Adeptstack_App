@@ -21,6 +21,9 @@ public partial class DisplayContent : ContentPage
         "<p style='color: var(--text-muted); font-size: 0.8125rem; font-style: italic;'>Image hidden (Data Saver)</p>";
 
     private string _shareTitle;
+    // So lange wartet ein Changelog ohne bekannte App höchstens auf deren Namen
+    private static readonly TimeSpan AppNameTimeout = TimeSpan.FromSeconds(3);
+
     private Func<string> _getShareText;
     private Func<bool> _isBookmarked;
     private Func<bool> _toggleBookmark;
@@ -88,20 +91,13 @@ public partial class DisplayContent : ContentPage
 
         if (app == null)
         {
-            await Task.Run(() =>
-            {
-            try
-            {
-                var appData = Web.GetAppById(changelog.appId);
-                if (appData != null && !string.IsNullOrEmpty(appData.name))
-                {
-                    appName = appData.name;
-                }
-            }
-            catch
+            // Der Name ist nur Beiwerk: bei langsamer Verbindung nicht den ganzen Inhalt aufhalten
+            var lookup = Web.GetAppByIdAsync(changelog.appId);
+
+            if (await Task.WhenAny(lookup, Task.Delay(AppNameTimeout)) == lookup && !string.IsNullOrEmpty(lookup.Result?.name))
             {
             }
-            });
+                appName = lookup.Result.name;
         }
 
         LoadContentAsync(changelog.content, changelog.imageUrl, changelog.title, appName, changelog.publishedAt, changelog.description);
