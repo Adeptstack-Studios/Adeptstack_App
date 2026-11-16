@@ -21,6 +21,8 @@ public partial class DisplayContent : ContentPage
     private const string DataSaverPlaceholder =
         "<p style='color: var(--text-muted); font-size: 0.8125rem; font-style: italic;'>Image hidden (Data Saver)</p>";
 
+    private static readonly Regex UriScheme = new Regex("^[a-zA-Z][a-zA-Z0-9+.-]*:", RegexOptions.Compiled);
+
     // So lange wartet ein Changelog ohne bekannte App höchstens auf deren Namen
     private static readonly TimeSpan AppNameTimeout = TimeSpan.FromSeconds(3);
 
@@ -138,7 +140,7 @@ public partial class DisplayContent : ContentPage
                                 {(string.IsNullOrEmpty(imgUrlHtml) || !loadImages ? "" : $"<img src='{imgUrlHtml}' style='width: 100%; border-radius: 12px; margin-top: 8px;' />")}
                             </div>";
 
-            string markdownBody = Markdig.Markdown.ToHtml(content, MarkdownPipeline);
+            string markdownBody = RenderMarkdown(content);
 
             if (!loadImages)
             {
@@ -173,6 +175,53 @@ public partial class DisplayContent : ContentPage
                 nothing.IsVisible = true;
             }
         });
+    }
+
+    private static string RenderMarkdown(string content)
+    {
+        using var writer = new StringWriter();
+        var renderer = new Markdig.Renderers.HtmlRenderer(writer) { LinkRewriter = RewriteLink };
+        MarkdownPipeline.Setup(renderer);
+
+        renderer.Render(Markdig.Markdown.Parse(content, MarkdownPipeline));
+        writer.Flush();
+        return writer.ToString();
+    }
+
+    /// <summary>
+    /// Relative Links sind relativ zur Website gemeint. Das WebView hat keine Basis-URL,
+    /// dort führen sie ins Leere. Anker (#abschnitt) bleiben, wie sie sind.
+    /// </summary>
+    private static string RewriteLink(string url)
+    {
+        if (string.IsNullOrEmpty(url) || url.StartsWith('#'))
+        {
+            return url;
+        }
+
+        // Selbst prüfen statt Uri.TryCreate: unter Android/iOS gilt "/pfad" als absolute file-URI
+        if (url.StartsWith("//"))
+        {
+            return "https:" + url;
+        }
+
+        if (url.StartsWith('/'))
+        {
+            return Utilities.WebsiteUrl + url;
+        }
+
+        if (UriScheme.IsMatch(url))
+        {
+            return url;
+        }
+
+        // E-Mail-Autolinks (<name@host>) kommen ohne Schema an, das "mailto:" schreibt Markdig selbst davor
+        if (url.Contains('@') && !url.Contains('/'))
+        {
+            return url;
+        }
+
+        return Utilities.WebsiteUrl + "/" + url;
     }
 
     private void UpdateBookmarkItem()
