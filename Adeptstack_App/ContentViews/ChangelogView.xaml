@@ -95,6 +95,19 @@
                                FontAttributes="Bold" />
                     </Border>
 
+                    <!-- Tag: Upcoming (nur solange das Release noch aussteht) -->
+                    <Border BackgroundColor="{DynamicResource WarningBackground}"
+                            Stroke="{DynamicResource WarningBorder}"
+                            StrokeThickness="1"
+                            StrokeShape="RoundRectangle 6"
+                            Padding="8,4"
+                            IsVisible="{Binding Changelog.IsUpcoming, FallbackValue=False}">
+                        <Label Text="Upcoming"
+                               TextColor="{DynamicResource WarningText}"
+                               FontSize="11"
+                               FontAttributes="Bold" />
+                    </Border>
+
                 </HorizontalStackLayout>
             </Grid>
 

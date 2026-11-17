@@ -30,7 +30,7 @@ public partial class Changelogs : ContentPage
 
             if (isConnected)
             {
-                apps = Web.GetApps();
+                apps = await Web.GetAppsAsync();
                 apps = apps.OrderBy(a => a.legacy).ToList();
             }
 

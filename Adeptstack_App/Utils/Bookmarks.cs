@@ -126,7 +126,11 @@ namespace Adeptstack_App.Utils
         {
             try
             {
-                File.WriteAllText(FilePath, JsonSerializer.Serialize(_store));
+                // Erst in eine temporäre Datei, dann austauschen: bricht der Prozess mitten im Schreiben ab,
+                // bliebe sonst eine kaputte Datei zurück und das nächste Speichern überschriebe alle Lesezeichen.
+                string tempPath = FilePath + ".tmp";
+                File.WriteAllText(tempPath, JsonSerializer.Serialize(_store));
+                File.Move(tempPath, FilePath, overwrite: true);
             }
             catch (Exception e)
             {

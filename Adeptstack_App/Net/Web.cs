@@ -7,21 +7,57 @@ namespace Adeptstack_App.Net
 {
     internal class Web
     {
+        private const string ApiBaseUrl = "https://api.adeptstack.net/api";
+
         private static readonly HttpClient _httpClient = new HttpClient { Timeout = TimeSpan.FromSeconds(3) };
+        private static readonly HttpClient _apiClient = new HttpClient { Timeout = TimeSpan.FromSeconds(15) };
+
+        // Für die Gegenprobe an der eigenen API, wenn der schnelle Test fehlschlägt
+        private static readonly TimeSpan ApiProbeTimeout = TimeSpan.FromSeconds(5);
 
         public static async Task<bool> IsConnectedToInternetAsync()
         {
+            // Flugmodus oder gar kein Netz: nicht erst auf Timeouts warten
+            if (Connectivity.Current.NetworkAccess == NetworkAccess.None)
+            {
+                return false;
+            }
+
             try
             {
                 var request = new HttpRequestMessage(HttpMethod.Head, "https://clients3.google.com/generate_204");
                 using (var response = await _httpClient.SendAsync(request))
                 {
-                    return response.IsSuccessStatusCode;
+                    if (response.IsSuccessStatusCode)
+                    {
+                        return true;
+                    }
                 }
             }
             catch (Exception e)
             {
                 System.Diagnostics.Debug.WriteLine($"Connection test failed: {e.Message}");
+            }
+
+            return await IsApiReachableAsync();
+        }
+
+        /// <summary>
+        /// Google kann gesperrt oder langsam sein, obwohl die eigene API erreichbar ist.
+        /// Jede Antwort zählt, auch ein Fehlerstatus: dann steht die Verbindung.
+        /// </summary>
+        private static async Task<bool> IsApiReachableAsync()
+        {
+            try
+            {
+                using var timeout = new CancellationTokenSource(ApiProbeTimeout);
+                var request = new HttpRequestMessage(HttpMethod.Head, $"{ApiBaseUrl}/news/categories");
+                using var response = await _apiClient.SendAsync(request, HttpCompletionOption.ResponseHeadersRead, timeout.Token);
+                return true;
+            }
+            catch (Exception e)
+            {
+                System.Diagnostics.Debug.WriteLine($"API probe failed: {e.Message}");
                 return false;
             }
         }
@@ -29,14 +65,14 @@ namespace Adeptstack_App.Net
         /// <summary>
         /// include=unlisted liefert gelistete und ungelistete Apps.
         /// </summary>
-        public static List<ContextClasses.AppContext> GetApps()
+        public static async Task<List<ContextClasses.AppContext>> GetAppsAsync()
         {
             try
             {
-                HttpClient client = new HttpClient();
-                string html = client.GetStringAsync("https://api.adeptstack.net/api/apps/get?include=unlisted").Result;
-                var result = JsonSerializer.Deserialize<List<ContextClasses.AppContext>>(html);
-                return result;
+                string json = await _apiClient.GetStringAsync($"{ApiBaseUrl}/apps/get?include=unlisted").ConfigureAwait(false);
+                var apps = JsonSerializer.Deserialize<List<ContextClasses.AppContext>>(json) ?? new();
+                apps.RemoveAll(a => a == null);
+                return apps;
             }
             catch (Exception e)
             {
@@ -45,26 +81,22 @@ namespace Adeptstack_App.Net
             }
         }
 
-        public static ContextClasses.AppContext GetAppById(int id)
+        /// <returns>null, wenn die App nicht geladen werden konnte.</returns>
+        public static async Task<ContextClasses.AppContext> GetAppByIdAsync(int id)
         {
             try
             {
-                HttpClient client = new HttpClient();
-                string html = client.GetStringAsync($"https://api.adeptstack.net/api/apps/get/{id}").Result;
-                var result = JsonSerializer.Deserialize<ContextClasses.AppContext>(html);
-                return result;
+                string json = await _apiClient.GetStringAsync($"{ApiBaseUrl}/apps/get/{id}").ConfigureAwait(false);
+                return JsonSerializer.Deserialize<ContextClasses.AppContext>(json);
             }
             catch (Exception e)
             {
                 Debug.WriteLine(e.ToString());
-                return new();
+                return null;
             }
         }
 
         // --- Gefilterte Listen mit Pagination ---
-
-        private const string ApiBaseUrl = "https://api.adeptstack.net/api";
-        private static readonly HttpClient _apiClient = new HttpClient { Timeout = TimeSpan.FromSeconds(15) };
 
         /// <summary>
         /// Eine Seite einer Liste. Total kommt aus dem Header X-Total-Count und zählt alle Treffer, nicht nur diese Seite.
@@ -89,7 +121,7 @@ namespace Adeptstack_App.Net
 
         public static async Task<List<FilterOption>> GetNewsCategoriesAsync()
         {
-            return (await GetPageAsync<FilterOption>("/news/categories", new() { ["include"] = "unlisted" })).Items;
+            return WithName((await GetPageAsync<FilterOption>("/news/categories", new() { ["include"] = "unlisted" })).Items);
         }
 
         /// <param name="app">App-ID oder Slug, null = alle Apps.</param>
@@ -111,7 +143,13 @@ namespace Adeptstack_App.Net
         /// <param name="app">App-ID oder Slug, null = Channels aller Apps.</param>
         public static async Task<List<FilterOption>> GetChangelogChannelsAsync(string app)
         {
-            return (await GetPageAsync<FilterOption>("/changelogs/channels", new() { ["include"] = "unlisted", ["app"] = app })).Items;
+            return WithName((await GetPageAsync<FilterOption>("/changelogs/channels", new() { ["include"] = "unlisted", ["app"] = app })).Items);
+        }
+
+        // Die Namen werden zu Chip-Beschriftungen: ein Eintrag ohne Namen würde dort die App abstürzen lassen
+        private static List<FilterOption> WithName(List<FilterOption> options)
+        {
+            return options.Where(o => !string.IsNullOrWhiteSpace(o?.name)).ToList();
         }
 
         private static async Task<PagedResult<T>> GetPageAsync<T>(string path, Dictionary<string, string> query)

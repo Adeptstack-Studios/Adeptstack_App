@@ -215,17 +215,7 @@ public partial class SettingsPage : ContentPage
             return;
         }
 
-        var app = await Task.Run(() =>
-        {
-            try
-            {
-                return Web.GetAppById(OwnAppId);
-            }
-            catch
-            {
-                return null;
-            }
-        });
+        var app = await Web.GetAppByIdAsync(OwnAppId);
 
         if (app == null)
         {

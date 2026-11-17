@@ -121,7 +121,7 @@ public partial class AppChangelog : ContentPage
         }
 
         var chips = new List<FilterChips.Chip> { new FilterChips.Chip(null, "ALL") };
-        chips.AddRange(_apps.Select(a => new FilterChips.Chip(a.id.ToString(), a.name.ToUpper())));
+        chips.AddRange(_apps.Select(a => new FilterChips.Chip(a.id.ToString(), (a.name ?? "").ToUpper())));
 
         FilterChips.Build(appLayout, chips, _selectedApp?.id.ToString(), async appId =>
         {

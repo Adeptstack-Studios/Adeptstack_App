@@ -4,6 +4,7 @@ using Adeptstack_App.Utils;
 using Markdig;
 using Microsoft.Maui.ApplicationModel;
 using System.Diagnostics;
+using System.Net;
 using System.Text.RegularExpressions;
 using AppContext = Adeptstack_App.ContextClasses.AppContext;
 
@@ -19,6 +20,11 @@ public partial class DisplayContent : ContentPage
     private static readonly Regex ImageTag = new Regex("<img[^>]*>", RegexOptions.IgnoreCase | RegexOptions.Compiled);
     private const string DataSaverPlaceholder =
         "<p style='color: var(--text-muted); font-size: 0.8125rem; font-style: italic;'>Image hidden (Data Saver)</p>";
+
+    private static readonly Regex UriScheme = new Regex("^[a-zA-Z][a-zA-Z0-9+.-]*:", RegexOptions.Compiled);
+
+    // So lange wartet ein Changelog ohne bekannte App höchstens auf deren Namen
+    private static readonly TimeSpan AppNameTimeout = TimeSpan.FromSeconds(3);
 
     private string _shareTitle;
     private Func<string> _getShareText;
@@ -88,23 +94,16 @@ public partial class DisplayContent : ContentPage
 
         if (app == null)
         {
-            await Task.Run(() =>
+            // Der Name ist nur Beiwerk: bei langsamer Verbindung nicht den ganzen Inhalt aufhalten
+            var lookup = Web.GetAppByIdAsync(changelog.appId);
+
+            if (await Task.WhenAny(lookup, Task.Delay(AppNameTimeout)) == lookup && !string.IsNullOrEmpty(lookup.Result?.name))
             {
-            try
-            {
-                var appData = Web.GetAppById(changelog.appId);
-                if (appData != null && !string.IsNullOrEmpty(appData.name))
-                {
-                    appName = appData.name;
-                }
+                appName = lookup.Result.name;
             }
-            catch
-            {
-            }
-            });
         }
 
-        LoadContentAsync(changelog.content, changelog.imageUrl, changelog.title, appName, changelog.publishedAt, changelog.description);
+        LoadContentAsync(changelog.content, changelog.imageUrl, changelog.title, appName, changelog.publishedAt, changelog.description, changelog.IsUpcoming ? "Upcoming" : null);
     }
 
     /// <param name="dateSuffix">Optional hinter dem Datum, z. B. "5 min read".</param>
@@ -122,19 +121,26 @@ public partial class DisplayContent : ContentPage
         // Markdown im Hintergrund umwandeln, während die Seite noch hereinfährt
         string html = string.IsNullOrEmpty(content) ? null : await Task.Run(() =>
         {
+            // Die Felder aus der API sind reiner Text, kein HTML: ein "<" im Titel würde sonst die Seite zerlegen
+            // Eigene Variablen: die Parameter stecken auch in _render und würden beim nächsten Aufbau doppelt kodiert.
+            string categoryHtml = WebUtility.HtmlEncode(category);
+            string titleHtml = WebUtility.HtmlEncode(title);
+            string descriptionHtml = WebUtility.HtmlEncode(description);
+            string imgUrlHtml = WebUtility.HtmlEncode(imgUrl);
+
             // Größen in rem, damit die Schriftgröße aus den Einstellungen alles mitskaliert
             string headerHtml = $@"
                             <div style='margin-bottom: 40px; margin-top: 48px;'>
                                 <div style='display: flex; justify-content: space-between; font-size: 0.8125rem; font-weight: bold; margin-bottom: 16px;'>
-                                    <span style='color: var(--accent); text-transform: uppercase; letter-spacing: 1px;'>{category}</span>
+                                    <span style='color: var(--accent); text-transform: uppercase; letter-spacing: 1px;'>{categoryHtml}</span>
                                     <span style='color: var(--text-secondary);'>{date:MMM dd, yyyy}{(string.IsNullOrEmpty(dateSuffix) ? "" : $" · {dateSuffix}")}</span>
                                 </div>
-                                <h1 style='color: var(--text); font-size: 1.625rem; line-height: 1.3; margin-top: 0; margin-bottom: 16px;'>{title}</h1>
-                                {(string.IsNullOrEmpty(description) ? "" : $"<p style='color: var(--text-secondary); font-size: 1rem; line-height: 1.5; margin-top: 0; margin-bottom: 32px;'>{description}</p>")}
-                                {(string.IsNullOrEmpty(imgUrl) || !loadImages ? "" : $"<img src='{imgUrl}' style='width: 100%; border-radius: 12px; margin-top: 8px;' />")}
+                                <h1 style='color: var(--text); font-size: 1.625rem; line-height: 1.3; margin-top: 0; margin-bottom: 16px;'>{titleHtml}</h1>
+                                {(string.IsNullOrEmpty(descriptionHtml) ? "" : $"<p style='color: var(--text-secondary); font-size: 1rem; line-height: 1.5; margin-top: 0; margin-bottom: 32px;'>{descriptionHtml}</p>")}
+                                {(string.IsNullOrEmpty(imgUrlHtml) || !loadImages ? "" : $"<img src='{imgUrlHtml}' style='width: 100%; border-radius: 12px; margin-top: 8px;' />")}
                             </div>";
 
-            string markdownBody = Markdig.Markdown.ToHtml(content, MarkdownPipeline);
+            string markdownBody = RenderMarkdown(content);
 
             if (!loadImages)
             {
@@ -171,6 +177,53 @@ public partial class DisplayContent : ContentPage
         });
     }
 
+    private static string RenderMarkdown(string content)
+    {
+        using var writer = new StringWriter();
+        var renderer = new Markdig.Renderers.HtmlRenderer(writer) { LinkRewriter = RewriteLink };
+        MarkdownPipeline.Setup(renderer);
+
+        renderer.Render(Markdig.Markdown.Parse(content, MarkdownPipeline));
+        writer.Flush();
+        return writer.ToString();
+    }
+
+    /// <summary>
+    /// Relative Links sind relativ zur Website gemeint. Das WebView hat keine Basis-URL,
+    /// dort führen sie ins Leere. Anker (#abschnitt) bleiben, wie sie sind.
+    /// </summary>
+    private static string RewriteLink(string url)
+    {
+        if (string.IsNullOrEmpty(url) || url.StartsWith('#'))
+        {
+            return url;
+        }
+
+        // Selbst prüfen statt Uri.TryCreate: unter Android/iOS gilt "/pfad" als absolute file-URI
+        if (url.StartsWith("//"))
+        {
+            return "https:" + url;
+        }
+
+        if (url.StartsWith('/'))
+        {
+            return Utilities.WebsiteUrl + url;
+        }
+
+        if (UriScheme.IsMatch(url))
+        {
+            return url;
+        }
+
+        // E-Mail-Autolinks (<name@host>) kommen ohne Schema an, das "mailto:" schreibt Markdig selbst davor
+        if (url.Contains('@') && !url.Contains('/'))
+        {
+            return url;
+        }
+
+        return Utilities.WebsiteUrl + "/" + url;
+    }
+
     private void UpdateBookmarkItem()
     {
         bool bookmarked = _isBookmarked();
@@ -198,7 +251,13 @@ public partial class DisplayContent : ContentPage
 
     private async void web_Navigating(object sender, WebNavigatingEventArgs e)
     {
-        if (e.Url != "file:///android_asset/" && !e.Url.Contains("data:text/html") && !e.Url.StartsWith("about:blank"))
+        // Der eigene Inhalt: Basis-URL auf Android, data- bzw. about:blank-URL auf den anderen Plattformen.
+        // StartsWith statt Contains, sonst lädt ein Link mit "data:text/html" irgendwo in der URL im WebView.
+        bool isOwnContent = e.Url == "file:///android_asset/"
+            || e.Url.StartsWith("data:text/html", StringComparison.OrdinalIgnoreCase)
+            || e.Url.StartsWith("about:blank", StringComparison.OrdinalIgnoreCase);
+
+        if (!isOwnContent)
         {
             e.Cancel = true;
             await AppSettings.OpenLinkAsync(e.Url);

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Text.Json.Serialization;
 
 namespace Adeptstack_App.ContextClasses
 {
@@ -22,8 +23,13 @@ namespace Adeptstack_App.ContextClasses
         public string feature3Desc { get; set; }
         public string publishedAt { get; set; }
         public ChangelogContext latestMainVersion { get; set; }
+        public ChangelogContext upcomingVersion { get; set; }
         public bool highlighted { get; set; }
         public bool legacy { get; set; }
         public string visibility { get; set; }
+
+        // Die App hat noch kein Release, nur ein angekündigtes.
+        [JsonIgnore]
+        public bool IsUpcoming => latestMainVersion == null && upcomingVersion?.IsUpcoming == true;
     }
 }

@@ -37,9 +37,34 @@ namespace Adeptstack_App.Utils
             set => Preferences.Default.Set(nameof(OpenLinksInApp), value);
         }
 
-        public static Task OpenLinkAsync(string url)
+        /// <summary>
+        /// Öffnet Links aus Artikeln. Wirft nie: der Aufrufer ist ein async-void-Handler, dort würde eine Exception die App beenden.
+        /// </summary>
+        public static async Task OpenLinkAsync(string url)
         {
-            return Browser.Default.OpenAsync(url, OpenLinksInApp ? BrowserLaunchMode.SystemPreferred : BrowserLaunchMode.External);
+            try
+            {
+                if (!Uri.TryCreate(url, UriKind.Absolute, out Uri uri))
+                {
+                    return;
+                }
+
+                if (uri.Scheme == Uri.UriSchemeHttp || uri.Scheme == Uri.UriSchemeHttps)
+                {
+                    await Browser.Default.OpenAsync(uri, OpenLinksInApp ? BrowserLaunchMode.SystemPreferred : BrowserLaunchMode.External);
+                }
+                else if (uri.Scheme == Uri.UriSchemeMailto || uri.Scheme == "tel")
+                {
+                    // Der Browser kann damit nichts anfangen, das übernimmt die Mail- bzw. Telefon-App
+                    await Launcher.Default.OpenAsync(uri);
+                }
+
+                // Alles andere (z. B. relative Links, die im WebView zu file:// werden) wird ignoriert
+            }
+            catch (Exception e)
+            {
+                System.Diagnostics.Debug.WriteLine(e.ToString());
+            }
         }
 
         // --- Filter und Sortierung ---

@@ -40,6 +40,17 @@ namespace Adeptstack_App.Utils
 
         public static string GetChangelogShareText(ChangelogContext changelog)
         {
+            // Noch nicht erschienen: der Text darf kein Release behaupten.
+            if (changelog.IsUpcoming)
+            {
+                // Invariant: sonst steht auf einem deutschen Gerät "Dez." mitten im englischen Satz
+                string releaseDate = changelog.publishedAt.ToString("MMM d, yyyy", CultureInfo.InvariantCulture);
+
+                return $"Hey! {changelog.title} is coming on {releaseDate}. Here's a first look:\n" +
+                       $"{GetChangelogUrl(changelog)}{AppSourceQuery}\n\n" +
+                       ShareSignature;
+            }
+
             return $"Hey! {changelog.title} is out. Take a look at what's new:\n" +
                    $"{GetChangelogUrl(changelog)}{AppSourceQuery}\n\n" +
                    ShareSignature;
